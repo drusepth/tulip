@@ -1,10 +1,13 @@
-<div class="h-screen flex flex-col">
+<div class="h-screen flex flex-col" data-controller="map"
+     data-map-stays-url-value="<%= api_stays_path %>"
+     data-map-pois-url-value="/api/stays/:id/pois"
+     data-map-transit-url-value="/api/stays/:id/transit_routes">
   <!-- Header -->
   <div class="bg-white border-b px-4 py-3 flex items-center justify-between">
     <h1 class="text-xl font-semibold text-gray-900">Map View</h1>
     <div class="flex items-center gap-4">
       <!-- POI Toggles -->
-      <div class="flex items-center gap-2" data-controller="map" data-map-target="toggles">
+      <div class="flex items-center gap-2">
         <button type="button" data-action="click->map#togglePoi" data-category="transit_stops"
                 class="poi-toggle px-3 py-1 text-sm rounded-full border border-gray-300 bg-white hover:bg-gray-50">
           Transit
@@ -12,10 +15,6 @@
         <button type="button" data-action="click->map#togglePoi" data-category="coffee"
                 class="poi-toggle px-3 py-1 text-sm rounded-full border border-gray-300 bg-white hover:bg-gray-50">
           Coffee
-        </button>
-        <button type="button" data-action="click->map#togglePoi" data-category="veterinarian"
-                class="poi-toggle px-3 py-1 text-sm rounded-full border border-gray-300 bg-white hover:bg-gray-50">
-          Vets
         </button>
         <button type="button" data-action="click->map#togglePoi" data-category="grocery"
                 class="poi-toggle px-3 py-1 text-sm rounded-full border border-gray-300 bg-white hover:bg-gray-50">
@@ -49,10 +48,6 @@
   </div>
 
   <!-- Map Container -->
-  <div id="map" class="flex-1"
-       data-controller="map"
-       data-map-stays-url-value="<%= api_stays_path %>"
-       data-map-pois-url-value="/api/stays/:id/pois"
-       data-map-transit-url-value="/api/stays/:id/transit_routes">
+  <div id="map" class="flex-1" data-map-target="container">
   </div>
 </div>

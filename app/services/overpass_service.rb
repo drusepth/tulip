@@ -1,32 +1,42 @@
 class OverpassService
   OVERPASS_URL = 'https://overpass-api.de/api/interpreter'.freeze
 
-  CATEGORY_QUERIES = {
-    'transit_stops' => 'node["public_transport"="stop_position"]; node["highway"="bus_stop"]; node["railway"~"station|subway_entrance|tram_stop"];',
-    'coffee' => 'node["amenity"="cafe"]; node["cuisine"="coffee"];',
-    'veterinarian' => 'node["amenity"="veterinary"];',
-    'grocery' => 'node["shop"~"supermarket|grocery|convenience"];'
+  CATEGORY_TAGS = {
+    'transit_stops' => [
+      '["public_transport"="stop_position"]',
+      '["highway"="bus_stop"]',
+      '["railway"~"station|subway_entrance|tram_stop"]'
+    ],
+    'coffee' => [
+      '["amenity"="cafe"]',
+      '["cuisine"="coffee"]'
+    ],
+    'grocery' => [
+      '["shop"~"supermarket|grocery|convenience"]'
+    ]
   }.freeze
 
-  TRANSIT_ROUTE_QUERIES = {
-    'subway' => 'relation["route"="subway"];',
-    'tram' => 'relation["route"="tram"];',
-    'bus' => 'relation["route"="bus"];'
+  TRANSIT_ROUTE_TYPES = {
+    'subway' => 'subway',
+    'tram' => 'tram',
+    'bus' => 'bus'
   }.freeze
 
   class << self
     def fetch_pois(lat:, lng:, category:, radius: 1000)
-      return [] unless CATEGORY_QUERIES.key?(category)
+      return [] unless CATEGORY_TAGS.key?(category)
 
       query = build_poi_query(lat, lng, category, radius)
+      Rails.logger.info("Overpass POI query: #{query}")
       response = make_request(query)
       parse_poi_response(response, lat, lng)
     end
 
     def fetch_transit_routes(lat:, lng:, route_type:, radius: 2000)
-      return [] unless TRANSIT_ROUTE_QUERIES.key?(route_type)
+      return [] unless TRANSIT_ROUTE_TYPES.key?(route_type)
 
       query = build_transit_query(lat, lng, route_type, radius)
+      Rails.logger.info("Overpass transit query: #{query}")
       response = make_request(query)
       parse_transit_response(response)
     end
@@ -34,27 +44,29 @@ class OverpassService
     private
 
     def build_poi_query(lat, lng, category, radius)
+      tags = CATEGORY_TAGS[category]
       bbox = calculate_bbox(lat, lng, radius)
-      category_query = CATEGORY_QUERIES[category]
+
+      node_queries = tags.map { |tag| "node#{tag}(#{bbox});" }.join("\n    ")
 
       <<~QUERY
         [out:json][timeout:25];
         (
-          #{category_query}
-        )(#{bbox});
+          #{node_queries}
+        );
         out body;
       QUERY
     end
 
     def build_transit_query(lat, lng, route_type, radius)
       bbox = calculate_bbox(lat, lng, radius)
-      route_query = TRANSIT_ROUTE_QUERIES[route_type]
+      osm_route_type = TRANSIT_ROUTE_TYPES[route_type]
 
       <<~QUERY
         [out:json][timeout:30];
         (
-          #{route_query}
-        )(#{bbox});
+          relation["route"="#{osm_route_type}"](#{bbox});
+        );
         out body;
         >;
         out skel qt;
@@ -62,7 +74,6 @@ class OverpassService
     end
 
     def calculate_bbox(lat, lng, radius)
-      # Approximate degrees per meter at the equator
       lat_delta = radius / 111_000.0
       lng_delta = radius / (111_000.0 * Math.cos(lat * Math::PI / 180))
 
@@ -82,7 +93,10 @@ class OverpassService
         timeout: 30
       )
 
-      return nil unless response.success?
+      unless response.success?
+        Rails.logger.error("Overpass API returned #{response.code}: #{response.body[0..200]}")
+        return nil
+      end
 
       JSON.parse(response.body)
     rescue StandardError => e
@@ -114,31 +128,32 @@ class OverpassService
     def parse_transit_response(response)
       return [] unless response && response['elements']
 
-      # Separate nodes and relations
       nodes = {}
+      ways = {}
       relations = []
 
       response['elements'].each do |element|
         case element['type']
         when 'node'
           nodes[element['id']] = [element['lat'], element['lon']]
+        when 'way'
+          ways[element['id']] = element['nodes'] || []
         when 'relation'
           relations << element
         end
       end
 
-      # Build route geometries from relations
       relations.map do |relation|
         members = relation['members'] || []
-        way_nodes = members.select { |m| m['type'] == 'node' && m['role'] != 'stop' }
+        geometry = []
 
-        geometry = way_nodes.map do |member|
-          nodes[member['ref']]
-        end.compact
-
-        # If no direct node references, try to build from ways
-        if geometry.empty?
-          geometry = extract_geometry_from_ways(relation, nodes)
+        members.each do |member|
+          if member['type'] == 'way' && ways[member['ref']]
+            way_geometry = ways[member['ref']].map { |node_id| nodes[node_id] }.compact
+            geometry.concat(way_geometry)
+          elsif member['type'] == 'node' && nodes[member['ref']]
+            geometry << nodes[member['ref']]
+          end
         end
 
         next if geometry.empty?
@@ -150,12 +165,6 @@ class OverpassService
           geometry: geometry
         }
       end.compact
-    end
-
-    def extract_geometry_from_ways(relation, nodes)
-      # For relations that reference ways, we need the way geometry
-      # This is a simplified approach - full implementation would need to fetch ways
-      []
     end
 
     def build_address(tags)
@@ -171,8 +180,7 @@ class OverpassService
     end
 
     def calculate_distance(lat1, lng1, lat2, lng2)
-      # Haversine formula for distance in meters
-      r = 6_371_000 # Earth's radius in meters
+      r = 6_371_000
 
       phi1 = lat1 * Math::PI / 180
       phi2 = lat2 * Math::PI / 180

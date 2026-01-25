@@ -1,7 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
-import L from "leaflet"
+// Leaflet is loaded globally via CDN in application.html.erb
 
 export default class extends Controller {
+  static targets = ["container"]
   static values = {
     staysUrl: String,
     poisUrl: String,
@@ -19,7 +20,8 @@ export default class extends Controller {
   }
 
   initializeMap() {
-    this.map = L.map(this.element).setView([20, 0], 2)
+    const mapElement = this.hasContainerTarget ? this.containerTarget : this.element
+    this.map = L.map(mapElement).setView([20, 0], 2)
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,

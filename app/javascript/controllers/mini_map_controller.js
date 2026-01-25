@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import L from "leaflet"
+// Leaflet is loaded globally via CDN in application.html.erb
 
 export default class extends Controller {
   static values = {

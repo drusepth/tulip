@@ -1,5 +1,5 @@
 class Poi < ApplicationRecord
-  CATEGORIES = %w[transit_stops coffee veterinarian grocery].freeze
+  CATEGORIES = %w[transit_stops coffee grocery].freeze
 
   belongs_to :stay
 
