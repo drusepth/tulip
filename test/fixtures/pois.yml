@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  stay: one
+  name: MyString
+  category: MyString
+  latitude: 9.99
+  longitude: 9.99
+  distance_meters: 1
+  osm_id: MyString
+  address: MyString
+  opening_hours: MyString
+  favorite: false
+
+two:
+  stay: two
+  name: MyString
+  category: MyString
+  latitude: 9.99
+  longitude: 9.99
+  distance_meters: 1
+  osm_id: MyString
+  address: MyString
+  opening_hours: MyString
+  favorite: false

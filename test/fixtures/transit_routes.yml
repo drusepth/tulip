@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  stay: one
+  name: MyString
+  route_type: MyString
+  color: MyString
+  osm_id: MyString
+  geometry: MyText
+
+two:
+  stay: two
+  name: MyString
+  route_type: MyString
+  color: MyString
+  osm_id: MyString
+  geometry: MyText

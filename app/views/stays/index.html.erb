@@ -1,0 +1,58 @@
+<div class="h-screen flex flex-col">
+  <!-- Header -->
+  <div class="bg-white border-b px-4 py-3 flex items-center justify-between">
+    <h1 class="text-xl font-semibold text-gray-900">Map View</h1>
+    <div class="flex items-center gap-4">
+      <!-- POI Toggles -->
+      <div class="flex items-center gap-2" data-controller="map" data-map-target="toggles">
+        <button type="button" data-action="click->map#togglePoi" data-category="transit_stops"
+                class="poi-toggle px-3 py-1 text-sm rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+          Transit
+        </button>
+        <button type="button" data-action="click->map#togglePoi" data-category="coffee"
+                class="poi-toggle px-3 py-1 text-sm rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+          Coffee
+        </button>
+        <button type="button" data-action="click->map#togglePoi" data-category="veterinarian"
+                class="poi-toggle px-3 py-1 text-sm rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+          Vets
+        </button>
+        <button type="button" data-action="click->map#togglePoi" data-category="grocery"
+                class="poi-toggle px-3 py-1 text-sm rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+          Grocery
+        </button>
+      </div>
+
+      <!-- Transit Route Toggles -->
+      <div class="border-l pl-4 flex items-center gap-2">
+        <button type="button" data-action="click->map#toggleTransit" data-route-type="subway"
+                class="transit-toggle px-3 py-1 text-sm rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+          Subway
+        </button>
+        <button type="button" data-action="click->map#toggleTransit" data-route-type="tram"
+                class="transit-toggle px-3 py-1 text-sm rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+          Tram
+        </button>
+        <button type="button" data-action="click->map#toggleTransit" data-route-type="bus"
+                class="transit-toggle px-3 py-1 text-sm rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+          Bus
+        </button>
+      </div>
+
+      <%= link_to new_stay_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700" do %>
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Add Stay
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Map Container -->
+  <div id="map" class="flex-1"
+       data-controller="map"
+       data-map-stays-url-value="<%= api_stays_path %>"
+       data-map-pois-url-value="/api/stays/:id/pois"
+       data-map-transit-url-value="/api/stays/:id/transit_routes">
+  </div>
+</div>

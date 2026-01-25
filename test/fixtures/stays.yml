@@ -1,0 +1,35 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  stay_type: MyString
+  booking_url: MyString
+  image_url: MyString
+  address: MyString
+  city: MyString
+  country: MyString
+  latitude: 9.99
+  longitude: 9.99
+  check_in: 2026-01-25
+  check_out: 2026-01-25
+  price_total_cents: 1
+  currency: MyString
+  notes: MyText
+  status: MyString
+
+two:
+  title: MyString
+  stay_type: MyString
+  booking_url: MyString
+  image_url: MyString
+  address: MyString
+  city: MyString
+  country: MyString
+  latitude: 9.99
+  longitude: 9.99
+  check_in: 2026-01-25
+  check_out: 2026-01-25
+  price_total_cents: 1
+  currency: MyString
+  notes: MyText
+  status: MyString
