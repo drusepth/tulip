@@ -523,6 +523,203 @@ input[type="checkbox"]:focus {
   background-color: var(--color-coral);
 }
 
+/* Timeline Zoom Buttons */
+.timeline-zoom-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-brown-light);
+  background-color: white;
+  border: 1px solid var(--color-taupe);
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.timeline-zoom-btn:hover {
+  background-color: var(--color-taupe-light);
+  border-color: var(--color-taupe-dark);
+  color: var(--color-brown);
+}
+
+.timeline-zoom-btn.active {
+  background-color: var(--color-sage);
+  border-color: var(--color-sage);
+  color: white;
+}
+
+.timeline-zoom-btn.active:hover {
+  background-color: var(--color-sage-dark);
+  border-color: var(--color-sage-dark);
+}
+
+/* Timeline Single-Row Bar Layout */
+.timeline-bar {
+  position: absolute;
+  top: 20px;
+  height: 56px;
+  border-radius: 1rem;
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 60px;
+  box-shadow: 0 2px 8px rgba(93, 78, 78, 0.12);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-decoration: none;
+  color: white;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.timeline-bar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(93, 78, 78, 0.2);
+  z-index: 15;
+}
+
+.timeline-bar-content {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.timeline-bar-duration {
+  flex-shrink: 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  opacity: 0.9;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.5rem;
+}
+
+/* Gap Bar Styling */
+.timeline-gap-bar {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color-coral-light),
+    var(--color-coral-light) 4px,
+    rgba(232, 180, 160, 0.5) 4px,
+    rgba(232, 180, 160, 0.5) 8px
+  );
+  border: 2px dashed var(--color-coral);
+  color: var(--color-coral-dark);
+}
+
+.timeline-gap-bar:hover {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color-coral),
+    var(--color-coral) 4px,
+    rgba(200, 152, 128, 0.7) 4px,
+    rgba(200, 152, 128, 0.7) 8px
+  );
+}
+
+.timeline-gap-legend {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color-coral-light),
+    var(--color-coral-light) 2px,
+    rgba(232, 180, 160, 0.5) 2px,
+    rgba(232, 180, 160, 0.5) 4px
+  );
+  border: 1px dashed var(--color-coral);
+}
+
+/* Year Dividers */
+.timeline-year-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: var(--color-taupe-light);
+  z-index: 5;
+}
+
+.timeline-year-label {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--color-taupe);
+  white-space: nowrap;
+  background-color: white;
+  padding: 0 0.25rem;
+}
+
+/* Connecting Lines Between Stays */
+.timeline-connector {
+  position: absolute;
+  top: 48px;
+  height: 2px;
+  border-top: 2px dotted var(--color-taupe-light);
+  z-index: 1;
+}
+
+/* Timeline Scroll Container */
+.timeline-scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-taupe) var(--color-taupe-light);
+}
+
+.timeline-scroll-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.timeline-scroll-container::-webkit-scrollbar-track {
+  background: var(--color-taupe-light);
+  border-radius: 4px;
+}
+
+.timeline-scroll-container::-webkit-scrollbar-thumb {
+  background-color: var(--color-taupe);
+  border-radius: 4px;
+}
+
+.timeline-scroll-container::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-taupe-dark);
+}
+
+/* Timeline Tooltip Styling */
+.timeline-tooltip {
+  min-width: 160px;
+  max-width: 240px;
+}
+
+/* ========================================
+   Cozy Tooltip (Cottagecore Style)
+   ======================================== */
+
+.cozy-tooltip {
+  background: linear-gradient(135deg, #FDF8F3 0%, #F5EDE5 100%);
+  border: 1px solid var(--color-taupe-light);
+  box-shadow: 0 8px 24px rgba(93, 78, 78, 0.15), 0 2px 8px rgba(93, 78, 78, 0.1);
+  color: var(--color-brown);
+}
+
+.cozy-tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(135deg, transparent 50%, #F5EDE5 50%);
+  border-right: 1px solid var(--color-taupe-light);
+  border-bottom: 1px solid var(--color-taupe-light);
+}
+
 /* ========================================
    Table Styles
    ======================================== */
