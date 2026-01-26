@@ -29,6 +29,9 @@
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
             crossorigin=""></script>
 
+    <%# Chart.js %>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
@@ -59,7 +62,9 @@
                 </svg>
                 Add Stay
               <% end %>
-              <%= link_to "Account", edit_user_registration_path, class: "text-sm text-brown-light hover:text-brown transition-colors" %>
+              <%= link_to edit_user_registration_path, class: "hover:opacity-80 transition-opacity", title: "Account" do %>
+                <%= avatar_tag(current_user, size: 40, html_options: { class: "w-10 h-10 border-2 border-taupe-light" }) %>
+              <% end %>
               <%= button_to "Log out", destroy_user_session_path, method: :delete, class: "btn-outline text-sm py-1.5 px-3" %>
             </div>
           </div>
@@ -90,5 +95,8 @@
     <% end %>
 
     <%= yield %>
+
+    <!-- Shared tooltip element for site-wide tooltips -->
+    <div id="tooltip" class="hidden fixed bg-stone-700 text-white text-sm px-3 py-2 rounded-lg shadow-lg z-50 pointer-events-none"></div>
   </body>
 </html>
