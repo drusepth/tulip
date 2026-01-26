@@ -77,7 +77,7 @@
                 You are here
               </span>
               <% unless @current_stay.booked? %>
-                <span class="badge badge-planned bg-lavender/90 text-white">
+                <span class="badge badge-planned bg-lavender-dark/90 text-white">
                   Not booked
                 </span>
               <% end %>
@@ -121,7 +121,7 @@
                   Next up
                 </span>
               <% else %>
-                <span class="badge badge-planned bg-lavender/90 text-white">
+                <span class="badge badge-planned bg-lavender-dark/90 text-white">
                   Planned
                 </span>
               <% end %>
@@ -176,7 +176,7 @@
               <div class="absolute inset-0 p-4 flex flex-col justify-end text-white">
                 <div class="flex items-center gap-2 mb-1">
                   <% unless stay.booked? %>
-                    <span class="badge badge-planned bg-lavender/90 text-white text-xs">
+                    <span class="badge badge-planned bg-lavender-dark/90 text-white text-xs">
                       Planned
                     </span>
                   <% end %>
@@ -263,5 +263,29 @@
         <% end %>
       </div>
     </div>
+  </div>
+
+  <!-- Timeline Card -->
+  <div class="mt-8">
+    <%= link_to timeline_path, class: "block group" do %>
+      <div class="cozy-card p-6 hover:shadow-cozy-lg transition-shadow">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-lavender-light flex items-center justify-center">
+              <svg class="w-6 h-6 text-lavender-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-brown group-hover:text-sage-dark transition-colors" style="font-family: var(--font-heading);">View Timeline</h3>
+              <p class="text-sm text-brown-light">See all your stays laid out on a visual timeline</p>
+            </div>
+          </div>
+          <svg class="w-5 h-5 text-brown-light group-hover:text-sage-dark group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </div>
+      </div>
+    <% end %>
   </div>
 </div>
