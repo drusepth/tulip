@@ -77,7 +77,7 @@ class StaysController < ApplicationController
     params.require(:stay).permit(
       :title, :stay_type, :booking_url, :image_url,
       :address, :city, :state, :country, :latitude, :longitude,
-      :check_in, :check_out, :price_total_cents, :currency, :notes,
+      :check_in, :check_out, :price_total_dollars, :currency, :notes,
       :booked
     )
   end

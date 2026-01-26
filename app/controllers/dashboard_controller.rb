@@ -4,7 +4,7 @@ class DashboardController < ApplicationController
 
     # Alerts (only shown when action needed)
     @gaps = Stay.find_gaps
-    @booking_alert = Stay.booking_alert(months_threshold: 4)
+    @booking_alert = Stay.booking_alert
 
     # Hero section: Current & Next
     @current_stay = Stay.current_stay

@@ -2,6 +2,7 @@ class Stay < ApplicationRecord
   STAY_TYPES = %w[airbnb hotel hostel friend other].freeze
   STATUSES = %w[upcoming current past].freeze
   CURRENCIES = %w[USD EUR GBP JPY AUD CAD CHF CNY INR MXN].freeze
+  BOOKING_ALERT_MONTHS_THRESHOLD = 4
 
   has_many :pois, dependent: :destroy
   has_many :transit_routes, dependent: :destroy
@@ -52,6 +53,16 @@ class Stay < ApplicationRecord
     "#{currency} #{price_total_cents / 100.0}"
   end
 
+  # Virtual attribute for entering price in dollars
+  def price_total_dollars
+    return nil unless price_total_cents
+    price_total_cents / 100.0
+  end
+
+  def price_total_dollars=(dollars)
+    self.price_total_cents = dollars.present? ? (dollars.to_f * 100).round : nil
+  end
+
   def overlapping_stays
     Stay.where.not(id: id)
         .where('check_in < ? AND check_out > ?', check_out, check_in)
@@ -90,7 +101,7 @@ class Stay < ApplicationRecord
 
   # Returns booking alert info if there's an unbooked upcoming stay within the threshold
   # Returns nil if no action needed
-  def self.booking_alert(months_threshold: 4)
+  def self.booking_alert(months_threshold: BOOKING_ALERT_MONTHS_THRESHOLD)
     next_unbooked = upcoming.planned.first
     return nil unless next_unbooked
 
@@ -105,6 +116,14 @@ class Stay < ApplicationRecord
       city: next_unbooked.city,
       state: next_unbooked.state
     }
+  end
+
+  # Check if this stay needs a booking alert (unbooked and within threshold)
+  def needs_booking_alert?
+    return false if booked?
+    return false unless days_until_check_in
+
+    days_until_check_in <= BOOKING_ALERT_MONTHS_THRESHOLD * 30
   end
 
   def self.last_booked_stay
