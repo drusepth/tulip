@@ -6,7 +6,8 @@ export default class extends Controller {
   static values = {
     staysUrl: String,
     poisUrl: String,
-    transitUrl: String
+    transitUrl: String,
+    poisSearchUrl: String
   }
 
   connect() {
@@ -21,15 +22,28 @@ export default class extends Controller {
     this.fetchedTransit = {}   // Track fetched transit by `${routeType}-${stayId}`
     this.poiAbortControllers = {}    // AbortControllers for in-flight POI requests
     this.transitAbortControllers = {} // AbortControllers for in-flight transit requests
+    this.searchedGridCells = {}      // Track searched viewport grid cells by `${category}-${gridKey}`
+    this.viewportSearchAbortControllers = {} // AbortControllers for viewport POI searches
+    this.viewportChangeTimeout = null // Debounce timeout for viewport changes
 
     // Auto-load POIs/transit when viewport changes
     this.map.on('moveend', () => this.onViewportChange())
   }
 
   onViewportChange() {
-    // Reload active POI categories for newly visible stays
-    this.activeCategories.forEach(category => this.loadPOIs(category))
-    this.activeTransitTypes.forEach(routeType => this.loadTransitRoutes(routeType))
+    // Debounce viewport changes to avoid excessive API calls while panning
+    if (this.viewportChangeTimeout) {
+      clearTimeout(this.viewportChangeTimeout)
+    }
+
+    this.viewportChangeTimeout = setTimeout(() => {
+      // Reload active POI categories for newly visible stays
+      this.activeCategories.forEach(category => this.loadPOIs(category))
+      this.activeTransitTypes.forEach(routeType => this.loadTransitRoutes(routeType))
+
+      // Also search for POIs around viewport center
+      this.activeCategories.forEach(category => this.searchViewportPOIs(category))
+    }, 300)
   }
 
   initializeMap() {
@@ -188,6 +202,7 @@ export default class extends Controller {
       button.classList.add('bg-indigo-600', 'text-white')
       button.classList.remove('bg-white', 'text-gray-700')
       this.loadPOIs(category)
+      this.searchViewportPOIs(category)
     }
   }
 
@@ -294,6 +309,11 @@ export default class extends Controller {
       this.poiAbortControllers[category].abort()
       delete this.poiAbortControllers[category]
     }
+    // Cancel any viewport search requests for this category
+    if (this.viewportSearchAbortControllers[category]) {
+      this.viewportSearchAbortControllers[category].abort()
+      delete this.viewportSearchAbortControllers[category]
+    }
     if (this.poiLayers[category]) {
       this.map.removeLayer(this.poiLayers[category])
       delete this.poiLayers[category]
@@ -304,6 +324,78 @@ export default class extends Controller {
         delete this.fetchedPOIs[key]
       }
     })
+    // Clear viewport search tracking for this category
+    Object.keys(this.searchedGridCells).forEach(key => {
+      if (key.startsWith(`${category}-`)) {
+        delete this.searchedGridCells[key]
+      }
+    })
+  }
+
+  // Get grid key for viewport-based POI caching (matches backend logic)
+  getGridKey(lat, lng, category) {
+    const gridSize = 0.01 // ~1km grid cells
+    const roundedLat = Math.floor(lat / gridSize) * gridSize
+    const roundedLng = Math.floor(lng / gridSize) * gridSize
+    return `${category}:${roundedLat.toFixed(2)}:${roundedLng.toFixed(2)}`
+  }
+
+  async searchViewportPOIs(category) {
+    if (!this.hasPoisSearchUrlValue) return
+
+    const center = this.map.getCenter()
+    const gridKey = this.getGridKey(center.lat, center.lng, category)
+    const trackingKey = `${category}-${gridKey}`
+
+    // Skip if we've already searched this grid cell
+    if (this.searchedGridCells[trackingKey]) return
+
+    // Mark as searched before starting request
+    this.searchedGridCells[trackingKey] = true
+
+    // Cancel any in-flight viewport search for this category
+    if (this.viewportSearchAbortControllers[category]) {
+      this.viewportSearchAbortControllers[category].abort()
+    }
+    this.viewportSearchAbortControllers[category] = new AbortController()
+    const signal = this.viewportSearchAbortControllers[category].signal
+
+    // Create layer group if it doesn't exist
+    if (!this.poiLayers[category]) {
+      this.poiLayers[category] = L.layerGroup()
+      this.poiLayers[category].addTo(this.map)
+    }
+    const layerGroup = this.poiLayers[category]
+
+    try {
+      const url = `${this.poisSearchUrlValue}?lat=${center.lat}&lng=${center.lng}&category=${category}`
+      const response = await fetch(url, { signal })
+      const pois = await response.json()
+
+      if (signal.aborted) return
+
+      pois.forEach(poi => {
+        if (poi.latitude && poi.longitude) {
+          const icon = this.getPOIIcon(category)
+          const marker = L.marker([poi.latitude, poi.longitude], { icon })
+          marker.bindPopup(`
+            <div class="p-1">
+              <strong>${poi.name || 'Unknown'}</strong>
+              ${poi.address ? `<br><span class="text-sm text-gray-500">${poi.address}</span>` : ''}
+              ${poi.opening_hours ? `<br><span class="text-xs">${poi.opening_hours}</span>` : ''}
+            </div>
+          `)
+          layerGroup.addLayer(marker)
+        }
+      })
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        // Request was cancelled, clear the searched flag so it can be retried
+        delete this.searchedGridCells[trackingKey]
+        return
+      }
+      console.error(`Failed to search viewport POIs for ${category}:`, error)
+    }
   }
 
   toggleTransit(event) {
@@ -406,6 +498,10 @@ export default class extends Controller {
     const defaults = {
       subway: { color: '#e11d48', weight: 5, opacity: 0.8 },
       tram: { color: '#0891b2', weight: 4, opacity: 0.7 },
+      light_rail: { color: '#7c3aed', weight: 4, opacity: 0.75 },
+      train: { color: '#1d4ed8', weight: 5, opacity: 0.8 },
+      rail: { color: '#4338ca', weight: 5, opacity: 0.8 },
+      ferry: { color: '#0284c7', weight: 4, opacity: 0.7 },
       bus: { color: '#65a30d', weight: 3, opacity: 0.6 }
     }
 

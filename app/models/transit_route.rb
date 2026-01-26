@@ -1,5 +1,5 @@
 class TransitRoute < ApplicationRecord
-  ROUTE_TYPES = %w[subway tram bus].freeze
+  ROUTE_TYPES = %w[subway tram light_rail train rail ferry bus].freeze
 
   belongs_to :stay
 

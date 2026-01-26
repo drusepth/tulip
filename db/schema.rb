@@ -66,6 +66,24 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_26_012815) do
     t.index ["stay_id"], name: "index_transit_routes_on_stay_id"
   end
 
+  create_table "viewport_pois", force: :cascade do |t|
+    t.string "grid_key", null: false
+    t.string "name"
+    t.string "category", null: false
+    t.decimal "latitude", precision: 10, scale: 6
+    t.decimal "longitude", precision: 10, scale: 6
+    t.string "osm_id"
+    t.string "address"
+    t.string "opening_hours"
+    t.decimal "center_lat", precision: 10, scale: 6
+    t.decimal "center_lng", precision: 10, scale: 6
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_viewport_pois_on_category"
+    t.index ["grid_key", "osm_id"], name: "index_viewport_pois_on_grid_key_and_osm_id", unique: true
+    t.index ["grid_key"], name: "index_viewport_pois_on_grid_key"
+  end
+
   add_foreign_key "pois", "stays"
   add_foreign_key "transit_routes", "stays"
 end

@@ -19,6 +19,10 @@ class OverpassService
   TRANSIT_ROUTE_TYPES = {
     'subway' => 'subway',
     'tram' => 'tram',
+    'light_rail' => 'light_rail',
+    'train' => 'train',
+    'rail' => 'railway',
+    'ferry' => 'ferry',
     'bus' => 'bus'
   }.freeze
 

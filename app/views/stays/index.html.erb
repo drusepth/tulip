@@ -1,7 +1,8 @@
 <div class="h-screen flex flex-col" data-controller="map"
      data-map-stays-url-value="<%= api_stays_path %>"
      data-map-pois-url-value="/api/stays/:id/pois"
-     data-map-transit-url-value="/api/stays/:id/transit_routes">
+     data-map-transit-url-value="/api/stays/:id/transit_routes"
+     data-map-pois-search-url-value="<%= api_pois_search_path %>">
   <!-- Header -->
   <div class="bg-cream border-b border-taupe-light px-4 py-3 flex items-center justify-between">
     <h1 class="text-xl font-semibold text-brown">Map View</h1>
@@ -30,7 +31,23 @@
         </button>
         <button type="button" data-action="click->map#toggleTransit" data-route-type="tram"
                 class="map-toggle-btn px-3 py-1 text-sm">
-          Tram
+          Streetcar
+        </button>
+        <button type="button" data-action="click->map#toggleTransit" data-route-type="light_rail"
+                class="map-toggle-btn px-3 py-1 text-sm">
+          Light Rail
+        </button>
+        <button type="button" data-action="click->map#toggleTransit" data-route-type="train"
+                class="map-toggle-btn px-3 py-1 text-sm">
+          Train
+        </button>
+        <button type="button" data-action="click->map#toggleTransit" data-route-type="rail"
+                class="map-toggle-btn px-3 py-1 text-sm">
+          Rail
+        </button>
+        <button type="button" data-action="click->map#toggleTransit" data-route-type="ferry"
+                class="map-toggle-btn px-3 py-1 text-sm">
+          Ferry
         </button>
         <button type="button" data-action="click->map#toggleTransit" data-route-type="bus"
                 class="map-toggle-btn px-3 py-1 text-sm">
