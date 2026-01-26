@@ -1,0 +1,18 @@
+<%= turbo_frame_tag dom_id(poi) do %>
+  <li class="flex items-center justify-between py-2 border-b border-taupe-light last:border-0">
+    <div class="flex items-center gap-2 min-w-0 flex-1">
+      <div class="w-6 h-6 flex-shrink-0 flex items-center justify-center rounded-full bg-sage text-white">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+      <div class="min-w-0">
+        <span class="text-brown"><%= poi.name || 'Unnamed' %></span>
+        <% if poi.cuisine.present? %>
+          <p class="text-xs text-brown-light truncate"><%= truncate(poi.cuisine.gsub(';', ', ').titleize, length: 60) %></p>
+        <% end %>
+      </div>
+    </div>
+    <span class="text-sm text-brown-light flex-shrink-0 ml-2"><%= format_distance(poi.distance_meters) %></span>
+  </li>
+<% end %>

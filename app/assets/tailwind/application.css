@@ -55,6 +55,8 @@ body {
   background-image:
     url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
   background-attachment: fixed;
+  /* Add padding for fixed bottom navbar (56px navbar + 24px grass) */
+  padding-bottom: 80px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -557,10 +559,10 @@ input[type="checkbox"]:focus {
   border-color: var(--color-sage-dark);
 }
 
-/* Timeline Single-Row Bar Layout */
+/* Timeline Bar Layout (multi-row support via inline top style) */
 .timeline-bar {
   position: absolute;
-  top: 20px;
+  /* top is set inline based on row assignment */
   height: 56px;
   border-radius: 1rem;
   padding: 0.5rem 0.75rem;
@@ -1117,4 +1119,93 @@ input[type="checkbox"]:focus {
   .decorative-heading::after {
     width: 40px;
   }
+}
+
+/* ========================================
+   Bottom Navbar Grass Decoration
+   ======================================== */
+
+.navbar-grass {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+}
+
+.navbar-grass::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  height: 24px;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 24' preserveAspectRatio='xMidYMax meet'%3E%3C!-- Grass Layer 1 (Back) --%3E%3Cpath d='M0,24 L0,18 Q2,10 4,18 L4,24 M4,24 L4,16 Q6,8 8,16 L8,24 M8,24 L8,14 Q10,6 12,14 L12,24 M12,24 L12,17 Q14,9 16,17 L16,24 M16,24 L16,15 Q18,7 20,15 L20,24 M20,24 L20,18 Q22,10 24,18 L24,24 M24,24 L24,13 Q26,5 28,13 L28,24 M28,24 L28,16 Q30,8 32,16 L32,24 M32,24 L32,14 Q34,6 36,14 L36,24 M36,24 L36,17 Q38,9 40,17 L40,24 M40,24 L40,15 Q42,7 44,15 L44,24 M44,24 L44,18 Q46,10 48,18 L48,24 M48,24 L48,13 Q50,5 52,13 L52,24 M52,24 L52,16 Q54,8 56,16 L56,24 M56,24 L56,14 Q58,6 60,14 L60,24 M60,24 L60,17 Q62,9 64,17 L64,24 M64,24 L64,15 Q66,7 68,15 L68,24 M68,24 L68,18 Q70,10 72,18 L72,24 M72,24 L72,13 Q74,5 76,13 L76,24 M76,24 L76,16 Q78,8 80,16 L80,24 M80,24 L80,14 Q82,6 84,14 L84,24 M84,24 L84,17 Q86,9 88,17 L88,24 M88,24 L88,15 Q90,7 92,15 L92,24 M92,24 L92,18 Q94,10 96,18 L96,24 M96,24 L96,13 Q98,5 100,13 L100,24 M100,24 L100,16 Q102,8 104,16 L104,24 M104,24 L104,14 Q106,6 108,14 L108,24 M108,24 L108,17 Q110,9 112,17 L112,24 M112,24 L112,15 Q114,7 116,15 L116,24 M116,24 L116,18 Q118,10 120,18 L120,24 Z' fill='%23a3b8a3'/%3E%3C!-- Grass Layer 2 (Middle) --%3E%3Cpath d='M2,24 L2,16 Q4,9 6,16 L6,24 M6,24 L6,14 Q8,7 10,14 L10,24 M10,24 L10,17 Q12,10 14,17 L14,24 M14,24 L14,13 Q16,6 18,13 L18,24 M18,24 L18,15 Q20,8 22,15 L22,24 M22,24 L22,18 Q24,11 26,18 L26,24 M26,24 L26,14 Q28,7 30,14 L30,24 M30,24 L30,16 Q32,9 34,16 L34,24 M34,24 L34,13 Q36,6 38,13 L38,24 M38,24 L38,17 Q40,10 42,17 L42,24 M42,24 L42,15 Q44,8 46,15 L46,24 M46,24 L46,14 Q48,7 50,14 L50,24 M50,24 L50,16 Q52,9 54,16 L54,24 M54,24 L54,18 Q56,11 58,18 L58,24 M58,24 L58,13 Q60,6 62,13 L62,24 M62,24 L62,15 Q64,8 66,15 L66,24 M66,24 L66,17 Q68,10 70,17 L70,24 M70,24 L70,14 Q72,7 74,14 L74,24 M74,24 L74,16 Q76,9 78,16 L78,24 M78,24 L78,13 Q80,6 82,13 L82,24 M82,24 L82,18 Q84,11 86,18 L86,24 M86,24 L86,15 Q88,8 90,15 L90,24 M90,24 L90,14 Q92,7 94,14 L94,24 M94,24 L94,17 Q96,10 98,17 L98,24 M98,24 L98,13 Q100,6 102,13 L102,24 M102,24 L102,16 Q104,9 106,16 L106,24 M106,24 L106,15 Q108,8 110,15 L110,24 M110,24 L110,18 Q112,11 114,18 L114,24 M114,24 L114,14 Q116,7 118,14 L118,24 Z' fill='%23B8C9B8'/%3E%3C!-- Grass Layer 3 (Front) --%3E%3Cpath d='M1,24 L1,19 Q3,14 5,19 L5,24 M9,24 L9,17 Q11,12 13,17 L13,24 M17,24 L17,18 Q19,13 21,18 L21,24 M25,24 L25,19 Q27,14 29,19 L29,24 M33,24 L33,17 Q35,12 37,17 L37,24 M41,24 L41,18 Q43,13 45,18 L45,24 M49,24 L49,19 Q51,14 53,19 L53,24 M57,24 L57,17 Q59,12 61,17 L61,24 M65,24 L65,18 Q67,13 69,18 L69,24 M73,24 L73,19 Q75,14 77,19 L77,24 M81,24 L81,17 Q83,12 85,17 L85,24 M89,24 L89,18 Q91,13 93,18 L93,24 M97,24 L97,19 Q99,14 101,19 L101,24 M105,24 L105,17 Q107,12 109,17 L109,24 M113,24 L113,18 Q115,13 117,18 L117,24 Z' fill='%23c8d9c8'/%3E%3C!-- Tulip Flowers (Rose) --%3E%3Cg fill='%23D4A5A5'%3E%3Cpath d='M8,10 Q8,14 10,16 Q12,14 12,10 Q10,9 8,10 Z'/%3E%3Cpath d='M38,12 Q38,16 40,18 Q42,16 42,12 Q40,11 38,12 Z'/%3E%3Cpath d='M78,11 Q78,15 80,17 Q82,15 82,11 Q80,10 78,11 Z'/%3E%3Cpath d='M108,13 Q108,17 110,19 Q112,17 112,13 Q110,12 108,13 Z'/%3E%3C/g%3E%3C!-- Daisy Flowers (Cream) --%3E%3Cg fill='%23FDF8F3'%3E%3Ccircle cx='22' cy='14' r='2.5'/%3E%3Ccircle cx='22' cy='14' r='1' fill='%23E8B4A0'/%3E%3Ccircle cx='58' cy='15' r='2.5'/%3E%3Ccircle cx='58' cy='15' r='1' fill='%23E8B4A0'/%3E%3Ccircle cx='92' cy='13' r='2.5'/%3E%3Ccircle cx='92' cy='13' r='1' fill='%23E8B4A0'/%3E%3C/g%3E%3C!-- Lavender Sprigs --%3E%3Cg fill='%23C8BFD4'%3E%3Cellipse cx='48' cy='16' rx='1.5' ry='2.5'/%3E%3Cellipse cx='48' cy='13' rx='1' ry='1.5'/%3E%3Cellipse cx='48' cy='11' rx='0.8' ry='1'/%3E%3Cellipse cx='68' cy='17' rx='1.5' ry='2.5'/%3E%3Cellipse cx='68' cy='14' rx='1' ry='1.5'/%3E%3Cellipse cx='68' cy='12' rx='0.8' ry='1'/%3E%3Cellipse cx='100' cy='15' rx='1.5' ry='2.5'/%3E%3Cellipse cx='100' cy='12' rx='1' ry='1.5'/%3E%3Cellipse cx='100' cy='10' rx='0.8' ry='1'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: bottom center;
+  background-size: 120px 24px;
+}
+
+/* ========================================
+   Animated Tulip Logo
+   ======================================== */
+
+.tulip-logo-link {
+  position: relative;
+}
+
+.tulip-bloom {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 0;
+  overflow: visible;
+  pointer-events: none;
+  transition: height 0.4s ease-out;
+}
+
+.tulip-logo-link:hover .tulip-bloom {
+  height: 50px;
+}
+
+/* Stem grows first */
+.tulip-stem {
+  stroke: var(--color-sage-dark);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  fill: none;
+  transition: stroke-dashoffset 0.3s ease-out;
+}
+
+.tulip-logo-link:hover .tulip-stem {
+  stroke-dashoffset: 0;
+}
+
+/* Flower blooms after stem */
+.tulip-flower {
+  fill: var(--color-rose);
+  transform: scale(0);
+  transform-origin: 12px 22px;
+  transition: transform 0.3s ease-out 0.2s;
+}
+
+.tulip-logo-link:hover .tulip-flower {
+  transform: scale(1);
+}
+
+/* Leaves appear with flower */
+.tulip-leaf {
+  fill: var(--color-sage);
+  transform: scale(0);
+  transform-origin: center bottom;
+  transition: transform 0.25s ease-out 0.15s;
+}
+
+.tulip-logo-link:hover .tulip-leaf {
+  transform: scale(1);
 }

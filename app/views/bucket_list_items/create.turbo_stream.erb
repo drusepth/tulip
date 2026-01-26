@@ -12,6 +12,6 @@
 
 <% if @source_poi %>
   <%= turbo_stream.replace dom_id(@source_poi) do %>
-    <%= render "pois/item_added", poi: @source_poi, stay: @stay %>
+    <%= render @compact ? "pois/item_added_compact" : "pois/item_added", poi: @source_poi, stay: @stay %>
   <% end %>
 <% end %>

@@ -5,6 +5,7 @@ class BucketListItemsController < ApplicationController
   def create
     @bucket_list_item = @stay.bucket_list_items.build(bucket_list_item_params)
     @source_poi = @stay.pois.find_by(id: params[:source_poi_id]) if params[:source_poi_id].present?
+    @compact = params[:compact].present?
 
     respond_to do |format|
       if @bucket_list_item.save
