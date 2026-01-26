@@ -1,18 +1,30 @@
 class StaysController < ApplicationController
-  before_action :set_stay, only: [:show, :edit, :update, :destroy]
+  before_action :set_stay, only: [:show, :edit, :update, :destroy, :weather]
 
   def index
     @stays = current_user.stays.chronological
   end
 
   def show
-    @pois_by_category = @stay.pois.group_by(&:category)
+    @pois_by_category = @stay.pois.where.not(category: ['bus_stops', 'stations']).group_by(&:category)
 
     # Fetch weather data if stale and stay has coordinates
     if @stay.latitude.present? && @stay.longitude.present? && @stay.weather_stale?
       @stay.fetch_weather!
     end
     @weather = @stay.expected_weather
+  end
+
+  def weather
+    # Fetch weather data if stale or missing daily_data (for backward compatibility)
+    if @stay.latitude.present? && @stay.longitude.present?
+      existing_weather = @stay.expected_weather
+      if @stay.weather_stale? || existing_weather&.dig(:daily_data).blank?
+        @stay.fetch_weather!
+      end
+    end
+    @weather = @stay.expected_weather
+    @daily_data = @weather&.dig(:daily_data) || []
   end
 
   def new
