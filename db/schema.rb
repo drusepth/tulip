@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_25_205501) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_26_011719) do
   create_table "pois", force: :cascade do |t|
     t.integer "stay_id", null: false
     t.string "name"
@@ -47,6 +47,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_25_205501) do
     t.string "status", default: "upcoming"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "state"
     t.index ["check_in", "check_out"], name: "index_stays_on_check_in_and_check_out"
   end
 

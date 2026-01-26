@@ -73,7 +73,7 @@ class StaysController < ApplicationController
   def stay_params
     params.require(:stay).permit(
       :title, :stay_type, :booking_url, :image_url,
-      :address, :city, :country, :latitude, :longitude,
+      :address, :city, :state, :country, :latitude, :longitude,
       :check_in, :check_out, :price_total_cents, :currency, :notes
     )
   end

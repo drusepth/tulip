@@ -85,6 +85,29 @@ class Stay < ApplicationRecord
     gaps
   end
 
+  # Returns booking alert info if the last booked stay ends within the threshold
+  # Returns nil if no action needed
+  def self.booking_alert(months_threshold: 4)
+    last_stay = order(:check_out).last
+    return nil unless last_stay
+
+    coverage_end = last_stay.check_out
+    alert_date = Date.current + months_threshold.months
+
+    return nil if coverage_end > alert_date
+
+    days_until_coverage_ends = (coverage_end - Date.current).to_i
+    {
+      coverage_ends: coverage_end,
+      days_remaining: days_until_coverage_ends,
+      last_stay: last_stay
+    }
+  end
+
+  def self.last_booked_stay
+    order(:check_out).last
+  end
+
   private
 
   def check_out_after_check_in

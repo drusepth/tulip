@@ -55,6 +55,11 @@
     </div>
 
     <div>
+      <%= form.label :state, "State/Province", class: "block text-sm font-medium text-gray-700" %>
+      <%= form.text_field :state, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "California" %>
+    </div>
+
+    <div>
       <%= form.label :country, class: "block text-sm font-medium text-gray-700" %>
       <%= form.text_field :country, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "Spain" %>
     </div>
