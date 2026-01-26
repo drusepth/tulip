@@ -1,5 +1,6 @@
 class BucketListItemsController < ApplicationController
   before_action :set_stay
+  before_action :require_stay_edit_permission
   before_action :set_bucket_list_item, only: [:edit, :update, :destroy, :toggle]
 
   def create
@@ -58,7 +59,7 @@ class BucketListItemsController < ApplicationController
   private
 
   def set_stay
-    @stay = current_user.stays.find(params[:stay_id])
+    @stay = find_accessible_stay(params[:stay_id])
   end
 
   def set_bucket_list_item

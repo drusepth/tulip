@@ -1,8 +1,10 @@
 class StaysController < ApplicationController
   before_action :set_stay, only: [:show, :edit, :update, :destroy, :weather]
+  before_action :require_stay_edit_permission, only: [:edit, :update]
+  before_action :require_stay_owner, only: [:destroy]
 
   def index
-    @stays = current_user.stays.chronological
+    @stays = current_user.accessible_stays.chronological
   end
 
   def show
@@ -13,6 +15,10 @@ class StaysController < ApplicationController
       @stay.fetch_weather!
     end
     @weather = @stay.expected_weather
+
+    # For collaboration display
+    @is_owner = @stay.owner?(current_user)
+    @can_edit = @stay.editable_by?(current_user)
   end
 
   def weather
@@ -36,12 +42,12 @@ class StaysController < ApplicationController
   end
 
   def edit
-    @overlapping_stays = @stay.overlapping_stays
+    @overlapping_stays = @stay.overlapping_stays(current_user.accessible_stays)
   end
 
   def create
     @stay = current_user.stays.build(stay_params)
-    @overlapping_stays = @stay.overlapping_stays
+    @overlapping_stays = @stay.overlapping_stays(current_user.accessible_stays)
 
     if @stay.save
       redirect_to @stay, notice: "Stay was successfully created."
@@ -54,7 +60,7 @@ class StaysController < ApplicationController
     if @stay.update(stay_params)
       redirect_to @stay, notice: "Stay was successfully updated."
     else
-      @overlapping_stays = @stay.overlapping_stays
+      @overlapping_stays = @stay.overlapping_stays(current_user.accessible_stays)
       render :edit, status: :unprocessable_entity
     end
   end
@@ -65,7 +71,7 @@ class StaysController < ApplicationController
   end
 
   def map_data
-    @stays = current_user.stays.where.not(latitude: nil, longitude: nil)
+    @stays = current_user.accessible_stays.where.not(latitude: nil, longitude: nil)
     render json: @stays.map { |stay|
       {
         id: stay.id,
@@ -80,7 +86,8 @@ class StaysController < ApplicationController
         country: stay.country,
         image_url: stay.image_url,
         duration_days: stay.duration_days,
-        url: stay_path(stay)
+        url: stay_path(stay),
+        is_shared: !stay.owner?(current_user)
       }
     }
   end
@@ -88,7 +95,7 @@ class StaysController < ApplicationController
   private
 
   def set_stay
-    @stay = current_user.stays.find(params[:id])
+    @stay = find_accessible_stay(params[:id])
   end
 
   def stay_params

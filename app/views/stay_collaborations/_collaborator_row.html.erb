@@ -1,0 +1,24 @@
+<%= turbo_frame_tag dom_id(collaboration) do %>
+  <div class="flex items-center justify-between py-3 border-b border-taupe-light last:border-0">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-lavender-light flex items-center justify-center">
+        <span class="text-lavender-dark font-medium"><%= collaboration.user.email[0].upcase %></span>
+      </div>
+      <div>
+        <p class="text-brown font-medium"><%= collaboration.user.email %></p>
+        <p class="text-xs text-brown-light">Joined <%= time_ago_in_words(collaboration.invite_accepted_at) %> ago</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="badge badge-upcoming"><%= collaboration.role.capitalize %></span>
+      <%= button_to stay_collaboration_path(@stay, collaboration),
+                    method: :delete,
+                    data: { turbo_confirm: "Remove this collaborator?" },
+                    class: "text-rose-dark hover:text-rose" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        </svg>
+      <% end %>
+    </div>
+  </div>
+<% end %>

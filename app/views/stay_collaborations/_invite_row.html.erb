@@ -1,0 +1,52 @@
+<%= turbo_frame_tag dom_id(invite) do %>
+  <div class="flex items-center justify-between py-3 border-b border-taupe-light last:border-0">
+    <div class="flex-1 min-w-0 mr-4">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="badge badge-planned">Pending</span>
+        <span class="text-xs text-brown-light">Created <%= time_ago_in_words(invite.created_at) %> ago</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <input
+          type="text"
+          value="<%= accept_invite_url(invite.invite_token) %>"
+          readonly
+          class="flex-1 rounded-xl border-taupe bg-cream-light px-3 py-2 text-sm text-brown font-mono truncate"
+          id="invite-url-<%= invite.id %>"
+        >
+        <button
+          type="button"
+          class="btn-outline text-sm"
+          onclick="copyInviteUrl(<%= invite.id %>)"
+          data-invite-id="<%= invite.id %>"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <%= button_to stay_collaboration_path(@stay, invite),
+                  method: :delete,
+                  data: { turbo_confirm: "Cancel this invite?" },
+                  class: "text-rose-dark hover:text-rose flex-shrink-0" do %>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+      </svg>
+    <% end %>
+  </div>
+<% end %>
+
+<script>
+function copyInviteUrl(inviteId) {
+  const input = document.getElementById('invite-url-' + inviteId);
+  input.select();
+  input.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(input.value);
+
+  // Show feedback
+  const button = document.querySelector('[data-invite-id="' + inviteId + '"]');
+  const originalHTML = button.innerHTML;
+  button.innerHTML = '<svg class="w-4 h-4 text-sage-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+  setTimeout(() => { button.innerHTML = originalHTML; }, 2000);
+}
+</script>

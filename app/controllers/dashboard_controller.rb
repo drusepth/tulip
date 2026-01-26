@@ -1,6 +1,9 @@
 class DashboardController < ApplicationController
   def index
-    user_stays = current_user.stays
+    # If we just processed an invite, redirect to the stay
+    return if redirect_if_pending_stay
+
+    user_stays = current_user.accessible_stays
 
     # Update statuses for the user's stays
     update_statuses!(user_stays)

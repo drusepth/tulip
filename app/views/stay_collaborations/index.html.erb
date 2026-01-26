@@ -1,0 +1,101 @@
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <% if notice.present? %>
+    <div class="mb-6 alert-success p-4">
+      <p class="text-sage-dark"><%= notice %></p>
+    </div>
+  <% end %>
+
+  <% if alert.present? %>
+    <div class="mb-6 bg-rose-light border border-rose rounded-2xl p-4">
+      <p class="text-rose-dark"><%= alert %></p>
+    </div>
+  <% end %>
+
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center gap-3 mb-2">
+      <%= link_to @stay, class: "text-sage-dark hover:text-sage" do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+      <% end %>
+      <h1 class="text-2xl font-bold text-brown">Share "<%= @stay.title %>"</h1>
+    </div>
+    <p class="text-brown-light">Invite others to collaborate on this stay. They'll be able to view and edit the stay details, bucket list, and more.</p>
+  </div>
+
+  <!-- Create New Invite -->
+  <div class="cozy-card p-6 mb-8">
+    <h2 class="text-lg font-semibold text-brown mb-4">Create Invite Link</h2>
+    <p class="text-sm text-brown-light mb-4">Generate a shareable link that others can use to join this stay as a collaborator.</p>
+
+    <%= form_with url: stay_collaborations_path(@stay), method: :post, class: "flex items-end gap-4" do |f| %>
+      <div class="flex-1">
+        <label class="block text-sm font-medium text-brown mb-1">Role</label>
+        <select name="role" class="w-full rounded-xl border-taupe bg-cream-light px-4 py-2 text-brown focus:border-sage focus:ring-sage">
+          <option value="editor">Editor (can edit everything)</option>
+        </select>
+      </div>
+      <button type="submit" class="btn-primary">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+        </svg>
+        Create Link
+      </button>
+    <% end %>
+  </div>
+
+  <!-- Pending Invites -->
+  <% if @pending_invites.any? %>
+    <div class="cozy-card p-6 mb-8">
+      <h2 class="text-lg font-semibold text-brown mb-4">Pending Invites</h2>
+      <p class="text-sm text-brown-light mb-4">These links are waiting to be accepted. Share them with the people you want to invite.</p>
+
+      <div id="pending-invites" class="space-y-4">
+        <% @pending_invites.each do |invite| %>
+          <%= render "invite_row", invite: invite %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Current Collaborators -->
+  <div class="cozy-card p-6">
+    <h2 class="text-lg font-semibold text-brown mb-4">Collaborators</h2>
+
+    <div id="collaborators" class="space-y-4">
+      <!-- Owner -->
+      <div class="flex items-center justify-between py-3 border-b border-taupe-light">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-sage-light flex items-center justify-center">
+            <span class="text-sage-dark font-medium"><%= @stay.owner.email[0].upcase %></span>
+          </div>
+          <div>
+            <p class="text-brown font-medium"><%= @stay.owner.email %></p>
+            <p class="text-xs text-brown-light">Owner</p>
+          </div>
+        </div>
+        <span class="badge badge-current">Owner</span>
+      </div>
+
+      <!-- Accepted Collaborators -->
+      <% @accepted_collaborations.each do |collab| %>
+        <%= render "collaborator_row", collaboration: collab %>
+      <% end %>
+
+      <% if @accepted_collaborations.empty? %>
+        <p class="text-center text-brown-light py-4">No collaborators yet. Create an invite link above to share this stay.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Back Link -->
+  <div class="mt-8 pt-8 border-t border-taupe-light">
+    <%= link_to @stay, class: "text-sage-dark hover:text-sage inline-flex items-center" do %>
+      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Back to Stay
+    <% end %>
+  </div>
+</div>

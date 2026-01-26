@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# User two has been invited to user one's stay and accepted
+accepted_collaboration:
+  stay: one
+  user: two
+  role: editor
+  invite_token: accepted_token_123
+  invite_accepted_at: <%= 1.day.ago %>
+
+# A pending invite for the Tokyo stay (no user yet)
+pending_invite:
+  stay: two
+  user:
+  role: editor
+  invite_token: pending_token_456
+  invite_accepted_at:

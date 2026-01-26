@@ -1,0 +1,9 @@
+<%= turbo_stream.prepend "pending-invites" do %>
+  <%= render "invite_row", invite: @collaboration %>
+<% end %>
+
+<%= turbo_stream.replace "flash" do %>
+  <div id="flash" class="mb-6 alert-success p-4">
+    <p class="text-sage-dark">Invite link created! Share it with your collaborator.</p>
+  </div>
+<% end %>
