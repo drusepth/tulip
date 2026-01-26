@@ -4,6 +4,13 @@ Poi.destroy_all
 TransitRoute.destroy_all
 Stay.destroy_all
 
+# Find or create a default user for seeds
+user = User.first_or_create!(
+  email: "demo@tulip.app",
+  password: "password123"
+)
+puts "Using user: #{user.email}"
+
 puts "Creating US road trip itinerary..."
 
 # US Road Trip - Starting May 22, 2026
@@ -11,6 +18,7 @@ puts "Creating US road trip itinerary..."
 
 # 1. Portland, OR - 2 months
 Stay.create!(
+  user: user,
   title: "Portland, OR",
   city: "Portland",
   state: "OR",
@@ -26,6 +34,7 @@ Stay.create!(
 
 # 2. Seaside, OR - 2 months
 Stay.create!(
+  user: user,
   title: "Seaside, OR",
   city: "Seaside",
   state: "OR",
@@ -41,6 +50,7 @@ Stay.create!(
 
 # 3. San Francisco, CA - 2 months
 Stay.create!(
+  user: user,
   title: "San Francisco, CA",
   city: "San Francisco",
   state: "CA",
@@ -56,6 +66,7 @@ Stay.create!(
 
 # 4. Denver, CO - 2 months
 Stay.create!(
+  user: user,
   title: "Denver, CO",
   city: "Denver",
   state: "CO",
@@ -71,6 +82,7 @@ Stay.create!(
 
 # 5. Kansas City, MO - 5 months (longer stay)
 Stay.create!(
+  user: user,
   title: "Kansas City, MO",
   city: "Kansas City",
   state: "MO",
@@ -84,8 +96,27 @@ Stay.create!(
   booked: false
 )
 
+# Amsterdam trip overlapping with Kansas City stay (1 month in the middle)
+# Skip validation since this intentionally overlaps to test multi-row timeline
+amsterdam = Stay.new(
+  user: user,
+  title: "Amsterdam, Netherlands",
+  city: "Amsterdam",
+  state: nil,
+  country: "Netherlands",
+  latitude: 52.3676,
+  longitude: 4.9041,
+  check_in: Date.new(2027, 3, 15),
+  check_out: Date.new(2027, 4, 15),
+  notes: "Quick trip to Europe! Canals, museums, and tulips in bloom.",
+  image_url: "https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=800",
+  booked: false
+)
+amsterdam.save!(validate: false)
+
 # 6. Chicago, IL - 2 months
 Stay.create!(
+  user: user,
   title: "Chicago, IL",
   city: "Chicago",
   state: "IL",
@@ -101,6 +132,7 @@ Stay.create!(
 
 # 7. NYC, NY - 2 months
 Stay.create!(
+  user: user,
   title: "NYC, NY",
   city: "NYC",
   state: "NY",
@@ -116,6 +148,7 @@ Stay.create!(
 
 # 8. Cambridge, MA - 2 months
 Stay.create!(
+  user: user,
   title: "Cambridge, MA",
   city: "Cambridge",
   state: "MA",
@@ -131,6 +164,7 @@ Stay.create!(
 
 # 9. Portland, ME - 2 months
 Stay.create!(
+  user: user,
   title: "Portland, ME",
   city: "Portland",
   state: "ME",
