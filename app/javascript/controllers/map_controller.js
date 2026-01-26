@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 // Leaflet is loaded globally via CDN in application.html.erb
 
 export default class extends Controller {
-  static targets = ["container"]
+  static targets = ["container", "timeline", "staysList", "collapseIcon"]
   static values = {
     staysUrl: String,
     poisUrl: String,
@@ -34,12 +34,26 @@ export default class extends Controller {
 
   initializeMap() {
     const mapElement = this.hasContainerTarget ? this.containerTarget : this.element
-    this.map = L.map(mapElement).setView([20, 0], 2)
+    this.map = L.map(mapElement, { zoomControl: false }).setView([20, 0], 2)
+
+    // Add zoom control with custom position (offset for timeline panel)
+    this.zoomControl = L.control.zoom({ position: 'topleft' })
+    this.zoomControl.addTo(this.map)
+    this.updateZoomControlPosition(false) // Panel starts open
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(this.map)
+  }
+
+  updateZoomControlPosition(collapsed) {
+    const container = this.zoomControl.getContainer()
+    if (collapsed) {
+      container.style.marginLeft = '10px'
+    } else {
+      container.style.marginLeft = '330px' // 320px panel + 10px padding
+    }
   }
 
   async loadStays() {
@@ -48,6 +62,7 @@ export default class extends Controller {
       const stays = await response.json()
       this.stays = stays
       this.renderStayMarkers(stays)
+      this.renderTimeline(stays)
     } catch (error) {
       console.error('Failed to load stays:', error)
     }
@@ -98,6 +113,64 @@ export default class extends Controller {
       case 'current': return '#3b82f6'  // blue
       case 'past': return '#9ca3af'     // gray
       default: return '#6b7280'
+    }
+  }
+
+  renderTimeline(stays) {
+    if (!this.hasStaysListTarget) return
+
+    // Sort by check_in date
+    const sorted = [...stays].sort((a, b) => new Date(a.check_in) - new Date(b.check_in))
+
+    // Render each stay as a clickable card
+    this.staysListTarget.innerHTML = sorted.map(stay => {
+      const color = this.getStatusColor(stay.status)
+      const checkIn = new Date(stay.check_in).toLocaleDateString()
+      const checkOut = new Date(stay.check_out).toLocaleDateString()
+      const location = [stay.city, stay.country].filter(Boolean).join(', ')
+
+      return `
+        <button data-action="click->map#zoomToStay" data-stay-id="${stay.id}"
+                class="w-full text-left p-3 rounded-lg hover:bg-gray-100 border border-gray-200 transition-colors">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full flex-shrink-0" style="background-color: ${color}"></span>
+            <div class="font-medium text-gray-900 truncate">${stay.title}</div>
+          </div>
+          <div class="text-sm text-gray-500 mt-1 ml-5">${location}</div>
+          <div class="text-xs text-gray-400 mt-1 ml-5">${checkIn} - ${checkOut}</div>
+        </button>
+      `
+    }).join('')
+  }
+
+  zoomToStay(event) {
+    const stayId = event.currentTarget.dataset.stayId
+    const stay = this.stays.find(s => s.id == stayId)
+    if (stay && stay.latitude && stay.longitude) {
+      this.map.setView([stay.latitude, stay.longitude], 14, { animate: true })
+    }
+  }
+
+  toggleTimeline() {
+    if (!this.hasTimelineTarget) return
+
+    const panel = this.timelineTarget
+    const isCollapsed = panel.dataset.collapsed === 'true'
+
+    if (isCollapsed) {
+      panel.classList.remove('-translate-x-full')
+      panel.dataset.collapsed = 'false'
+      if (this.hasCollapseIconTarget) {
+        this.collapseIconTarget.classList.remove('rotate-180')
+      }
+      this.updateZoomControlPosition(false)
+    } else {
+      panel.classList.add('-translate-x-full')
+      panel.dataset.collapsed = 'true'
+      if (this.hasCollapseIconTarget) {
+        this.collapseIconTarget.classList.add('rotate-180')
+      }
+      this.updateZoomControlPosition(true)
     }
   }
 
