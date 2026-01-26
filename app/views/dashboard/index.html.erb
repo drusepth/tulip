@@ -77,7 +77,7 @@
                 You are here
               </span>
               <% unless @current_stay.booked? %>
-                <span class="badge badge-planned bg-lavender-dark/90 text-white">
+                <span class="badge badge-planned text-white" style="background-color: rgba(158, 146, 176, 0.9)">
                   Not booked
                 </span>
               <% end %>
@@ -121,7 +121,7 @@
                   Next up
                 </span>
               <% else %>
-                <span class="badge badge-planned bg-lavender-dark/90 text-white">
+                <span class="badge badge-planned text-white" style="background-color: rgba(158, 146, 176, 0.9)">
                   Planned
                 </span>
               <% end %>
@@ -176,7 +176,7 @@
               <div class="absolute inset-0 p-4 flex flex-col justify-end text-white">
                 <div class="flex items-center gap-2 mb-1">
                   <% unless stay.booked? %>
-                    <span class="badge badge-planned bg-lavender-dark/90 text-white text-xs">
+                    <span class="badge badge-planned text-white" style="background-color: rgba(158, 146, 176, 0.9) text-xs">
                       Planned
                     </span>
                   <% end %>
