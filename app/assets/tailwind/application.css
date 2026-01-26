@@ -576,6 +576,36 @@ input[type="checkbox"]:focus {
   color: white;
 }
 
+/* Hide legend dot and show spinner when loading */
+.map-toggle-btn.loading .legend-dot {
+  display: none;
+}
+
+.map-toggle-btn .loading-spinner {
+  display: none;
+  width: 0.625rem;
+  height: 0.625rem;
+  border: 2px solid var(--color-taupe-light);
+  border-top-color: var(--color-brown);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.map-toggle-btn.loading .loading-spinner {
+  display: block;
+}
+
+.map-toggle-btn.active .loading-spinner {
+  border-color: rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* ========================================
    Responsive Adjustments
    ======================================== */

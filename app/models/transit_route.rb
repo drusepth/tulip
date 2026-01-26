@@ -1,5 +1,5 @@
 class TransitRoute < ApplicationRecord
-  ROUTE_TYPES = %w[subway tram light_rail train rail ferry bus].freeze
+  ROUTE_TYPES = %w[rails train ferry bus].freeze
 
   belongs_to :stay
 
@@ -7,8 +7,9 @@ class TransitRoute < ApplicationRecord
   validates :osm_id, uniqueness: true, allow_nil: true
 
   scope :by_type, ->(type) { where(route_type: type) }
-  scope :subway, -> { by_type('subway') }
-  scope :tram, -> { by_type('tram') }
+  scope :rails, -> { by_type('rails') }
+  scope :train, -> { by_type('train') }
+  scope :ferry, -> { by_type('ferry') }
   scope :bus, -> { by_type('bus') }
 
   def geometry_coordinates

@@ -2,10 +2,12 @@ class OverpassService
   OVERPASS_URL = 'https://overpass-api.de/api/interpreter'.freeze
 
   CATEGORY_TAGS = {
-    'transit_stops' => [
-      '["public_transport"="stop_position"]',
-      '["highway"="bus_stop"]',
-      '["railway"~"station|subway_entrance|tram_stop"]'
+    'bus_stops' => [
+      '["highway"="bus_stop"]'
+    ],
+    'stations' => [
+      '["railway"~"station|subway_entrance|tram_stop|halt"]',
+      '["public_transport"="station"]'
     ],
     'coffee' => [
       '["amenity"="cafe"]',
@@ -13,17 +15,28 @@ class OverpassService
     ],
     'grocery' => [
       '["shop"~"supermarket|grocery|convenience"]'
+    ],
+    'gym' => [
+      '["leisure"="fitness_centre"]',
+      '["amenity"="gym"]'
+    ],
+    'food' => [
+      '["amenity"="restaurant"]'
+    ],
+    'coworking' => [
+      '["amenity"="coworking_space"]',
+      '["office"="coworking"]'
+    ],
+    'library' => [
+      '["amenity"="library"]'
     ]
   }.freeze
 
   TRANSIT_ROUTE_TYPES = {
-    'subway' => 'subway',
-    'tram' => 'tram',
-    'light_rail' => 'light_rail',
-    'train' => 'train',
-    'rail' => 'railway',
-    'ferry' => 'ferry',
-    'bus' => 'bus'
+    'rails' => %w[subway tram light_rail railway],
+    'train' => %w[train],
+    'ferry' => %w[ferry],
+    'bus' => %w[bus]
   }.freeze
 
   class << self
@@ -64,12 +77,13 @@ class OverpassService
 
     def build_transit_query(lat, lng, route_type, radius)
       bbox = calculate_bbox(lat, lng, radius)
-      osm_route_type = TRANSIT_ROUTE_TYPES[route_type]
+      osm_route_types = TRANSIT_ROUTE_TYPES[route_type]
+      relation_queries = osm_route_types.map { |t| "relation[\"route\"=\"#{t}\"](#{bbox});" }.join("\n          ")
 
       <<~QUERY
         [out:json][timeout:30];
         (
-          relation["route"="#{osm_route_type}"](#{bbox});
+          #{relation_queries}
         );
         out body;
         >;

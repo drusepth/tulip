@@ -25,9 +25,27 @@ export default class extends Controller {
     this.searchedGridCells = {}      // Track searched viewport grid cells by `${category}-${gridKey}`
     this.viewportSearchAbortControllers = {} // AbortControllers for viewport POI searches
     this.viewportChangeTimeout = null // Debounce timeout for viewport changes
+    this.loadingCounts = {}    // Track in-flight request counts per category/routeType
 
     // Auto-load POIs/transit when viewport changes
     this.map.on('moveend', () => this.onViewportChange())
+  }
+
+  // Loading state helpers
+  startLoading(type, key) {
+    const loadingKey = `${type}-${key}`
+    this.loadingCounts[loadingKey] = (this.loadingCounts[loadingKey] || 0) + 1
+    const button = this.element.querySelector(`[data-${type === 'poi' ? 'category' : 'route-type'}="${key}"]`)
+    if (button) button.classList.add('loading')
+  }
+
+  stopLoading(type, key) {
+    const loadingKey = `${type}-${key}`
+    this.loadingCounts[loadingKey] = Math.max(0, (this.loadingCounts[loadingKey] || 1) - 1)
+    if (this.loadingCounts[loadingKey] === 0) {
+      const button = this.element.querySelector(`[data-${type === 'poi' ? 'category' : 'route-type'}="${key}"]`)
+      if (button) button.classList.remove('loading')
+    }
   }
 
   onViewportChange() {
@@ -97,18 +115,41 @@ export default class extends Controller {
           fillOpacity: 0.8
         })
 
+        const statusBadge = stay.booked
+          ? `<span class="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-800">Booked</span>`
+          : `<span class="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-800">Planned</span>`
+
+        const imageHtml = stay.image_url
+          ? `<div class="w-full h-24 -mx-3 -mt-3 mb-3 overflow-hidden rounded-t-xl">
+               <img src="${stay.image_url}" alt="${stay.title}" class="w-full h-full object-cover"/>
+             </div>`
+          : ''
+
+        const checkIn = new Date(stay.check_in).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        const checkOut = new Date(stay.check_out).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
         marker.bindPopup(`
-          <div class="p-2">
-            <h3 class="font-bold text-lg">${stay.title}</h3>
-            <p class="text-gray-600">${[stay.city, stay.country].filter(Boolean).join(', ')}</p>
-            <p class="text-sm text-gray-500 mt-1">
-              ${new Date(stay.check_in).toLocaleDateString()} - ${new Date(stay.check_out).toLocaleDateString()}
-            </p>
-            <a href="${stay.url}" class="inline-block mt-2 text-indigo-600 hover:text-indigo-800">
-              View Details &rarr;
-            </a>
+          <div class="min-w-48">
+            ${imageHtml}
+            <div class="px-3 pb-3 ${stay.image_url ? '' : 'pt-3'}">
+              <div class="flex items-center gap-2 mb-2">
+                ${statusBadge}
+                <span class="text-xs text-gray-500">${stay.duration_days} nights</span>
+              </div>
+              <h3 class="font-semibold text-lg text-gray-800">${stay.title}</h3>
+              <p class="text-sm text-gray-500">${[stay.city, stay.country].filter(Boolean).join(', ')}</p>
+              <p class="text-sm text-gray-400 mt-1">
+                ${checkIn} - ${checkOut}
+              </p>
+              <a href="${stay.url}" class="inline-flex items-center gap-1 mt-3 text-sm font-medium text-rose-600 hover:text-rose-700">
+                View Details
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </a>
+            </div>
           </div>
-        `)
+        `, { className: 'cozy-popup', maxWidth: 280 })
 
         marker.addTo(this.map)
         this.stayMarkers.push({ marker, stay })
@@ -194,13 +235,11 @@ export default class extends Controller {
 
     if (this.activeCategories.has(category)) {
       this.activeCategories.delete(category)
-      button.classList.remove('bg-indigo-600', 'text-white')
-      button.classList.add('bg-white', 'text-gray-700')
+      button.classList.remove('active')
       this.removePOILayer(category)
     } else {
       this.activeCategories.add(category)
-      button.classList.add('bg-indigo-600', 'text-white')
-      button.classList.remove('bg-white', 'text-gray-700')
+      button.classList.add('active')
       this.loadPOIs(category)
       this.searchViewportPOIs(category)
     }
@@ -238,61 +277,71 @@ export default class extends Controller {
 
     if (staysToFetch.length === 0) return
 
+    this.startLoading('poi', category)
+
     // Mark stays as fetched before starting requests
     staysToFetch.forEach(stay => {
       const key = `${category}-${stay.id}`
       this.fetchedPOIs[key] = true
     })
 
-    // Fetch POIs for visible stays in parallel
-    const fetchPromises = staysToFetch.map(stay => {
-      const url = this.poisUrlValue.replace(':id', stay.id) + `?category=${category}`
-      return fetch(url, { signal })
-        .then(response => response.json())
-        .then(pois => ({ stay, pois }))
-        .catch(error => {
-          if (error.name === 'AbortError') {
-            // Request was cancelled, clear the fetched flag so it can be retried
-            delete this.fetchedPOIs[`${category}-${stay.id}`]
-            return null
-          }
-          console.error(`Failed to load POIs for stay ${stay.id}:`, error)
-          return { stay, pois: [] }
-        })
-    })
+    try {
+      // Fetch POIs for visible stays in parallel
+      const fetchPromises = staysToFetch.map(stay => {
+        const url = this.poisUrlValue.replace(':id', stay.id) + `?category=${category}`
+        return fetch(url, { signal })
+          .then(response => response.json())
+          .then(pois => ({ stay, pois }))
+          .catch(error => {
+            if (error.name === 'AbortError') {
+              // Request was cancelled, clear the fetched flag so it can be retried
+              delete this.fetchedPOIs[`${category}-${stay.id}`]
+              return null
+            }
+            console.error(`Failed to load POIs for stay ${stay.id}:`, error)
+            return { stay, pois: [] }
+          })
+      })
 
-    const results = await Promise.all(fetchPromises)
+      const results = await Promise.all(fetchPromises)
 
-    // Check if this request was aborted
-    if (signal.aborted) return
+      // Check if this request was aborted
+      if (signal.aborted) return
 
-    // Render all POIs at once
-    results.forEach(result => {
-      if (!result) return // Skip aborted requests
-      const { pois } = result
-      pois.forEach(poi => {
-        if (poi.latitude && poi.longitude) {
-          const icon = this.getPOIIcon(category)
-          const marker = L.marker([poi.latitude, poi.longitude], { icon })
-          marker.bindPopup(`
-            <div class="p-1">
-              <strong>${poi.name || 'Unknown'}</strong>
-              <br><span class="text-sm text-gray-500">${poi.distance_meters}m from stay</span>
-              ${poi.opening_hours ? `<br><span class="text-xs">${poi.opening_hours}</span>` : ''}
-            </div>
-          `)
+      // Render all POIs at once
+      results.forEach(result => {
+        if (!result) return // Skip aborted requests
+        const { pois } = result
+        pois.forEach(poi => {
+          if (poi.latitude && poi.longitude) {
+            const icon = this.getPOIIcon(category)
+            const marker = L.marker([poi.latitude, poi.longitude], { icon })
+            marker.bindPopup(`
+              <div class="p-1">
+                <strong>${poi.name || 'Unknown'}</strong>
+                <br><span class="text-sm text-gray-500">${poi.distance_meters}m from stay</span>
+                ${poi.opening_hours ? `<br><span class="text-xs">${poi.opening_hours}</span>` : ''}
+              </div>
+            `)
           layerGroup.addLayer(marker)
         }
       })
     })
+    } finally {
+      this.stopLoading('poi', category)
+    }
   }
 
   getPOIIcon(category) {
     const colors = {
-      transit_stops: '#ef4444',
+      bus_stops: '#65a30d',
+      stations: '#ef4444',
       coffee: '#92400e',
-      veterinarian: '#10b981',
-      grocery: '#f59e0b'
+      grocery: '#f59e0b',
+      gym: '#7c3aed',
+      food: '#dc2626',
+      coworking: '#0891b2',
+      library: '#4f46e5'
     }
 
     return L.divIcon({
@@ -367,6 +416,8 @@ export default class extends Controller {
     }
     const layerGroup = this.poiLayers[category]
 
+    this.startLoading('poi', category)
+
     try {
       const url = `${this.poisSearchUrlValue}?lat=${center.lat}&lng=${center.lng}&category=${category}`
       const response = await fetch(url, { signal })
@@ -395,6 +446,8 @@ export default class extends Controller {
         return
       }
       console.error(`Failed to search viewport POIs for ${category}:`, error)
+    } finally {
+      this.stopLoading('poi', category)
     }
   }
 
@@ -404,13 +457,11 @@ export default class extends Controller {
 
     if (this.activeTransitTypes.has(routeType)) {
       this.activeTransitTypes.delete(routeType)
-      button.classList.remove('bg-indigo-600', 'text-white')
-      button.classList.add('bg-white', 'text-gray-700')
+      button.classList.remove('active')
       this.removeTransitLayer(routeType)
     } else {
       this.activeTransitTypes.add(routeType)
-      button.classList.add('bg-indigo-600', 'text-white')
-      button.classList.remove('bg-white', 'text-gray-700')
+      button.classList.add('active')
       this.loadTransitRoutes(routeType)
     }
   }
@@ -447,60 +498,63 @@ export default class extends Controller {
 
     if (staysToFetch.length === 0) return
 
+    this.startLoading('transit', routeType)
+
     // Mark stays as fetched before starting requests
     staysToFetch.forEach(stay => {
       const key = `${routeType}-${stay.id}`
       this.fetchedTransit[key] = true
     })
 
-    // Fetch transit routes for visible stays in parallel
-    const fetchPromises = staysToFetch.map(stay => {
-      const url = this.transitUrlValue.replace(':id', stay.id) + `?route_type=${routeType}`
-      return fetch(url, { signal })
-        .then(response => response.json())
-        .then(routes => ({ stay, routes }))
-        .catch(error => {
-          if (error.name === 'AbortError') {
-            // Request was cancelled, clear the fetched flag so it can be retried
-            delete this.fetchedTransit[`${routeType}-${stay.id}`]
-            return null
-          }
-          console.error(`Failed to load transit routes for stay ${stay.id}:`, error)
-          return { stay, routes: [] }
-        })
-    })
-
-    const results = await Promise.all(fetchPromises)
-
-    // Check if this request was aborted
-    if (signal.aborted) return
-
-    // Render all routes at once
-    results.forEach(result => {
-      if (!result) return // Skip aborted requests
-      const { routes } = result
-      routes.forEach(route => {
-        if (route.geometry && route.geometry.length > 0) {
-          const style = this.getTransitStyle(routeType, route.color)
-          const polyline = L.polyline(route.geometry, style)
-          polyline.bindPopup(`
-            <div class="p-1">
-              <strong>${route.name || routeType.charAt(0).toUpperCase() + routeType.slice(1)} Line</strong>
-            </div>
-          `)
-          layerGroup.addLayer(polyline)
-        }
+    try {
+      // Fetch transit routes for visible stays in parallel
+      const fetchPromises = staysToFetch.map(stay => {
+        const url = this.transitUrlValue.replace(':id', stay.id) + `?route_type=${routeType}`
+        return fetch(url, { signal })
+          .then(response => response.json())
+          .then(routes => ({ stay, routes }))
+          .catch(error => {
+            if (error.name === 'AbortError') {
+              // Request was cancelled, clear the fetched flag so it can be retried
+              delete this.fetchedTransit[`${routeType}-${stay.id}`]
+              return null
+            }
+            console.error(`Failed to load transit routes for stay ${stay.id}:`, error)
+            return { stay, routes: [] }
+          })
       })
-    })
+
+      const results = await Promise.all(fetchPromises)
+
+      // Check if this request was aborted
+      if (signal.aborted) return
+
+      // Render all routes at once
+      results.forEach(result => {
+        if (!result) return // Skip aborted requests
+        const { routes } = result
+        routes.forEach(route => {
+          if (route.geometry && route.geometry.length > 0) {
+            const style = this.getTransitStyle(routeType, route.color)
+            const polyline = L.polyline(route.geometry, style)
+            polyline.bindPopup(`
+              <div class="p-1">
+                <strong>${route.name || routeType.charAt(0).toUpperCase() + routeType.slice(1)} Line</strong>
+              </div>
+            `)
+            layerGroup.addLayer(polyline)
+          }
+        })
+      })
+    } finally {
+      this.stopLoading('transit', routeType)
+    }
   }
 
   getTransitStyle(routeType, routeColor) {
     const defaults = {
-      subway: { color: '#e11d48', weight: 5, opacity: 0.8 },
-      tram: { color: '#0891b2', weight: 4, opacity: 0.7 },
-      light_rail: { color: '#7c3aed', weight: 4, opacity: 0.75 },
+      rails: { color: '#e11d48', weight: 4, opacity: 0.8 },
       train: { color: '#1d4ed8', weight: 5, opacity: 0.8 },
-      rail: { color: '#4338ca', weight: 5, opacity: 0.8 },
       ferry: { color: '#0284c7', weight: 4, opacity: 0.7 },
       bus: { color: '#65a30d', weight: 3, opacity: 0.6 }
     }
