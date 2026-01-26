@@ -17,6 +17,17 @@ export default class extends Controller {
     this.activeCategories = new Set()
     this.activeTransitTypes = new Set()
     this.stayMarkers = []
+    this.fetchedPOIs = {}      // Track fetched POIs by `${category}-${stayId}`
+    this.fetchedTransit = {}   // Track fetched transit by `${routeType}-${stayId}`
+
+    // Auto-load POIs/transit when viewport changes
+    this.map.on('moveend', () => this.onViewportChange())
+  }
+
+  onViewportChange() {
+    // Reload active POI categories for newly visible stays
+    this.activeCategories.forEach(category => this.loadPOIs(category))
+    this.activeTransitTypes.forEach(routeType => this.loadTransitRoutes(routeType))
   }
 
   initializeMap() {
@@ -108,37 +119,62 @@ export default class extends Controller {
   async loadPOIs(category) {
     if (!this.stays || this.stays.length === 0) return
 
-    const layerGroup = L.layerGroup()
-    this.poiLayers[category] = layerGroup
-
-    for (const stay of this.stays) {
-      if (!stay.latitude || !stay.longitude) continue
-
-      try {
-        const url = this.poisUrlValue.replace(':id', stay.id) + `?category=${category}`
-        const response = await fetch(url)
-        const pois = await response.json()
-
-        pois.forEach(poi => {
-          if (poi.latitude && poi.longitude) {
-            const icon = this.getPOIIcon(category)
-            const marker = L.marker([poi.latitude, poi.longitude], { icon })
-            marker.bindPopup(`
-              <div class="p-1">
-                <strong>${poi.name || 'Unknown'}</strong>
-                <br><span class="text-sm text-gray-500">${poi.distance_meters}m from stay</span>
-                ${poi.opening_hours ? `<br><span class="text-xs">${poi.opening_hours}</span>` : ''}
-              </div>
-            `)
-            layerGroup.addLayer(marker)
-          }
-        })
-      } catch (error) {
-        console.error(`Failed to load POIs for stay ${stay.id}:`, error)
-      }
+    // Create layer group if it doesn't exist
+    if (!this.poiLayers[category]) {
+      this.poiLayers[category] = L.layerGroup()
+      this.poiLayers[category].addTo(this.map)
     }
+    const layerGroup = this.poiLayers[category]
 
-    layerGroup.addTo(this.map)
+    // Filter stays to only those visible in viewport with valid coordinates
+    const bounds = this.map.getBounds()
+    const validStays = this.stays.filter(stay =>
+      stay.latitude && stay.longitude &&
+      bounds.contains([stay.latitude, stay.longitude])
+    )
+
+    // Filter out stays we've already fetched for this category
+    const staysToFetch = validStays.filter(stay => {
+      const key = `${category}-${stay.id}`
+      return !this.fetchedPOIs[key]
+    })
+
+    if (staysToFetch.length === 0) return
+
+    // Fetch POIs for visible stays in parallel
+    const fetchPromises = staysToFetch.map(stay => {
+      const key = `${category}-${stay.id}`
+      this.fetchedPOIs[key] = true // Mark as fetched
+
+      const url = this.poisUrlValue.replace(':id', stay.id) + `?category=${category}`
+      return fetch(url)
+        .then(response => response.json())
+        .then(pois => ({ stay, pois }))
+        .catch(error => {
+          console.error(`Failed to load POIs for stay ${stay.id}:`, error)
+          return { stay, pois: [] }
+        })
+    })
+
+    const results = await Promise.all(fetchPromises)
+
+    // Render all POIs at once
+    results.forEach(({ pois }) => {
+      pois.forEach(poi => {
+        if (poi.latitude && poi.longitude) {
+          const icon = this.getPOIIcon(category)
+          const marker = L.marker([poi.latitude, poi.longitude], { icon })
+          marker.bindPopup(`
+            <div class="p-1">
+              <strong>${poi.name || 'Unknown'}</strong>
+              <br><span class="text-sm text-gray-500">${poi.distance_meters}m from stay</span>
+              ${poi.opening_hours ? `<br><span class="text-xs">${poi.opening_hours}</span>` : ''}
+            </div>
+          `)
+          layerGroup.addLayer(marker)
+        }
+      })
+    })
   }
 
   getPOIIcon(category) {
@@ -162,6 +198,12 @@ export default class extends Controller {
       this.map.removeLayer(this.poiLayers[category])
       delete this.poiLayers[category]
     }
+    // Clear fetched tracking for this category so re-enabling will fetch again
+    Object.keys(this.fetchedPOIs).forEach(key => {
+      if (key.startsWith(`${category}-`)) {
+        delete this.fetchedPOIs[key]
+      }
+    })
   }
 
   toggleTransit(event) {
@@ -184,35 +226,60 @@ export default class extends Controller {
   async loadTransitRoutes(routeType) {
     if (!this.stays || this.stays.length === 0) return
 
-    const layerGroup = L.layerGroup()
-    this.transitLayers[routeType] = layerGroup
-
-    for (const stay of this.stays) {
-      if (!stay.latitude || !stay.longitude) continue
-
-      try {
-        const url = this.transitUrlValue.replace(':id', stay.id) + `?route_type=${routeType}`
-        const response = await fetch(url)
-        const routes = await response.json()
-
-        routes.forEach(route => {
-          if (route.geometry && route.geometry.length > 0) {
-            const style = this.getTransitStyle(routeType, route.color)
-            const polyline = L.polyline(route.geometry, style)
-            polyline.bindPopup(`
-              <div class="p-1">
-                <strong>${route.name || routeType.charAt(0).toUpperCase() + routeType.slice(1)} Line</strong>
-              </div>
-            `)
-            layerGroup.addLayer(polyline)
-          }
-        })
-      } catch (error) {
-        console.error(`Failed to load transit routes for stay ${stay.id}:`, error)
-      }
+    // Create layer group if it doesn't exist
+    if (!this.transitLayers[routeType]) {
+      this.transitLayers[routeType] = L.layerGroup()
+      this.transitLayers[routeType].addTo(this.map)
     }
+    const layerGroup = this.transitLayers[routeType]
 
-    layerGroup.addTo(this.map)
+    // Filter stays to only those visible in viewport with valid coordinates
+    const bounds = this.map.getBounds()
+    const validStays = this.stays.filter(stay =>
+      stay.latitude && stay.longitude &&
+      bounds.contains([stay.latitude, stay.longitude])
+    )
+
+    // Filter out stays we've already fetched for this route type
+    const staysToFetch = validStays.filter(stay => {
+      const key = `${routeType}-${stay.id}`
+      return !this.fetchedTransit[key]
+    })
+
+    if (staysToFetch.length === 0) return
+
+    // Fetch transit routes for visible stays in parallel
+    const fetchPromises = staysToFetch.map(stay => {
+      const key = `${routeType}-${stay.id}`
+      this.fetchedTransit[key] = true // Mark as fetched
+
+      const url = this.transitUrlValue.replace(':id', stay.id) + `?route_type=${routeType}`
+      return fetch(url)
+        .then(response => response.json())
+        .then(routes => ({ stay, routes }))
+        .catch(error => {
+          console.error(`Failed to load transit routes for stay ${stay.id}:`, error)
+          return { stay, routes: [] }
+        })
+    })
+
+    const results = await Promise.all(fetchPromises)
+
+    // Render all routes at once
+    results.forEach(({ routes }) => {
+      routes.forEach(route => {
+        if (route.geometry && route.geometry.length > 0) {
+          const style = this.getTransitStyle(routeType, route.color)
+          const polyline = L.polyline(route.geometry, style)
+          polyline.bindPopup(`
+            <div class="p-1">
+              <strong>${route.name || routeType.charAt(0).toUpperCase() + routeType.slice(1)} Line</strong>
+            </div>
+          `)
+          layerGroup.addLayer(polyline)
+        }
+      })
+    })
   }
 
   getTransitStyle(routeType, routeColor) {
@@ -234,6 +301,12 @@ export default class extends Controller {
       this.map.removeLayer(this.transitLayers[routeType])
       delete this.transitLayers[routeType]
     }
+    // Clear fetched tracking for this route type so re-enabling will fetch again
+    Object.keys(this.fetchedTransit).forEach(key => {
+      if (key.startsWith(`${routeType}-`)) {
+        delete this.fetchedTransit[key]
+      }
+    })
   }
 
   disconnect() {
