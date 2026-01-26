@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 // Leaflet is loaded globally via CDN in application.html.erb
 
 export default class extends Controller {
-  static targets = ["container", "timeline", "staysList", "collapseIcon"]
+  static targets = ["container", "timeline", "upcomingStaysList", "previousStaysList", "previousStaysToggle", "previousStaysChevron", "previousStaysCount", "collapseIcon", "floatingCard", "floatingCardTitle", "floatingCardLocation", "floatingCardDates"]
   static values = {
     staysUrl: String,
     poisUrl: String,
@@ -20,6 +20,8 @@ export default class extends Controller {
     this.stayMarkers = []
     this.fetchedPOIs = {}      // Track fetched POIs by `${category}-${stayId}`
     this.fetchedTransit = {}   // Track fetched transit by `${routeType}-${stayId}`
+    this.previousStaysVisible = false  // Track visibility of previous stays markers
+    this.previousStayMarkers = []      // Separate array for previous stay markers
     this.poiAbortControllers = {}    // AbortControllers for in-flight POI requests
     this.transitAbortControllers = {} // AbortControllers for in-flight transit requests
     this.searchedGridCells = {}      // Track searched viewport grid cells by `${category}-${gridKey}`
@@ -102,61 +104,78 @@ export default class extends Controller {
 
   renderStayMarkers(stays) {
     const bounds = []
+    const upcomingStays = stays.filter(s => s.status === 'upcoming' || s.status === 'current')
+    const previousStays = stays.filter(s => s.status === 'past')
 
-    stays.forEach(stay => {
+    // Render upcoming/current stays (always visible)
+    upcomingStays.forEach(stay => {
       if (stay.latitude && stay.longitude) {
-        const color = this.getStatusColor(stay.status)
-        const marker = L.circleMarker([stay.latitude, stay.longitude], {
-          radius: 10,
-          fillColor: color,
-          color: '#fff',
-          weight: 2,
-          opacity: 1,
-          fillOpacity: 0.8
-        })
-
-        const statusBadge = stay.booked
-          ? `<span class="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-800">Booked</span>`
-          : `<span class="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-800">Planned</span>`
-
-        const imageHtml = stay.image_url
-          ? `<div class="popup-image">
-               <img src="${stay.image_url}" alt="${stay.title}"/>
-             </div>`
-          : ''
-
-        const checkIn = new Date(stay.check_in).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-        const checkOut = new Date(stay.check_out).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-
-        marker.bindPopup(`
-          <div class="popup-content">
-            ${imageHtml}
-            <div class="popup-body">
-              <div class="popup-badges">
-                ${statusBadge}
-                <span class="popup-nights">${stay.duration_days} nights</span>
-              </div>
-              <h3 class="popup-title">${stay.title}</h3>
-              <p class="popup-dates">${checkIn} - ${checkOut}</p>
-              <a href="${stay.url}" class="popup-link">
-                View Details
-                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-              </a>
-            </div>
-          </div>
-        `, { className: 'cozy-popup', maxWidth: 260 })
-
+        const marker = this.createStayMarker(stay)
         marker.addTo(this.map)
         this.stayMarkers.push({ marker, stay })
         bounds.push([stay.latitude, stay.longitude])
       }
     })
 
+    // Render previous stays (hidden by default)
+    previousStays.forEach(stay => {
+      if (stay.latitude && stay.longitude) {
+        const marker = this.createStayMarker(stay)
+        // Don't add to map initially - they're hidden by default
+        this.previousStayMarkers.push({ marker, stay })
+      }
+    })
+
     if (bounds.length > 0) {
       this.map.fitBounds(bounds, { padding: [50, 50] })
     }
+  }
+
+  createStayMarker(stay) {
+    const color = this.getStatusColor(stay.status)
+    const marker = L.circleMarker([stay.latitude, stay.longitude], {
+      radius: 10,
+      fillColor: color,
+      color: '#fff',
+      weight: 2,
+      opacity: 1,
+      fillOpacity: 0.8
+    })
+
+    const statusBadge = stay.booked
+      ? `<span class="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-800">Booked</span>`
+      : `<span class="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-800">Planned</span>`
+
+    const imageHtml = stay.image_url
+      ? `<div class="popup-image">
+           <img src="${stay.image_url}" alt="${stay.title}"/>
+         </div>`
+      : ''
+
+    const checkIn = new Date(stay.check_in).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    const checkOut = new Date(stay.check_out).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
+    marker.bindPopup(`
+      <div class="popup-content">
+        ${imageHtml}
+        <div class="popup-body">
+          <div class="popup-badges">
+            ${statusBadge}
+            <span class="popup-nights">${stay.duration_days} nights</span>
+          </div>
+          <h3 class="popup-title">${stay.title}</h3>
+          <p class="popup-dates">${checkIn} - ${checkOut}</p>
+          <a href="${stay.url}" class="popup-link">
+            View Details
+            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    `, { className: 'cozy-popup', maxWidth: 260 })
+
+    return marker
   }
 
   getStatusColor(status) {
@@ -169,45 +188,106 @@ export default class extends Controller {
   }
 
   renderTimeline(stays) {
-    if (!this.hasStaysListTarget) return
+    // Split stays into upcoming/current and past
+    const upcomingStays = stays.filter(s => s.status === 'upcoming' || s.status === 'current')
+    const previousStays = stays.filter(s => s.status === 'past')
 
-    // Sort by check_in date
-    const sorted = [...stays].sort((a, b) => new Date(a.check_in) - new Date(b.check_in))
+    // Sort upcoming by check_in date (ascending - soonest first)
+    const sortedUpcoming = [...upcomingStays].sort((a, b) => new Date(a.check_in) - new Date(b.check_in))
+    // Sort previous by check_in date (descending - most recent first)
+    const sortedPrevious = [...previousStays].sort((a, b) => new Date(b.check_in) - new Date(a.check_in))
 
-    // Render each stay as a clickable card
-    this.staysListTarget.innerHTML = sorted.map(stay => {
-      const checkIn = new Date(stay.check_in).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-      const checkOut = new Date(stay.check_out).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-      const location = [stay.city, stay.country].filter(Boolean).join(', ')
-
-      const imageHtml = stay.image_url
-        ? `<img src="${stay.image_url}" alt="${stay.title}" class="w-20 h-full absolute left-0 top-0 bottom-0 object-cover">`
-        : `<div class="w-20 h-full absolute left-0 top-0 bottom-0 bg-taupe-light flex items-center justify-center">
-             <svg class="w-8 h-8 text-taupe" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-             </svg>
-           </div>`
-
-      return `
-        <button data-action="click->map#zoomToStay" data-stay-id="${stay.id}"
-                class="w-full text-left rounded-xl border border-taupe-light overflow-hidden relative transition-all duration-200 hover:shadow-md hover:border-sage hover:-translate-y-0.5">
-          ${imageHtml}
-          <div class="ml-20 py-2 px-3 bg-white">
-            <div class="font-medium text-brown truncate">${stay.title}</div>
-            <div class="text-sm text-brown-light">${location}</div>
-            <div class="text-xs text-brown-lighter mt-0.5">${checkIn} - ${checkOut}</div>
+    // Render upcoming stays
+    if (this.hasUpcomingStaysListTarget) {
+      if (sortedUpcoming.length === 0) {
+        this.upcomingStaysListTarget.innerHTML = `
+          <div class="text-center py-6 text-brown-lighter">
+            <svg class="w-10 h-10 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <p class="text-sm">No upcoming stays</p>
           </div>
-        </button>
-      `
-    }).join('')
+        `
+      } else {
+        this.upcomingStaysListTarget.innerHTML = sortedUpcoming.map(stay => this.renderStayCard(stay)).join('')
+      }
+    }
+
+    // Render previous stays
+    if (this.hasPreviousStaysListTarget) {
+      this.previousStaysListTarget.innerHTML = sortedPrevious.map(stay => this.renderStayCard(stay, true)).join('')
+    }
+
+    // Update previous stays count
+    if (this.hasPreviousStaysCountTarget) {
+      this.previousStaysCountTarget.textContent = `${previousStays.length} ${previousStays.length === 1 ? 'stay' : 'stays'}`
+    }
+  }
+
+  renderStayCard(stay, isPrevious = false) {
+    const checkIn = new Date(stay.check_in).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    const checkOut = new Date(stay.check_out).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    const location = [stay.city, stay.country].filter(Boolean).join(', ')
+
+    const imageHtml = stay.image_url
+      ? `<img src="${stay.image_url}" alt="${stay.title}" class="w-20 h-full absolute left-0 top-0 bottom-0 object-cover ${isPrevious ? 'grayscale opacity-70' : ''}">`
+      : `<div class="w-20 h-full absolute left-0 top-0 bottom-0 ${isPrevious ? 'bg-gray-200' : 'bg-taupe-light'} flex items-center justify-center">
+           <svg class="w-8 h-8 ${isPrevious ? 'text-gray-400' : 'text-taupe'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+           </svg>
+         </div>`
+
+    const cardClasses = isPrevious
+      ? 'w-full text-left rounded-xl border border-gray-200 overflow-hidden relative transition-all duration-200 hover:shadow-md hover:border-taupe hover:-translate-y-0.5'
+      : 'w-full text-left rounded-xl border border-taupe-light overflow-hidden relative transition-all duration-200 hover:shadow-md hover:border-sage hover:-translate-y-0.5'
+
+    const textClasses = isPrevious ? 'text-brown-light' : 'text-brown'
+
+    return `
+      <button data-action="click->map#zoomToStay" data-stay-id="${stay.id}"
+              class="${cardClasses}">
+        ${imageHtml}
+        <div class="ml-20 py-2 px-3 bg-white">
+          <div class="font-medium ${textClasses} truncate">${stay.title}</div>
+          <div class="text-sm text-brown-light">${location}</div>
+          <div class="text-xs text-brown-lighter mt-0.5">${checkIn} - ${checkOut}</div>
+        </div>
+      </button>
+    `
   }
 
   zoomToStay(event) {
     const stayId = event.currentTarget.dataset.stayId
     const stay = this.stays.find(s => s.id == stayId)
     if (stay && stay.latitude && stay.longitude) {
+      // If it's a previous stay and markers are hidden, show them first
+      if (stay.status === 'past' && !this.previousStaysVisible) {
+        this.togglePreviousStays()
+      }
       this.map.setView([stay.latitude, stay.longitude], 14, { animate: true })
+      this.showFloatingCard(stay)
+    }
+  }
+
+  showFloatingCard(stay) {
+    this.selectedStay = stay
+    this.floatingCardTitleTarget.textContent = stay.title
+    const location = [stay.city, stay.country].filter(Boolean).join(', ')
+    if (this.hasFloatingCardLocationTarget) {
+      this.floatingCardLocationTarget.textContent = location
+    }
+    if (this.hasFloatingCardDatesTarget) {
+      const checkIn = new Date(stay.check_in).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      const checkOut = new Date(stay.check_out).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      this.floatingCardDatesTarget.textContent = `${checkIn} - ${checkOut}`
+    }
+    this.floatingCardTarget.classList.remove('hidden')
+  }
+
+  goToStayDetails() {
+    if (this.selectedStay) {
+      window.location.href = this.selectedStay.url
     }
   }
 
@@ -232,6 +312,29 @@ export default class extends Controller {
       }
       this.updateZoomControlPosition(true)
     }
+  }
+
+  togglePreviousStays() {
+    this.previousStaysVisible = !this.previousStaysVisible
+
+    // Toggle the list visibility
+    if (this.hasPreviousStaysListTarget) {
+      this.previousStaysListTarget.classList.toggle('hidden', !this.previousStaysVisible)
+    }
+
+    // Rotate the chevron
+    if (this.hasPreviousStaysChevronTarget) {
+      this.previousStaysChevronTarget.classList.toggle('rotate-180', this.previousStaysVisible)
+    }
+
+    // Toggle markers on the map
+    this.previousStayMarkers.forEach(({ marker }) => {
+      if (this.previousStaysVisible) {
+        marker.addTo(this.map)
+      } else {
+        this.map.removeLayer(marker)
+      }
+    })
   }
 
   togglePoi(event) {
@@ -321,10 +424,12 @@ export default class extends Controller {
           if (poi.latitude && poi.longitude) {
             const icon = this.getPOIIcon(category)
             const marker = L.marker([poi.latitude, poi.longitude], { icon })
+            const miles = (poi.distance_meters / 1609.34).toFixed(1)
+            const distanceText = miles < 0.1 ? `${Math.round(miles * 5280)} ft` : `${miles} mi`
             marker.bindPopup(`
               <div class="p-1">
                 <strong>${poi.name || 'Unknown'}</strong>
-                <br><span class="text-sm text-gray-500">${poi.distance_meters}m from stay</span>
+                <br><span class="text-sm text-gray-500">${distanceText} from stay</span>
                 ${poi.opening_hours ? `<br><span class="text-xs">${poi.opening_hours}</span>` : ''}
               </div>
             `)
