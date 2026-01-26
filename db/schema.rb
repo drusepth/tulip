@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_26_051652) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_26_065531) do
   create_table "bucket_list_items", force: :cascade do |t|
     t.integer "stay_id", null: false
     t.string "title", null: false
@@ -42,6 +42,22 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_26_051652) do
     t.boolean "favorite", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "website"
+    t.string "phone"
+    t.string "cuisine"
+    t.boolean "outdoor_seating"
+    t.string "internet_access"
+    t.boolean "air_conditioning"
+    t.boolean "takeaway"
+    t.string "brand"
+    t.text "description"
+    t.string "foursquare_id"
+    t.decimal "foursquare_rating", precision: 3, scale: 1
+    t.integer "foursquare_price"
+    t.string "foursquare_photo_url"
+    t.text "foursquare_tip"
+    t.datetime "foursquare_fetched_at"
+    t.index ["foursquare_id"], name: "index_pois_on_foursquare_id"
     t.index ["osm_id"], name: "index_pois_on_osm_id", unique: true
     t.index ["stay_id", "category"], name: "index_pois_on_stay_id_and_category"
     t.index ["stay_id"], name: "index_pois_on_stay_id"
@@ -113,7 +129,23 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_26_051652) do
     t.decimal "center_lng", precision: 10, scale: 6
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "website"
+    t.string "phone"
+    t.string "cuisine"
+    t.boolean "outdoor_seating"
+    t.string "internet_access"
+    t.boolean "air_conditioning"
+    t.boolean "takeaway"
+    t.string "brand"
+    t.text "description"
+    t.string "foursquare_id"
+    t.decimal "foursquare_rating", precision: 3, scale: 1
+    t.integer "foursquare_price"
+    t.string "foursquare_photo_url"
+    t.text "foursquare_tip"
+    t.datetime "foursquare_fetched_at"
     t.index ["category"], name: "index_viewport_pois_on_category"
+    t.index ["foursquare_id"], name: "index_viewport_pois_on_foursquare_id"
     t.index ["grid_key", "osm_id"], name: "index_viewport_pois_on_grid_key_and_osm_id", unique: true
     t.index ["grid_key"], name: "index_viewport_pois_on_grid_key"
   end
