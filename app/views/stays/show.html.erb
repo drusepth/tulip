@@ -140,7 +140,18 @@
                 <ul class="space-y-2">
                   <% pois.sort_by(&:distance_meters).first(5).each do |poi| %>
                     <li class="flex items-center justify-between py-2 border-b border-taupe-light last:border-0">
-                      <span class="text-brown"><%= poi.name || 'Unnamed' %></span>
+                      <div class="flex items-center gap-2">
+                        <%= button_to stay_bucket_list_items_path(@stay),
+                                      method: :post,
+                                      params: { bucket_list_item: { title: poi.name, address: poi.address } },
+                                      class: "w-6 h-6 flex items-center justify-center rounded-full bg-sage-light hover:bg-sage hover:scale-110 hover:shadow-md text-sage-dark hover:text-white transition-all duration-200 cursor-pointer",
+                                      title: "Add to bucket list" do %>
+                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                          </svg>
+                        <% end %>
+                        <span class="text-brown"><%= poi.name || 'Unnamed' %></span>
+                      </div>
                       <span class="text-sm text-brown-light"><%= poi.distance_meters %>m</span>
                     </li>
                   <% end %>
