@@ -179,10 +179,21 @@
           </div>
         <% end %>
       <% else %>
-        <div class="bg-lavender-light border border-lavender rounded-3xl shadow-cozy p-6">
-          <h2 class="text-lg font-semibold text-lavender-dark mb-2">Not Yet Booked</h2>
-          <p class="text-sm text-lavender-dark mb-4">This stay is planned but doesn't have accommodation booked yet.</p>
-          <%= link_to edit_stay_path(@stay), class: "btn-secondary w-full justify-center bg-lavender hover:bg-lavender-dark" do %>
+        <% days_until = @stay.days_until_check_in %>
+        <% needs_urgent_booking = @stay.needs_booking_alert? %>
+        <div class="<%= needs_urgent_booking ? 'bg-coral-light border-coral' : 'bg-lavender-light border-lavender' %> border rounded-3xl shadow-cozy p-6">
+          <h2 class="text-lg font-semibold <%= needs_urgent_booking ? 'text-coral-dark' : 'text-lavender-dark' %> mb-2">Not Yet Booked</h2>
+          <% if days_until && days_until > 0 %>
+            <p class="text-sm <%= needs_urgent_booking ? 'text-coral-dark font-medium' : 'text-lavender-dark' %> mb-2">
+              <strong><%= days_until %> days</strong> until check-in
+            </p>
+          <% end %>
+          <% if needs_urgent_booking %>
+            <p class="text-sm text-coral-dark mb-4">This stay is coming up soon! Make sure to book accommodation.</p>
+          <% else %>
+            <p class="text-sm text-lavender-dark mb-4">This stay is planned but doesn't have accommodation booked yet.</p>
+          <% end %>
+          <%= link_to edit_stay_path(@stay), class: "btn-secondary w-full justify-center #{needs_urgent_booking ? 'bg-coral hover:bg-coral-dark' : 'bg-lavender hover:bg-lavender-dark'}" do %>
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
             </svg>
