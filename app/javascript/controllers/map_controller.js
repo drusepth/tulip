@@ -19,6 +19,8 @@ export default class extends Controller {
     this.stayMarkers = []
     this.fetchedPOIs = {}      // Track fetched POIs by `${category}-${stayId}`
     this.fetchedTransit = {}   // Track fetched transit by `${routeType}-${stayId}`
+    this.poiAbortControllers = {}    // AbortControllers for in-flight POI requests
+    this.transitAbortControllers = {} // AbortControllers for in-flight transit requests
 
     // Auto-load POIs/transit when viewport changes
     this.map.on('moveend', () => this.onViewportChange())
@@ -119,6 +121,13 @@ export default class extends Controller {
   async loadPOIs(category) {
     if (!this.stays || this.stays.length === 0) return
 
+    // Cancel any in-flight requests for this category
+    if (this.poiAbortControllers[category]) {
+      this.poiAbortControllers[category].abort()
+    }
+    this.poiAbortControllers[category] = new AbortController()
+    const signal = this.poiAbortControllers[category].signal
+
     // Create layer group if it doesn't exist
     if (!this.poiLayers[category]) {
       this.poiLayers[category] = L.layerGroup()
@@ -130,7 +139,7 @@ export default class extends Controller {
     const bounds = this.map.getBounds()
     const validStays = this.stays.filter(stay =>
       stay.latitude && stay.longitude &&
-      bounds.contains([stay.latitude, stay.longitude])
+      bounds.contains(L.latLng(stay.latitude, stay.longitude))
     )
 
     // Filter out stays we've already fetched for this category
@@ -141,16 +150,24 @@ export default class extends Controller {
 
     if (staysToFetch.length === 0) return
 
+    // Mark stays as fetched before starting requests
+    staysToFetch.forEach(stay => {
+      const key = `${category}-${stay.id}`
+      this.fetchedPOIs[key] = true
+    })
+
     // Fetch POIs for visible stays in parallel
     const fetchPromises = staysToFetch.map(stay => {
-      const key = `${category}-${stay.id}`
-      this.fetchedPOIs[key] = true // Mark as fetched
-
       const url = this.poisUrlValue.replace(':id', stay.id) + `?category=${category}`
-      return fetch(url)
+      return fetch(url, { signal })
         .then(response => response.json())
         .then(pois => ({ stay, pois }))
         .catch(error => {
+          if (error.name === 'AbortError') {
+            // Request was cancelled, clear the fetched flag so it can be retried
+            delete this.fetchedPOIs[`${category}-${stay.id}`]
+            return null
+          }
           console.error(`Failed to load POIs for stay ${stay.id}:`, error)
           return { stay, pois: [] }
         })
@@ -158,8 +175,13 @@ export default class extends Controller {
 
     const results = await Promise.all(fetchPromises)
 
+    // Check if this request was aborted
+    if (signal.aborted) return
+
     // Render all POIs at once
-    results.forEach(({ pois }) => {
+    results.forEach(result => {
+      if (!result) return // Skip aborted requests
+      const { pois } = result
       pois.forEach(poi => {
         if (poi.latitude && poi.longitude) {
           const icon = this.getPOIIcon(category)
@@ -194,6 +216,11 @@ export default class extends Controller {
   }
 
   removePOILayer(category) {
+    // Cancel any in-flight requests for this category
+    if (this.poiAbortControllers[category]) {
+      this.poiAbortControllers[category].abort()
+      delete this.poiAbortControllers[category]
+    }
     if (this.poiLayers[category]) {
       this.map.removeLayer(this.poiLayers[category])
       delete this.poiLayers[category]
@@ -226,6 +253,13 @@ export default class extends Controller {
   async loadTransitRoutes(routeType) {
     if (!this.stays || this.stays.length === 0) return
 
+    // Cancel any in-flight requests for this route type
+    if (this.transitAbortControllers[routeType]) {
+      this.transitAbortControllers[routeType].abort()
+    }
+    this.transitAbortControllers[routeType] = new AbortController()
+    const signal = this.transitAbortControllers[routeType].signal
+
     // Create layer group if it doesn't exist
     if (!this.transitLayers[routeType]) {
       this.transitLayers[routeType] = L.layerGroup()
@@ -237,7 +271,7 @@ export default class extends Controller {
     const bounds = this.map.getBounds()
     const validStays = this.stays.filter(stay =>
       stay.latitude && stay.longitude &&
-      bounds.contains([stay.latitude, stay.longitude])
+      bounds.contains(L.latLng(stay.latitude, stay.longitude))
     )
 
     // Filter out stays we've already fetched for this route type
@@ -248,16 +282,24 @@ export default class extends Controller {
 
     if (staysToFetch.length === 0) return
 
+    // Mark stays as fetched before starting requests
+    staysToFetch.forEach(stay => {
+      const key = `${routeType}-${stay.id}`
+      this.fetchedTransit[key] = true
+    })
+
     // Fetch transit routes for visible stays in parallel
     const fetchPromises = staysToFetch.map(stay => {
-      const key = `${routeType}-${stay.id}`
-      this.fetchedTransit[key] = true // Mark as fetched
-
       const url = this.transitUrlValue.replace(':id', stay.id) + `?route_type=${routeType}`
-      return fetch(url)
+      return fetch(url, { signal })
         .then(response => response.json())
         .then(routes => ({ stay, routes }))
         .catch(error => {
+          if (error.name === 'AbortError') {
+            // Request was cancelled, clear the fetched flag so it can be retried
+            delete this.fetchedTransit[`${routeType}-${stay.id}`]
+            return null
+          }
           console.error(`Failed to load transit routes for stay ${stay.id}:`, error)
           return { stay, routes: [] }
         })
@@ -265,8 +307,13 @@ export default class extends Controller {
 
     const results = await Promise.all(fetchPromises)
 
+    // Check if this request was aborted
+    if (signal.aborted) return
+
     // Render all routes at once
-    results.forEach(({ routes }) => {
+    results.forEach(result => {
+      if (!result) return // Skip aborted requests
+      const { routes } = result
       routes.forEach(route => {
         if (route.geometry && route.geometry.length > 0) {
           const style = this.getTransitStyle(routeType, route.color)
@@ -297,6 +344,11 @@ export default class extends Controller {
   }
 
   removeTransitLayer(routeType) {
+    // Cancel any in-flight requests for this route type
+    if (this.transitAbortControllers[routeType]) {
+      this.transitAbortControllers[routeType].abort()
+      delete this.transitAbortControllers[routeType]
+    }
     if (this.transitLayers[routeType]) {
       this.map.removeLayer(this.transitLayers[routeType])
       delete this.transitLayers[routeType]
