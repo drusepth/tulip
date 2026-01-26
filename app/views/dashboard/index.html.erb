@@ -1,39 +1,4 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <!-- Header with Tulip Branding -->
-  <div class="mb-8 flex items-center justify-between">
-    <div>
-      <h1 class="text-4xl font-bold text-brown decorative-heading">
-        <svg class="tulip-icon-inline" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 3C9.5 3 7 5.5 7 9C7 11.5 8.5 13.5 10 14.5V20H14V14.5C15.5 13.5 17 11.5 17 9C17 5.5 14.5 3 12 3Z" fill="#D4A5A5" stroke="#B88888" stroke-width="1"/>
-          <path d="M10 20H14V22H10V20Z" fill="#B8C9B8"/>
-          <path d="M9 9C9 7 10 5 12 5C14 5 15 7 15 9" stroke="#B88888" stroke-width="0.5" fill="none"/>
-        </svg>
-        Tulip
-      </h1>
-      <p class="mt-2 text-brown-light text-lg">Your cozy travel companion</p>
-    </div>
-    <div class="flex gap-3">
-      <%= link_to map_path, class: "btn-outline" do %>
-        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
-        </svg>
-        Map View
-      <% end %>
-      <%= link_to timeline_path, class: "btn-outline" do %>
-        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-        </svg>
-        Timeline
-      <% end %>
-      <%= link_to new_stay_path, class: "btn-primary" do %>
-        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-        </svg>
-        Add Stay
-      <% end %>
-    </div>
-  </div>
-
   <!-- Alerts Section (only shows when there are issues) -->
   <% if @gaps.any? || @booking_alert %>
     <div class="mb-8 space-y-4">

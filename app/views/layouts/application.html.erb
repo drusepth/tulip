@@ -35,6 +35,60 @@
   </head>
 
   <body class="bg-cream min-h-screen">
+    <% if user_signed_in? %>
+      <nav class="bg-white/80 backdrop-blur-sm border-b border-taupe-light sticky top-0 z-50">
+        <div class="px-4 sm:px-6">
+          <div class="flex justify-between items-center h-14">
+            <div class="flex items-center gap-6">
+              <%= link_to root_path, class: "flex items-center gap-2 text-brown hover:text-sage-dark transition-colors" do %>
+                <svg class="w-6 h-6 text-rose" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C9 5 7 8 7 11c0 2.5 1.5 4 3 5-2 0-4 1.5-5 3.5 2.5-1 4.5-.5 6.5.5-1 2-.5 4 .5 6 1-2 2-4 4-5 2 1 3 3 4 5 1-2 1.5-4 .5-6 2-1 4-1.5 6.5-.5-1-2-3-3.5-5-3.5 1.5-1 3-2.5 3-5 0-3-2-6-5-9z"/>
+                </svg>
+                <span class="font-semibold text-lg" style="font-family: var(--font-heading);">Tulip</span>
+              <% end %>
+              <div class="hidden sm:flex items-center gap-4">
+                <%= link_to "Travel Plans", root_path, class: "text-sm text-brown-light hover:text-brown transition-colors" %>
+                <%= link_to "Map", map_path, class: "text-sm text-brown-light hover:text-brown transition-colors" %>
+                <%= link_to "Timeline", timeline_path, class: "text-sm text-brown-light hover:text-brown transition-colors" %>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <%= link_to new_stay_path, class: "btn-primary text-sm py-1.5 px-3" do %>
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Add Stay
+              <% end %>
+              <%= link_to "Account", edit_user_registration_path, class: "text-sm text-brown-light hover:text-brown transition-colors" %>
+              <%= button_to "Log out", destroy_user_session_path, method: :delete, class: "btn-outline text-sm py-1.5 px-3" %>
+            </div>
+          </div>
+        </div>
+      </nav>
+    <% end %>
+
+    <% if notice.present? %>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        <div class="alert-success p-4 flex items-center gap-3">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <p class="text-sm"><%= notice %></p>
+        </div>
+      </div>
+    <% end %>
+
+    <% if alert.present? %>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        <div class="alert-error p-4 flex items-center gap-3">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          <p class="text-sm"><%= alert %></p>
+        </div>
+      </div>
+    <% end %>
+
     <%= yield %>
   </body>
 </html>

@@ -1,7 +1,7 @@
 class TimelineController < ApplicationController
   def index
-    @stays = Stay.chronological
-    @gaps = Stay.find_gaps
+    @stays = current_user.stays.chronological
+    @gaps = find_gaps(@stays)
 
     if @stays.any?
       @start_date = [@stays.first.check_in, Date.current - 30].min
@@ -14,5 +14,22 @@ class TimelineController < ApplicationController
     end
 
     @today = Date.current
+  end
+
+  private
+
+  def find_gaps(stays)
+    gaps = []
+    ordered_stays = stays.to_a
+    ordered_stays.each_cons(2) do |stay1, stay2|
+      if stay2.check_in > stay1.check_out
+        gaps << {
+          start_date: stay1.check_out,
+          end_date: stay2.check_in,
+          days: (stay2.check_in - stay1.check_out).to_i
+        }
+      end
+    end
+    gaps
   end
 end

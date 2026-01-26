@@ -4,103 +4,85 @@
      data-map-transit-url-value="/api/stays/:id/transit_routes"
      data-map-pois-search-url-value="<%= api_pois_search_path %>">
   <!-- Header -->
-  <div class="bg-cream border-b border-taupe-light px-4 py-3 flex items-center justify-between">
-<div class="flex items-center gap-2">
-      <%= link_to root_path, class: "text-brown-light hover:text-brown transition-colors" do %>
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-        </svg>
-      <% end %>
-      <span class="text-taupe">/</span>
-      <h1 class="text-xl font-semibold text-brown">Map View</h1>
+  <div class="bg-cream border-b border-taupe-light px-4 py-3 flex items-center gap-4 overflow-x-auto">
+    <!-- POI Toggles -->
+    <div class="flex items-center gap-2">
+      <button type="button" data-action="click->map#togglePoi" data-category="bus_stops"
+              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
+        <span class="loading-spinner"></span>
+        <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #65a30d;"></span>
+        Bus Stops
+      </button>
+      <button type="button" data-action="click->map#togglePoi" data-category="stations"
+              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
+        <span class="loading-spinner"></span>
+        <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #ef4444;"></span>
+        Rail Stops
+      </button>
+      <button type="button" data-action="click->map#togglePoi" data-category="coffee"
+              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
+        <span class="loading-spinner"></span>
+        <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #92400e;"></span>
+        Coffee
+      </button>
+      <button type="button" data-action="click->map#togglePoi" data-category="grocery"
+              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
+        <span class="loading-spinner"></span>
+        <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #f59e0b;"></span>
+        Grocery
+      </button>
+      <button type="button" data-action="click->map#togglePoi" data-category="food"
+              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
+        <span class="loading-spinner"></span>
+        <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #dc2626;"></span>
+        Food
+      </button>
+      <button type="button" data-action="click->map#togglePoi" data-category="gym"
+              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
+        <span class="loading-spinner"></span>
+        <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #7c3aed;"></span>
+        Gyms
+      </button>
+      <button type="button" data-action="click->map#togglePoi" data-category="coworking"
+              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
+        <span class="loading-spinner"></span>
+        <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #0891b2;"></span>
+        Coworking
+      </button>
+      <button type="button" data-action="click->map#togglePoi" data-category="library"
+              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
+        <span class="loading-spinner"></span>
+        <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #4f46e5;"></span>
+        Libraries
+      </button>
     </div>
-    <div class="flex items-center gap-4">
-      <!-- POI Toggles -->
-      <div class="flex items-center gap-2">
-        <button type="button" data-action="click->map#togglePoi" data-category="bus_stops"
-                class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-          <span class="loading-spinner"></span>
-          <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #65a30d;"></span>
-          Bus Stops
-        </button>
-        <button type="button" data-action="click->map#togglePoi" data-category="stations"
-                class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-          <span class="loading-spinner"></span>
-          <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #ef4444;"></span>
-          Rail Stops
-        </button>
-        <button type="button" data-action="click->map#togglePoi" data-category="coffee"
-                class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-          <span class="loading-spinner"></span>
-          <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #92400e;"></span>
-          Coffee
-        </button>
-        <button type="button" data-action="click->map#togglePoi" data-category="grocery"
-                class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-          <span class="loading-spinner"></span>
-          <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #f59e0b;"></span>
-          Grocery
-        </button>
-        <button type="button" data-action="click->map#togglePoi" data-category="food"
-                class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-          <span class="loading-spinner"></span>
-          <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #dc2626;"></span>
-          Food
-        </button>
-        <button type="button" data-action="click->map#togglePoi" data-category="gym"
-                class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-          <span class="loading-spinner"></span>
-          <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #7c3aed;"></span>
-          Gyms
-        </button>
-        <button type="button" data-action="click->map#togglePoi" data-category="coworking"
-                class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-          <span class="loading-spinner"></span>
-          <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #0891b2;"></span>
-          Coworking
-        </button>
-        <button type="button" data-action="click->map#togglePoi" data-category="library"
-                class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-          <span class="loading-spinner"></span>
-          <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #4f46e5;"></span>
-          Libraries
-        </button>
-      </div>
 
-      <!-- Transit Route Toggles -->
-      <div class="border-l border-taupe-light pl-4 flex items-center gap-2">
-        <button type="button" data-action="click->map#toggleTransit" data-route-type="train"
-                class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-          <span class="loading-spinner"></span>
-          <span class="legend-dot w-3 h-1 rounded-sm" style="background-color: #1d4ed8;"></span>
-          Train
-        </button>
-        <button type="button" data-action="click->map#toggleTransit" data-route-type="rails"
-                class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-          <span class="loading-spinner"></span>
-          <span class="legend-dot w-3 h-1 rounded-sm" style="background-color: #e11d48;"></span>
-          Rails
-        </button>
-        <button type="button" data-action="click->map#toggleTransit" data-route-type="bus"
-                class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-          <span class="loading-spinner"></span>
-          <span class="legend-dot w-3 h-1 rounded-sm" style="background-color: #65a30d;"></span>
-          Bus
-        </button>
-        <button type="button" data-action="click->map#toggleTransit" data-route-type="ferry"
-                class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-          <span class="loading-spinner"></span>
-          <span class="legend-dot w-3 h-1 rounded-sm" style="background-color: #0284c7;"></span>
-          Ferry
-        </button>
-      </div>
-
-      <%= link_to new_stay_path, class: "btn-primary" do %>
-        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-        </svg>
-        Add Stay
-      <% end %>
+    <!-- Transit Route Toggles -->
+    <div class="border-l border-taupe-light pl-4 flex items-center gap-2">
+      <button type="button" data-action="click->map#toggleTransit" data-route-type="train"
+              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
+        <span class="loading-spinner"></span>
+        <span class="legend-dot w-3 h-1 rounded-sm" style="background-color: #1d4ed8;"></span>
+        Train
+      </button>
+      <button type="button" data-action="click->map#toggleTransit" data-route-type="rails"
+              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
+        <span class="loading-spinner"></span>
+        <span class="legend-dot w-3 h-1 rounded-sm" style="background-color: #e11d48;"></span>
+        Rails
+      </button>
+      <button type="button" data-action="click->map#toggleTransit" data-route-type="bus"
+              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
+        <span class="loading-spinner"></span>
+        <span class="legend-dot w-3 h-1 rounded-sm" style="background-color: #65a30d;"></span>
+        Bus
+      </button>
+      <button type="button" data-action="click->map#toggleTransit" data-route-type="ferry"
+              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
+        <span class="loading-spinner"></span>
+        <span class="legend-dot w-3 h-1 rounded-sm" style="background-color: #0284c7;"></span>
+        Ferry
+      </button>
     </div>
   </div>
 

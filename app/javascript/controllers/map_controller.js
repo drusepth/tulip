@@ -176,20 +176,28 @@ export default class extends Controller {
 
     // Render each stay as a clickable card
     this.staysListTarget.innerHTML = sorted.map(stay => {
-      const color = this.getStatusColor(stay.status)
-      const checkIn = new Date(stay.check_in).toLocaleDateString()
-      const checkOut = new Date(stay.check_out).toLocaleDateString()
+      const checkIn = new Date(stay.check_in).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      const checkOut = new Date(stay.check_out).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
       const location = [stay.city, stay.country].filter(Boolean).join(', ')
+
+      const imageHtml = stay.image_url
+        ? `<img src="${stay.image_url}" alt="${stay.title}" class="w-20 h-full absolute left-0 top-0 bottom-0 object-cover">`
+        : `<div class="w-20 h-full absolute left-0 top-0 bottom-0 bg-taupe-light flex items-center justify-center">
+             <svg class="w-8 h-8 text-taupe" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+             </svg>
+           </div>`
 
       return `
         <button data-action="click->map#zoomToStay" data-stay-id="${stay.id}"
-                class="w-full text-left p-3 rounded-lg hover:bg-gray-100 border border-gray-200 transition-colors">
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full flex-shrink-0" style="background-color: ${color}"></span>
-            <div class="font-medium text-gray-900 truncate">${stay.title}</div>
+                class="w-full text-left rounded-xl border border-taupe-light overflow-hidden relative transition-all duration-200 hover:shadow-md hover:border-sage hover:-translate-y-0.5">
+          ${imageHtml}
+          <div class="ml-20 py-2 px-3 bg-white">
+            <div class="font-medium text-brown truncate">${stay.title}</div>
+            <div class="text-sm text-brown-light">${location}</div>
+            <div class="text-xs text-brown-lighter mt-0.5">${checkIn} - ${checkOut}</div>
           </div>
-          <div class="text-sm text-gray-500 mt-1 ml-5">${location}</div>
-          <div class="text-xs text-gray-400 mt-1 ml-5">${checkIn} - ${checkOut}</div>
         </button>
       `
     }).join('')

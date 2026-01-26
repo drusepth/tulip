@@ -2,6 +2,8 @@ require "test_helper"
 
 class BucketListItemsControllerTest < ActionDispatch::IntegrationTest
   setup do
+    @user = users(:one)
+    sign_in @user
     @stay = stays(:one)
     @bucket_list_item = BucketListItem.create!(
       stay: @stay,

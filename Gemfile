@@ -71,4 +71,8 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+  # Pin minitest to avoid compatibility issues with Rails 8
+  gem "minitest", "~> 5.25"
+  # HTTP request stubbing for testing external APIs
+  gem "webmock"
 end

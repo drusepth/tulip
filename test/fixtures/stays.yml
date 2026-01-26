@@ -17,6 +17,7 @@ one:
   notes: Looking forward to this trip!
   status: upcoming
   booked: true
+  user: one
 
 two:
   title: Tokyo Adventure
@@ -35,3 +36,4 @@ two:
   notes: Can't wait for ramen!
   status: upcoming
   booked: true
+  user: one

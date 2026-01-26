@@ -4,6 +4,8 @@ class Stay < ApplicationRecord
   CURRENCIES = %w[USD EUR GBP JPY AUD CAD CHF CNY INR MXN].freeze
   BOOKING_ALERT_MONTHS_THRESHOLD = 4
 
+  belongs_to :user
+
   has_many :pois, dependent: :destroy
   has_many :transit_routes, dependent: :destroy
   has_many :bucket_list_items, dependent: :destroy
@@ -129,6 +131,40 @@ class Stay < ApplicationRecord
 
   def self.last_booked_stay
     order(:check_out).last
+  end
+
+  # Weather data methods
+  def fetch_weather!
+    return unless latitude.present? && longitude.present?
+    return unless check_in.present? && check_out.present?
+
+    weather = WeatherService.fetch_historical_weather(
+      lat: latitude,
+      lng: longitude,
+      start_date: check_in,
+      end_date: check_out
+    )
+
+    if weather
+      update_columns(
+        weather_data: weather.to_json,
+        weather_fetched_at: Time.current
+      )
+    end
+
+    weather
+  end
+
+  def weather_stale?
+    return true unless weather_fetched_at.present?
+    weather_fetched_at < 7.days.ago
+  end
+
+  def expected_weather
+    return nil unless weather_data.present?
+    JSON.parse(weather_data).deep_symbolize_keys
+  rescue JSON::ParserError
+    nil
   end
 
   private

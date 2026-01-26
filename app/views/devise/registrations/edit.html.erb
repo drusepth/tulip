@@ -1,0 +1,72 @@
+<div class="max-w-2xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold" style="font-family: var(--font-heading);">Account Settings</h1>
+    <p class="text-brown-light mt-2">Manage your account details and security</p>
+  </div>
+
+  <div class="cozy-card p-8">
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <div class="space-y-6">
+        <div class="cozy-field-group">
+          <h3 class="text-lg font-semibold mb-4" style="font-family: var(--font-heading);">Email Address</h3>
+          <div>
+            <label class="cozy-label" for="user_email">Email</label>
+            <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "cozy-input" %>
+          </div>
+
+          <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+            <p class="mt-3 text-sm text-coral-dark bg-coral-light rounded-lg px-3 py-2">
+              Currently waiting confirmation for: <%= resource.unconfirmed_email %>
+            </p>
+          <% end %>
+        </div>
+
+        <div class="cozy-field-group">
+          <h3 class="text-lg font-semibold mb-4" style="font-family: var(--font-heading);">Change Password</h3>
+          <p class="text-sm text-brown-lighter mb-4">Leave blank if you don't want to change your password</p>
+
+          <div class="space-y-4">
+            <div>
+              <label class="cozy-label" for="user_password">New password</label>
+              <%= f.password_field :password, autocomplete: "new-password", class: "cozy-input", placeholder: "Enter new password" %>
+              <% if @minimum_password_length %>
+                <p class="text-xs text-brown-lighter mt-1"><%= @minimum_password_length %> characters minimum</p>
+              <% end %>
+            </div>
+
+            <div>
+              <label class="cozy-label" for="user_password_confirmation">Confirm new password</label>
+              <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "cozy-input", placeholder: "Confirm new password" %>
+            </div>
+          </div>
+        </div>
+
+        <div class="cozy-field-group bg-rose-light/30 border-rose">
+          <h3 class="text-lg font-semibold mb-4" style="font-family: var(--font-heading);">Confirm Changes</h3>
+          <p class="text-sm text-brown-light mb-4">Enter your current password to save changes</p>
+
+          <div>
+            <label class="cozy-label" for="user_current_password">Current password</label>
+            <%= f.password_field :current_password, autocomplete: "current-password", class: "cozy-input", placeholder: "Your current password" %>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-4">
+          <%= link_to "Cancel", root_path, class: "btn-outline" %>
+          <%= f.submit "Update account", class: "btn-primary" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-8 cozy-card p-8 border-rose">
+    <h3 class="text-lg font-semibold mb-2 text-rose-dark" style="font-family: var(--font-heading);">Delete Account</h3>
+    <p class="text-sm text-brown-light mb-4">Once you delete your account, all your data will be permanently removed. This action cannot be undone.</p>
+    <%= button_to "Delete my account", registration_path(resource_name),
+        method: :delete,
+        class: "btn-secondary bg-rose-dark hover:bg-rose-dark/90",
+        data: { turbo_confirm: "Are you sure you want to delete your account? This cannot be undone." } %>
+  </div>
+</div>

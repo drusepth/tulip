@@ -2,15 +2,21 @@ class StaysController < ApplicationController
   before_action :set_stay, only: [:show, :edit, :update, :destroy]
 
   def index
-    @stays = Stay.chronological
+    @stays = current_user.stays.chronological
   end
 
   def show
     @pois_by_category = @stay.pois.group_by(&:category)
+
+    # Fetch weather data if stale and stay has coordinates
+    if @stay.latitude.present? && @stay.longitude.present? && @stay.weather_stale?
+      @stay.fetch_weather!
+    end
+    @weather = @stay.expected_weather
   end
 
   def new
-    @stay = Stay.new(
+    @stay = current_user.stays.new(
       check_in: params[:check_in],
       check_out: params[:check_out]
     )
@@ -22,7 +28,7 @@ class StaysController < ApplicationController
   end
 
   def create
-    @stay = Stay.new(stay_params)
+    @stay = current_user.stays.build(stay_params)
     @overlapping_stays = @stay.overlapping_stays
 
     if @stay.save
@@ -47,7 +53,7 @@ class StaysController < ApplicationController
   end
 
   def map_data
-    @stays = Stay.where.not(latitude: nil, longitude: nil)
+    @stays = current_user.stays.where.not(latitude: nil, longitude: nil)
     render json: @stays.map { |stay|
       {
         id: stay.id,
@@ -70,7 +76,7 @@ class StaysController < ApplicationController
   private
 
   def set_stay
-    @stay = Stay.find(params[:id])
+    @stay = current_user.stays.find(params[:id])
   end
 
   def stay_params

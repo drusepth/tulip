@@ -56,7 +56,7 @@ class BucketListItemsController < ApplicationController
   private
 
   def set_stay
-    @stay = Stay.find(params[:stay_id])
+    @stay = current_user.stays.find(params[:stay_id])
   end
 
   def set_bucket_list_item
