@@ -8,10 +8,16 @@ class PoisController < ApplicationController
     ensure_pois_cached(@current_category)
     @pois = @stay.pois.by_category(@current_category).nearest
 
+    # Enrich POIs with Foursquare data (lazy, cached per-POI)
+    @pois.each { |poi| FoursquareService.enrich_poi(poi) }
+
     respond_to do |format|
       format.html
       format.turbo_stream do
-        render turbo_stream: turbo_stream.replace("poi_list", partial: "pois/list", locals: { pois: @pois, category: @current_category, stay: @stay })
+        render turbo_stream: [
+          turbo_stream.replace("poi_tabs", partial: "pois/tabs", locals: { stay: @stay, current_category: @current_category }),
+          turbo_stream.replace("poi_list", partial: "pois/list", locals: { pois: @pois, category: @current_category, stay: @stay })
+        ]
       end
     end
   end
@@ -20,19 +26,7 @@ class PoisController < ApplicationController
     @pois = @stay.pois
     @pois = @pois.by_category(params[:category]) if params[:category].present?
 
-    render json: @pois.map { |poi|
-      {
-        id: poi.id,
-        name: poi.name,
-        category: poi.category,
-        latitude: poi.latitude,
-        longitude: poi.longitude,
-        distance_meters: poi.distance_meters,
-        address: poi.address,
-        opening_hours: poi.opening_hours,
-        favorite: poi.favorite
-      }
-    }
+    render json: format_pois(@pois)
   end
 
   def fetch
@@ -67,7 +61,16 @@ class PoisController < ApplicationController
             longitude: poi_data[:longitude],
             distance_meters: poi_data[:distance_meters],
             address: poi_data[:address],
-            opening_hours: poi_data[:opening_hours]
+            opening_hours: poi_data[:opening_hours],
+            website: poi_data[:website],
+            phone: poi_data[:phone],
+            cuisine: poi_data[:cuisine],
+            outdoor_seating: poi_data[:outdoor_seating],
+            internet_access: poi_data[:internet_access],
+            air_conditioning: poi_data[:air_conditioning],
+            takeaway: poi_data[:takeaway],
+            brand: poi_data[:brand],
+            description: poi_data[:description]
           )
         end
       end
@@ -135,7 +138,16 @@ class PoisController < ApplicationController
           address: poi_data[:address],
           opening_hours: poi_data[:opening_hours],
           center_lat: grid_center[:lat],
-          center_lng: grid_center[:lng]
+          center_lng: grid_center[:lng],
+          website: poi_data[:website],
+          phone: poi_data[:phone],
+          cuisine: poi_data[:cuisine],
+          outdoor_seating: poi_data[:outdoor_seating],
+          internet_access: poi_data[:internet_access],
+          air_conditioning: poi_data[:air_conditioning],
+          takeaway: poi_data[:takeaway],
+          brand: poi_data[:brand],
+          description: poi_data[:description]
         )
       end
     end
@@ -168,7 +180,16 @@ class PoisController < ApplicationController
           longitude: poi_data[:longitude],
           distance_meters: poi_data[:distance_meters],
           address: poi_data[:address],
-          opening_hours: poi_data[:opening_hours]
+          opening_hours: poi_data[:opening_hours],
+          website: poi_data[:website],
+          phone: poi_data[:phone],
+          cuisine: poi_data[:cuisine],
+          outdoor_seating: poi_data[:outdoor_seating],
+          internet_access: poi_data[:internet_access],
+          air_conditioning: poi_data[:air_conditioning],
+          takeaway: poi_data[:takeaway],
+          brand: poi_data[:brand],
+          description: poi_data[:description]
         )
       end
     end
@@ -189,7 +210,16 @@ class PoisController < ApplicationController
         distance_meters: poi.distance_meters,
         address: poi.address,
         opening_hours: poi.opening_hours,
-        favorite: poi.favorite
+        favorite: poi.favorite,
+        website: poi.website,
+        phone: poi.phone,
+        cuisine: poi.cuisine,
+        outdoor_seating: poi.outdoor_seating,
+        internet_access: poi.internet_access,
+        air_conditioning: poi.air_conditioning,
+        takeaway: poi.takeaway,
+        brand: poi.brand,
+        description: poi.description
       }
     end
   end
@@ -204,7 +234,16 @@ class PoisController < ApplicationController
         longitude: poi.longitude,
         address: poi.address,
         opening_hours: poi.opening_hours,
-        viewport_poi: true
+        viewport_poi: true,
+        website: poi.website,
+        phone: poi.phone,
+        cuisine: poi.cuisine,
+        outdoor_seating: poi.outdoor_seating,
+        internet_access: poi.internet_access,
+        air_conditioning: poi.air_conditioning,
+        takeaway: poi.takeaway,
+        brand: poi.brand,
+        description: poi.description
       }
     end
   end

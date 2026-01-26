@@ -27,18 +27,7 @@
     <!-- Main Content (2/3) -->
     <div class="lg:col-span-2">
       <!-- Category Tabs -->
-      <div class="mb-6 border-b border-taupe-light">
-        <nav class="-mb-px flex space-x-4 overflow-x-auto" aria-label="Categories">
-          <% Poi::BROWSABLE_CATEGORIES.each do |category| %>
-            <%= link_to browse_stay_pois_path(@stay, category: category),
-                        data: { turbo_frame: "poi_list" },
-                        class: "whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm inline-flex items-center gap-2 #{@current_category == category ? 'border-sage-dark text-sage-dark' : 'border-transparent text-brown-light hover:text-brown hover:border-taupe'}" do %>
-              <%= category_icon(category) %>
-              <%= category.titleize %>
-            <% end %>
-          <% end %>
-        </nav>
-      </div>
+      <%= render "pois/tabs", stay: @stay, current_category: @current_category %>
 
       <!-- POI List -->
       <%= turbo_frame_tag "poi_list" do %>

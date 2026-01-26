@@ -1,4 +1,95 @@
 module PoisHelper
+  # Convert Foursquare 1-10 rating to 5-star display
+  def foursquare_rating_stars(rating)
+    return nil unless rating
+    stars = (rating / 2.0).round(1)
+    "#{stars}/5"
+  end
+
+  # Convert Foursquare 1-4 price to dollar signs
+  def foursquare_price_display(price)
+    return nil unless price
+    '$' * price
+  end
+
+  # Check if POI has Foursquare enrichment data
+  def poi_has_foursquare_data?(poi)
+    poi.foursquare_rating.present? ||
+      poi.foursquare_price.present? ||
+      poi.foursquare_photo_url.present? ||
+      poi.foursquare_tip.present?
+  end
+
+  # Parse OSM opening_hours format into readable display
+  # Example input: "Mo-Fr 08:00-18:00; Sa 09:00-14:00"
+  def format_opening_hours(hours_string)
+    return nil if hours_string.blank?
+
+    # Common abbreviation mappings
+    day_map = {
+      'Mo' => 'Mon', 'Tu' => 'Tue', 'We' => 'Wed', 'Th' => 'Thu',
+      'Fr' => 'Fri', 'Sa' => 'Sat', 'Su' => 'Sun',
+      'PH' => 'Holidays'
+    }
+
+    # Split by semicolon for multiple rules
+    rules = hours_string.split(';').map(&:strip)
+
+    rules.map do |rule|
+      # Handle 24/7
+      next '24/7' if rule == '24/7'
+
+      # Replace day abbreviations
+      formatted = rule.dup
+      day_map.each { |short, long| formatted.gsub!(short, long) }
+
+      # Replace hyphen ranges for days
+      formatted.gsub!(/(\w+)-(\w+)/, '\1-\2')
+
+      formatted
+    end.compact
+  end
+
+  def format_phone(phone)
+    return nil if phone.blank?
+    # Return as-is, but ensure it's safe for display
+    phone.strip
+  end
+
+  def format_website_domain(website)
+    return nil if website.blank?
+    begin
+      uri = URI.parse(website)
+      uri.host&.sub(/^www\./, '') || website
+    rescue URI::InvalidURIError
+      website
+    end
+  end
+
+  def poi_has_details?(poi)
+    poi.address.present? ||
+      poi.opening_hours.present? ||
+      poi.phone.present? ||
+      poi.website.present? ||
+      poi.cuisine.present? ||
+      poi.outdoor_seating? ||
+      poi.internet_access.present? ||
+      poi.air_conditioning? ||
+      poi.takeaway? ||
+      poi.brand.present? ||
+      poi.description.present? ||
+      poi_has_foursquare_data?(poi)
+  end
+
+  def poi_amenity_badges(poi)
+    badges = []
+    badges << { label: 'WiFi', icon: 'wifi' } if poi.internet_access.present? && poi.internet_access != 'no'
+    badges << { label: 'Outdoor', icon: 'outdoor' } if poi.outdoor_seating?
+    badges << { label: 'A/C', icon: 'ac' } if poi.air_conditioning?
+    badges << { label: 'Takeaway', icon: 'takeaway' } if poi.takeaway?
+    badges
+  end
+
   def category_icon(category)
     case category
     when 'coffee'

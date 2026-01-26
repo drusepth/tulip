@@ -128,17 +128,28 @@ class OverpassService
       response['elements'].map do |element|
         next unless element['lat'] && element['lon']
 
+        tags = element['tags'] || {}
+
         {
-          name: element.dig('tags', 'name'),
+          name: tags['name'],
           latitude: element['lat'],
           longitude: element['lon'],
           osm_id: "#{element['type']}/#{element['id']}",
-          address: build_address(element['tags']),
-          opening_hours: element.dig('tags', 'opening_hours'),
+          address: build_address(tags),
+          opening_hours: tags['opening_hours'],
           distance_meters: calculate_distance(
             origin_lat, origin_lng,
             element['lat'], element['lon']
-          )
+          ),
+          website: tags['website'] || tags['contact:website'],
+          phone: tags['phone'] || tags['contact:phone'],
+          cuisine: tags['cuisine'],
+          outdoor_seating: tags['outdoor_seating'] == 'yes',
+          internet_access: tags['internet_access'],
+          air_conditioning: tags['air_conditioning'] == 'yes',
+          takeaway: tags['takeaway'] == 'yes',
+          brand: tags['brand'],
+          description: tags['description']
         }
       end.compact
     end
