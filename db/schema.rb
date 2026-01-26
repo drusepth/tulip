@@ -10,7 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_26_012815) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_26_051652) do
+  create_table "bucket_list_items", force: :cascade do |t|
+    t.integer "stay_id", null: false
+    t.string "title", null: false
+    t.string "category", default: "other"
+    t.text "notes"
+    t.string "address"
+    t.decimal "latitude", precision: 10, scale: 6
+    t.decimal "longitude", precision: 10, scale: 6
+    t.boolean "completed", default: false, null: false
+    t.datetime "completed_at"
+    t.integer "position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stay_id", "category"], name: "index_bucket_list_items_on_stay_id_and_category"
+    t.index ["stay_id", "completed"], name: "index_bucket_list_items_on_stay_id_and_completed"
+    t.index ["stay_id"], name: "index_bucket_list_items_on_stay_id"
+  end
+
   create_table "pois", force: :cascade do |t|
     t.integer "stay_id", null: false
     t.string "name"
@@ -49,7 +67,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_26_012815) do
     t.datetime "updated_at", null: false
     t.string "state"
     t.boolean "booked", default: false, null: false
+    t.text "weather_data"
+    t.datetime "weather_fetched_at"
+    t.integer "user_id"
     t.index ["check_in", "check_out"], name: "index_stays_on_check_in_and_check_out"
+    t.index ["user_id"], name: "index_stays_on_user_id"
   end
 
   create_table "transit_routes", force: :cascade do |t|
@@ -64,6 +86,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_26_012815) do
     t.index ["osm_id"], name: "index_transit_routes_on_osm_id", unique: true
     t.index ["stay_id", "route_type"], name: "index_transit_routes_on_stay_id_and_route_type"
     t.index ["stay_id"], name: "index_transit_routes_on_stay_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   create_table "viewport_pois", force: :cascade do |t|
@@ -84,6 +118,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_26_012815) do
     t.index ["grid_key"], name: "index_viewport_pois_on_grid_key"
   end
 
+  add_foreign_key "bucket_list_items", "stays"
   add_foreign_key "pois", "stays"
+  add_foreign_key "stays", "users"
   add_foreign_key "transit_routes", "stays"
 end

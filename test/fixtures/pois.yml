@@ -2,24 +2,24 @@
 
 one:
   stay: one
-  name: MyString
-  category: MyString
-  latitude: 9.99
-  longitude: 9.99
-  distance_meters: 1
-  osm_id: MyString
-  address: MyString
-  opening_hours: MyString
+  name: Blue Bottle Coffee
+  category: coffee
+  latitude: 37.7749
+  longitude: -122.4194
+  distance_meters: 250
+  osm_id: osm_123456
+  address: 123 Market St
+  opening_hours: "7am-6pm"
   favorite: false
 
 two:
   stay: two
-  name: MyString
-  category: MyString
-  latitude: 9.99
-  longitude: 9.99
-  distance_meters: 1
-  osm_id: MyString
-  address: MyString
-  opening_hours: MyString
-  favorite: false
+  name: Tokyo Coffee Shop
+  category: coffee
+  latitude: 35.6762
+  longitude: 139.6503
+  distance_meters: 100
+  osm_id: osm_789012
+  address: 1-2-3 Shibuya
+  opening_hours: "8am-10pm"
+  favorite: true

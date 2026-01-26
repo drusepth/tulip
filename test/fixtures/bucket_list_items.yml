@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  stay: one
+  title: Visit Golden Gate Bridge
+  category: landmark
+  notes: Best views at sunset
+  completed: false
+
+two:
+  stay: one
+  title: Try clam chowder at Fisherman's Wharf
+  category: restaurant
+  address: Fisherman's Wharf, San Francisco, CA
+  completed: true
+  completed_at: <%= 2.days.ago %>
+
+three:
+  stay: two
+  title: Visit Senso-ji Temple
+  category: landmark
+  address: Asakusa, Tokyo
+  completed: false

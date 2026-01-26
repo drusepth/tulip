@@ -2,16 +2,16 @@
 
 one:
   stay: one
-  name: MyString
-  route_type: MyString
-  color: MyString
-  osm_id: MyString
-  geometry: MyText
+  name: BART Blue Line
+  route_type: subway
+  color: "#0099CC"
+  osm_id: transit_123456
+  geometry: "[[37.7749,-122.4194],[37.7847,-122.4089]]"
 
 two:
   stay: two
-  name: MyString
-  route_type: MyString
-  color: MyString
-  osm_id: MyString
-  geometry: MyText
+  name: Tokyo Metro Ginza Line
+  route_type: subway
+  color: "#FF9500"
+  osm_id: transit_789012
+  geometry: "[[35.6762,139.6503],[35.6847,139.6589]]"

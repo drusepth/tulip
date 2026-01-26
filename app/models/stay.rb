@@ -6,6 +6,7 @@ class Stay < ApplicationRecord
 
   has_many :pois, dependent: :destroy
   has_many :transit_routes, dependent: :destroy
+  has_many :bucket_list_items, dependent: :destroy
 
   validates :title, presence: true
   validates :check_in, presence: true

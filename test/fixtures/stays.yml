@@ -1,35 +1,37 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  title: MyString
-  stay_type: MyString
-  booking_url: MyString
-  image_url: MyString
-  address: MyString
-  city: MyString
-  country: MyString
-  latitude: 9.99
-  longitude: 9.99
-  check_in: 2026-01-25
-  check_out: 2026-01-25
-  price_total_cents: 1
-  currency: MyString
-  notes: MyText
-  status: MyString
+  title: San Francisco Trip
+  stay_type: airbnb
+  booking_url: https://example.com/booking
+  image_url: https://example.com/image.jpg
+  address: 123 Market St
+  city: San Francisco
+  country: USA
+  latitude: 37.7749
+  longitude: -122.4194
+  check_in: <%= Date.current + 30.days %>
+  check_out: <%= Date.current + 35.days %>
+  price_total_cents: 50000
+  currency: USD
+  notes: Looking forward to this trip!
+  status: upcoming
+  booked: true
 
 two:
-  title: MyString
-  stay_type: MyString
-  booking_url: MyString
-  image_url: MyString
-  address: MyString
-  city: MyString
-  country: MyString
-  latitude: 9.99
-  longitude: 9.99
-  check_in: 2026-01-25
-  check_out: 2026-01-25
-  price_total_cents: 1
-  currency: MyString
-  notes: MyText
-  status: MyString
+  title: Tokyo Adventure
+  stay_type: hotel
+  booking_url: https://example.com/booking2
+  image_url: https://example.com/image2.jpg
+  address: 1-1 Shibuya
+  city: Tokyo
+  country: Japan
+  latitude: 35.6762
+  longitude: 139.6503
+  check_in: <%= Date.current + 60.days %>
+  check_out: <%= Date.current + 67.days %>
+  price_total_cents: 120000
+  currency: JPY
+  notes: Can't wait for ramen!
+  status: upcoming
+  booked: true

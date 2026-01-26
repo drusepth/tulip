@@ -1,0 +1,11 @@
+<%= turbo_stream.append "bucket_list_pending_items" do %>
+  <%= render "bucket_list_items/item", bucket_list_item: @bucket_list_item %>
+<% end %>
+
+<%= turbo_stream.replace "bucket_list_form" do %>
+  <%= render "bucket_list_items/form", stay: @stay %>
+<% end %>
+
+<%= turbo_stream.replace "bucket_list_section" do %>
+  <%= render "bucket_list_items/section", stay: @stay %>
+<% end %>
