@@ -1,0 +1,54 @@
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Back Link -->
+  <div class="mb-6">
+    <%= link_to stay_path(@stay), class: "text-sage-dark hover:text-sage inline-flex items-center" do %>
+      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Back to <%= @stay.title %>
+    <% end %>
+  </div>
+
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-brown">Nearby Places</h1>
+    <p class="mt-2 text-brown-light">
+      <span class="inline-flex items-center">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        <%= [@stay.city, @stay.country].compact.join(', ') %>
+      </span>
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Main Content (2/3) -->
+    <div class="lg:col-span-2">
+      <!-- Category Tabs -->
+      <div class="mb-6 border-b border-taupe-light">
+        <nav class="-mb-px flex space-x-4 overflow-x-auto" aria-label="Categories">
+          <% Poi::BROWSABLE_CATEGORIES.each do |category| %>
+            <%= link_to browse_stay_pois_path(@stay, category: category),
+                        data: { turbo_frame: "poi_list" },
+                        class: "whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm inline-flex items-center gap-2 #{@current_category == category ? 'border-sage-dark text-sage-dark' : 'border-transparent text-brown-light hover:text-brown hover:border-taupe'}" do %>
+              <%= category_icon(category) %>
+              <%= category.titleize %>
+            <% end %>
+          <% end %>
+        </nav>
+      </div>
+
+      <!-- POI List -->
+      <%= turbo_frame_tag "poi_list" do %>
+        <%= render "pois/list", pois: @pois, category: @current_category, stay: @stay %>
+      <% end %>
+    </div>
+
+    <!-- Sidebar (1/3) -->
+    <div class="lg:sticky lg:top-8 lg:self-start">
+      <%= render "bucket_list_items/section", stay: @stay %>
+    </div>
+  </div>
+</div>

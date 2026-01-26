@@ -1,0 +1,27 @@
+<%= turbo_frame_tag dom_id(poi) do %>
+  <li class="flex items-start justify-between py-3 border-b border-taupe-light last:border-0">
+    <div class="flex items-start gap-3 flex-1 min-w-0">
+      <%= button_to stay_bucket_list_items_path(stay),
+                    method: :post,
+                    params: { bucket_list_item: { title: poi.name, address: poi.address }, source_poi_id: poi.id },
+                    class: "mt-0.5 w-7 h-7 flex-shrink-0 flex items-center justify-center rounded-full bg-sage-light hover:bg-sage hover:scale-110 hover:shadow-md text-sage-dark hover:text-white transition-all duration-200 cursor-pointer",
+                    title: "Add to bucket list" do %>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+      <% end %>
+      <div class="min-w-0 flex-1">
+        <p class="text-brown font-medium truncate"><%= poi.name || 'Unnamed' %></p>
+        <% if poi.address.present? %>
+          <p class="text-sm text-brown-light truncate"><%= poi.address %></p>
+        <% end %>
+        <% if poi.opening_hours.present? %>
+          <p class="text-xs text-taupe mt-1"><%= poi.opening_hours %></p>
+        <% end %>
+      </div>
+    </div>
+    <span class="ml-3 flex-shrink-0 text-sm text-brown-light bg-cream px-2 py-1 rounded-full">
+      <%= poi.distance_meters %>m
+    </span>
+  </li>
+<% end %>

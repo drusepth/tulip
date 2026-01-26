@@ -3,7 +3,14 @@ Rails.application.routes.draw do
   root "dashboard#index"
 
   resources :stays do
-    resources :pois, only: [:index, :create, :update, :destroy]
+    member do
+      get :weather
+    end
+    resources :pois, only: [:index, :create, :update, :destroy] do
+      collection do
+        get :browse
+      end
+    end
     resources :transit_routes, only: [:index, :create]
     resources :bucket_list_items, only: [:create, :edit, :update, :destroy] do
       member do

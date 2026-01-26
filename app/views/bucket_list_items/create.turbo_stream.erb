@@ -9,3 +9,9 @@
 <%= turbo_stream.replace "bucket_list_section" do %>
   <%= render "bucket_list_items/section", stay: @stay %>
 <% end %>
+
+<% if @source_poi %>
+  <%= turbo_stream.replace dom_id(@source_poi) do %>
+    <%= render "pois/item_added", poi: @source_poi, stay: @stay %>
+  <% end %>
+<% end %>

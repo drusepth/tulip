@@ -1,6 +1,21 @@
 class PoisController < ApplicationController
   before_action :set_stay, except: [:search]
 
+  def browse
+    @current_category = params[:category].presence || 'coffee'
+    @current_category = 'coffee' unless Poi::BROWSABLE_CATEGORIES.include?(@current_category)
+
+    ensure_pois_cached(@current_category)
+    @pois = @stay.pois.by_category(@current_category).nearest
+
+    respond_to do |format|
+      format.html
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace("poi_list", partial: "pois/list", locals: { pois: @pois, category: @current_category, stay: @stay })
+      end
+    end
+  end
+
   def index
     @pois = @stay.pois
     @pois = @pois.by_category(params[:category]) if params[:category].present?
@@ -132,6 +147,31 @@ class PoisController < ApplicationController
 
   def set_stay
     @stay = current_user.stays.find(params[:stay_id] || params[:id])
+  end
+
+  def ensure_pois_cached(category)
+    return if @stay.pois.by_category(category).exists?
+    return unless @stay.latitude.present? && @stay.longitude.present?
+
+    pois_data = OverpassService.fetch_pois(
+      lat: @stay.latitude.to_f,
+      lng: @stay.longitude.to_f,
+      category: category
+    )
+
+    pois_data.each do |poi_data|
+      @stay.pois.find_or_create_by(osm_id: poi_data[:osm_id]) do |poi|
+        poi.assign_attributes(
+          name: poi_data[:name],
+          category: category,
+          latitude: poi_data[:latitude],
+          longitude: poi_data[:longitude],
+          distance_meters: poi_data[:distance_meters],
+          address: poi_data[:address],
+          opening_hours: poi_data[:opening_hours]
+        )
+      end
+    end
   end
 
   def poi_params
