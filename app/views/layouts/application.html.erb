@@ -51,8 +51,7 @@
               <% end %>
               <div class="hidden sm:flex items-center gap-4">
                 <%= link_to "Travel Plans", root_path, class: "text-sm text-brown-light hover:text-brown transition-colors" %>
-                <%= link_to "Map", map_path, class: "text-sm text-brown-light hover:text-brown transition-colors" %>
-                <%= link_to "Timeline", timeline_path, class: "text-sm text-brown-light hover:text-brown transition-colors" %>
+                <%= link_to "Your Map", map_path, class: "text-sm text-brown-light hover:text-brown transition-colors" %>
               </div>
             </div>
             <div class="flex items-center gap-4">
@@ -97,6 +96,6 @@
     <%= yield %>
 
     <!-- Shared tooltip element for site-wide tooltips -->
-    <div id="tooltip" class="hidden fixed bg-stone-700 text-white text-sm px-3 py-2 rounded-lg shadow-lg z-50 pointer-events-none"></div>
+    <div id="tooltip" class="cozy-tooltip hidden fixed text-sm px-4 py-3 rounded-2xl z-50 pointer-events-none"></div>
   </body>
 </html>
