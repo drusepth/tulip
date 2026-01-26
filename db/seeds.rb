@@ -20,7 +20,7 @@ Stay.create!(
   check_in: Date.new(2026, 5, 22),
   check_out: Date.new(2026, 7, 22),
   notes: "Starting the road trip in the Pacific Northwest! Coffee, food carts, and Powell's Books.",
-  image_url: "https://images.unsplash.com/photo-1566093097221-ac2335b09e70?w=800",
+  image_url: "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=800",
   booked: false
 )
 
@@ -80,7 +80,7 @@ Stay.create!(
   check_in: Date.new(2027, 1, 22),
   check_out: Date.new(2027, 6, 22),
   notes: "Extended stay in KC! BBQ capital, jazz history, and fountains.",
-  image_url: "https://images.unsplash.com/photo-1551522355-5f1c4d8ebb74?w=800",
+  image_url: "https://images.unsplash.com/photo-1559002144-c9aae0d8a24b?w=800",
   booked: false
 )
 

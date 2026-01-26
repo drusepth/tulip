@@ -94,7 +94,7 @@
   <% end %>
 
   <!-- Hero Section: Current & Next Stay -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
     <!-- Current Stay -->
     <% if @current_stay %>
       <%= link_to stay_path(@current_stay), class: "block group" do %>
@@ -169,7 +169,7 @@
               <% if @next_stay.booked? %>
                 <span class="font-semibold text-white"><%= pluralize(@next_stay.duration_days, 'night') %></span>
               <% else %>
-                <%= link_to "Book this stay", edit_stay_path(@next_stay), class: "font-semibold text-white hover:underline" %>
+                <span class="font-semibold text-white">Book this stay</span>
               <% end %>
             </div>
           </div>
