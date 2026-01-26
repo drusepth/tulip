@@ -534,7 +534,7 @@ export default class extends Controller {
           if (route.geometry && route.geometry.length > 0) {
             const style = this.getTransitStyle(routeType, route.color)
 
-            // geometry is now array of paths - render each as separate polyline
+            // geometry is array of paths - each path is array of [lat, lng] points
             route.geometry.forEach(path => {
               if (path && path.length >= 2) {
                 const polyline = L.polyline(path, style)

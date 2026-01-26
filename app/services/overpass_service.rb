@@ -192,8 +192,7 @@ class OverpassService
         next unless member['type'] == 'way' && ways[member['ref']]
 
         node_ids = ways[member['ref']]
-        # Filter out nil coords and coords with nil lat/lon
-        coords = node_ids.map { |id| nodes[id] }.compact.select { |c| c[0] && c[1] }
+        coords = node_ids.map { |id| nodes[id] }.compact
         next if coords.length < 2
 
         {
@@ -220,8 +219,6 @@ class OverpassService
         next if used.include?(segment[:id])
 
         path = build_path_from(segment, endpoint_index, used)
-        # Filter out any nil coordinates and ensure path has enough points
-        path = path.compact.select { |c| c.is_a?(Array) && c[0] && c[1] }
         paths << path if path.length >= 2
       end
 
@@ -235,8 +232,9 @@ class OverpassService
         start_key = coord_key(seg[:start_coord])
         end_key = coord_key(seg[:end_coord])
 
-        index[start_key] << { segment: seg, is_start: true }
-        index[end_key] << { segment: seg, is_start: false }
+        # Only index if we have valid coordinate keys
+        index[start_key] << { segment: seg, is_start: true } if start_key
+        index[end_key] << { segment: seg, is_start: false } if end_key
       end
 
       index
@@ -272,14 +270,11 @@ class OverpassService
 
     def find_connected_segment(coord, endpoint_index, used)
       key = coord_key(coord)
-      return nil unless key
-
       candidates = endpoint_index[key] || []
       candidates.find { |c| !used.include?(c[:segment][:id]) }
     end
 
     def coord_key(coord)
-      return nil unless coord && coord[0] && coord[1]
       # Round to ~1 meter precision to handle floating point differences
       "#{coord[0].round(5)},#{coord[1].round(5)}"
     end
