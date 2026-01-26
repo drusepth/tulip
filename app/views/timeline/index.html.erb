@@ -88,7 +88,7 @@
            data-timeline-target="track"
            data-action="mousedown->timeline#startDrag mousemove->timeline#drag mouseup->timeline#stopDrag mouseleave->timeline#stopDrag"
            tabindex="0">
-        <div class="relative" style="height: 100px; min-width: <%= [@total_days * 4, 800].max %>px;">
+        <div class="relative" style="height: <%= 20 + (@row_count * 66) %>px; min-width: <%= [@total_days * 4, 800].max %>px;">
 
           <!-- Year Dividers -->
           <% years_in_range = (@start_date.year..@end_date.year).to_a %>
@@ -149,7 +149,7 @@
 
               <%= link_to stay_path(stay),
                   class: "timeline-bar #{bar_class} group",
-                  style: "left: #{left_offset}%; width: #{width}%;",
+                  style: "left: #{left_offset}%; width: #{width}%; top: #{20 + (item[:row] * 66)}px;",
                   data: {
                     controller: "tooltip",
                     tooltip_content_value: tooltip_content_for(stay),
@@ -176,7 +176,7 @@
               <% gap = item %>
               <%= link_to new_stay_path(check_in: gap[:start_date], check_out: gap[:end_date]),
                   class: "timeline-bar timeline-gap-bar group",
-                  style: "left: #{left_offset}%; width: #{width}%;",
+                  style: "left: #{left_offset}%; width: #{width}%; top: #{20 + (item[:row] * 66)}px;",
                   data: {
                     controller: "tooltip",
                     tooltip_content_value: gap_tooltip_content(gap),
