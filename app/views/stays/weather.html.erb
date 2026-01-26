@@ -1,0 +1,150 @@
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Back Link -->
+  <div class="mb-6">
+    <%= link_to stay_path(@stay), class: "text-sage-dark hover:text-sage inline-flex items-center" do %>
+      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Back to <%= @stay.title %>
+    <% end %>
+  </div>
+
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-brown">Weather Forecast</h1>
+    <p class="mt-2 text-brown-light">
+      <%= @stay.title %> &middot; <%= @stay.check_in.strftime('%B %d') %> - <%= @stay.check_out.strftime('%B %d, %Y') %>
+    </p>
+    <p class="text-sm text-taupe mt-1">Based on historical weather data from the same dates in previous years</p>
+  </div>
+
+  <% if @weather.present? %>
+    <!-- Temperature Summary -->
+    <div class="cozy-card p-6 mb-8">
+      <h2 class="text-lg font-semibold text-brown mb-4">Temperature Summary</h2>
+      <div class="grid grid-cols-3 gap-4">
+        <div class="text-center p-4 bg-sage-light rounded-2xl">
+          <p class="text-sm text-brown-light mb-1">Low</p>
+          <p class="text-3xl font-bold text-sage-dark"><%= @weather[:low] %>&deg;F</p>
+        </div>
+        <div class="text-center p-4 bg-taupe-light rounded-2xl">
+          <p class="text-sm text-brown-light mb-1">Average</p>
+          <p class="text-3xl font-bold text-brown"><%= @weather[:average] %>&deg;F</p>
+        </div>
+        <div class="text-center p-4 bg-rose-light rounded-2xl">
+          <p class="text-sm text-brown-light mb-1">High</p>
+          <p class="text-3xl font-bold text-rose-dark"><%= @weather[:high] %>&deg;F</p>
+        </div>
+      </div>
+    </div>
+
+    <% if @daily_data.any? %>
+      <!-- Temperature Chart -->
+      <div class="cozy-card p-6 mb-8">
+        <h2 class="text-lg font-semibold text-brown mb-4">Daily Temperatures</h2>
+        <div class="h-64"
+             data-controller="weather-chart"
+             data-weather-chart-daily-data-value="<%= @daily_data.to_json %>">
+          <canvas data-weather-chart-target="canvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Weather Conditions Grid -->
+      <div class="cozy-card p-6 mb-8">
+        <h2 class="text-lg font-semibold text-brown mb-4">Weather Conditions</h2>
+        <div data-controller="weather-grid"
+             data-weather-grid-daily-data-value="<%= @daily_data.to_json %>">
+          <div data-weather-grid-target="grid" class="flex flex-wrap gap-1 mb-4"></div>
+        </div>
+
+        <!-- Legend -->
+        <div class="flex flex-wrap gap-4 mt-4 pt-4 border-t border-taupe-light">
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded bg-coral"></div>
+            <span class="text-sm text-brown-light">Sunny</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded bg-slate-300"></div>
+            <span class="text-sm text-brown-light">Cloudy</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded bg-taupe"></div>
+            <span class="text-sm text-brown-light">Foggy</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded" style="background-color: #9BB8C9;"></div>
+            <span class="text-sm text-brown-light">Rainy</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded bg-cyan-200"></div>
+            <span class="text-sm text-brown-light">Snowy</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded bg-lavender-dark"></div>
+            <span class="text-sm text-brown-light">Stormy</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day-by-Day List -->
+      <div class="cozy-card p-6">
+        <h2 class="text-lg font-semibold text-brown mb-4">Day-by-Day Forecast</h2>
+        <div class="space-y-3">
+          <% @daily_data.each do |day| %>
+            <div class="flex items-center justify-between py-3 border-b border-taupe-light last:border-0">
+              <div class="flex-1 min-w-0">
+                <p class="font-medium text-brown"><%= Date.parse(day[:date]).strftime('%A, %B %d') %></p>
+                <p class="text-sm text-brown-light"><%= day[:condition] %></p>
+                <% if day[:sunrise] && day[:sunset] %>
+                  <p class="text-xs text-taupe mt-1">☀️ <%= Time.parse(day[:sunrise]).strftime('%-I:%M%P') %> - <%= Time.parse(day[:sunset]).strftime('%-I:%M%P') %></p>
+                <% end %>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-20 text-center">
+                  <% if day[:precipitation_mm] && day[:precipitation_mm] > 0 %>
+                    <p class="text-sm text-blue-500"><%= day[:condition] == 'Snowy' ? '❄️' : '💧' %> <%= day[:precipitation_mm] %>mm</p>
+                    <p class="text-xs text-taupe"><%= day[:precipitation_hours] %>h</p>
+                  <% end %>
+                </div>
+                <div class="w-20 text-center">
+                  <% if day[:wind_speed] && day[:wind_speed] > 10 %>
+                    <p class="text-sm text-gray-600">💨 <%= day[:wind_speed] %></p>
+                    <p class="text-xs text-taupe"><%= day[:wind_gusts] ? "gusts #{day[:wind_gusts]}" : "mph" %></p>
+                  <% end %>
+                </div>
+                <div class="w-16 text-center">
+                  <p class="text-lg font-semibold text-rose-dark"><%= day[:high] %>&deg;</p>
+                  <% if day[:feels_like_high] && day[:feels_like_high] != day[:high] %>
+                    <p class="text-xs text-taupe">Feels <%= day[:feels_like_high] %>&deg;</p>
+                  <% else %>
+                    <p class="text-sm text-brown-light">High</p>
+                  <% end %>
+                </div>
+                <div class="w-16 text-center">
+                  <p class="text-lg font-semibold text-sage-dark"><%= day[:low] %>&deg;</p>
+                  <% if day[:feels_like_low] && day[:feels_like_low] != day[:low] %>
+                    <p class="text-xs text-taupe">Feels <%= day[:feels_like_low] %>&deg;</p>
+                  <% else %>
+                    <p class="text-sm text-brown-light">Low</p>
+                  <% end %>
+                </div>
+                <div class="w-14 text-center">
+                  <span class="text-5xl"><%= weather_icon(day[:condition]) %></span>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% else %>
+      <div class="cozy-card p-6 text-center">
+        <p class="text-brown-light">No daily weather data available.</p>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="cozy-card p-6 text-center">
+      <p class="text-brown-light">Weather data is not available for this stay.</p>
+      <p class="text-sm text-taupe mt-2">Make sure the stay has valid coordinates and dates.</p>
+    </div>
+  <% end %>
+</div>
