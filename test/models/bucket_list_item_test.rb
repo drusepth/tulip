@@ -14,10 +14,17 @@ class BucketListItemTest < ActiveSupport::TestCase
     assert @bucket_list_item.valid?
   end
 
-  test "requires title" do
+  test "requires title or address" do
     @bucket_list_item.title = nil
+    @bucket_list_item.address = nil
     assert_not @bucket_list_item.valid?
-    assert_includes @bucket_list_item.errors[:title], "can't be blank"
+    assert_includes @bucket_list_item.errors[:base], "Title or address must be provided"
+  end
+
+  test "valid with only address" do
+    item = BucketListItem.new(stay: @stay, address: "123 Main St", category: "other")
+    assert item.valid?
+    assert_equal "123 Main St", item.title  # title is set from address
   end
 
   test "requires valid category" do

@@ -27,7 +27,7 @@ class WeatherServiceTest < ActiveSupport::TestCase
     assert_equal 30, result[:low]
     assert_equal 50, result[:high]
     assert_equal 40, result[:average]
-    assert_includes result[:conditions].keys, "Clear"
+    assert_includes result[:conditions].keys, "Sunny"
     assert_includes result[:conditions].keys, "Rainy"
   end
 
@@ -85,7 +85,7 @@ class WeatherServiceTest < ActiveSupport::TestCase
       "daily" => {
         "temperature_2m_max" => [50, 55, 60],
         "temperature_2m_min" => [30, 35, 40],
-        "weather_code" => [0, 61, 95]  # Clear, Rainy, Stormy
+        "weather_code" => [0, 61, 95]  # Sunny, Rainy, Stormy
       }
     }
 
@@ -99,7 +99,7 @@ class WeatherServiceTest < ActiveSupport::TestCase
       end_date: @end_date
     )
 
-    assert_equal({ "Clear" => 1, "Rainy" => 1, "Stormy" => 1 }, result[:conditions])
+    assert_equal({ "Sunny" => 1, "Rainy" => 1, "Stormy" => 1 }, result[:conditions])
   end
 
   private
