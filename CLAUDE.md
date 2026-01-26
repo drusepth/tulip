@@ -45,12 +45,24 @@ bin/rails tailwindcss:watch
 
 **TransitRoute** - cached transit lines near stays with serialized geometry for map rendering
 
+**BucketListItem** - user-created tasks/activities associated with a stay (e.g., restaurants to try, attractions to visit)
+
 ### Key Services
 
 **OverpassService** (`app/services/overpass_service.rb`) - fetches POI and transit data from OpenStreetMap's Overpass API:
 - `fetch_pois(lat:, lng:, category:, radius:)` - returns nearby amenities
 - `fetch_transit_routes(lat:, lng:, route_type:, radius:)` - returns transit lines with stitched geometry
 - Handles complex way-stitching for rendering continuous transit route polylines
+
+**WeatherService** (`app/services/weather_service.rb`) - fetches historical weather data from Open-Meteo Archive API:
+- `fetch_historical_weather(lat:, lng:, start_date:, end_date:)` - returns temperature ranges and conditions
+- Looks back up to 5 years to find historical data for future trip dates
+- Weather data is cached on Stay model (`weather_data`, `weather_fetched_at`)
+
+**FoursquareService** (`app/services/foursquare_service.rb`) - enriches POIs with Foursquare data:
+- `enrich_poi(poi)` - adds ratings, prices, photos, and tips to a POI
+- Uses Levenshtein distance for fuzzy name matching
+- Requires `foursquare_service_token` in Rails credentials
 
 ### Frontend Architecture
 
@@ -78,4 +90,13 @@ GET /api/stays                     - All stays as JSON for map
 GET /api/stays/:id/pois            - Fetch/cache POIs for a stay
 GET /api/stays/:id/transit_routes  - Fetch/cache transit routes for a stay
 GET /api/pois/search               - Search POIs by viewport center
+GET /stays/:id/weather             - Fetch/cache weather forecast for a stay
 ```
+
+### External APIs
+
+The app integrates with several external APIs (use webmock for stubbing in tests):
+- **Open-Meteo Archive API** - historical weather data (no API key required)
+- **Overpass API** - OpenStreetMap POI and transit data (no API key required)
+- **Foursquare Places API** - POI enrichment (requires `foursquare_service_token` in credentials)
+- **Geocoder** - address to lat/lng conversion (uses default provider)
