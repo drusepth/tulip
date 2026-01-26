@@ -432,14 +432,24 @@ input[type="checkbox"]:focus {
   transform: translateY(-4px);
 }
 
+/* Hero card text styling for readability */
+.hero-card h2,
+.hero-card h3,
+.hero-card p,
+.hero-card span {
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
 .hero-card-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     to top,
-    rgba(93, 78, 78, 0.7) 0%,
-    rgba(93, 78, 78, 0.3) 40%,
-    rgba(253, 248, 243, 0.1) 100%
+    rgba(45, 35, 35, 0.85) 0%,
+    rgba(45, 35, 35, 0.6) 35%,
+    rgba(45, 35, 35, 0.3) 60%,
+    rgba(45, 35, 35, 0.1) 100%
   );
 }
 
