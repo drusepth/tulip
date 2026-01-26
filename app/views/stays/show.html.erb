@@ -124,6 +124,9 @@
         </div>
       <% end %>
 
+      <!-- Bucket List -->
+      <%= render "bucket_list_items/section", stay: @stay %>
+
       <!-- POIs -->
       <% if @pois_by_category.any? %>
         <div class="cozy-card p-6">
@@ -151,20 +154,6 @@
 
     <!-- Sidebar -->
     <div class="space-y-6">
-      <!-- Price -->
-      <% if @stay.price_total_cents.present? %>
-        <div class="cozy-card p-6">
-          <h2 class="text-lg font-semibold text-brown mb-2">Price</h2>
-          <p class="text-2xl font-bold text-brown"><%= @stay.price_formatted %></p>
-          <p class="text-sm text-brown-light">Total for <%= @stay.duration_days %> nights</p>
-          <% if @stay.duration_days > 0 %>
-            <p class="text-sm text-brown-light">
-              (~<%= @stay.currency %> <%= (@stay.price_total_cents / @stay.duration_days / 100.0).round(2) %>/night)
-            </p>
-          <% end %>
-        </div>
-      <% end %>
-
       <!-- Booking Status -->
       <% if @stay.booked? %>
         <% if @stay.booking_url.present? %>
@@ -198,6 +187,61 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
             </svg>
             Book This Stay
+          <% end %>
+        </div>
+      <% end %>
+
+      <!-- Expected Weather -->
+      <% if @weather.present? %>
+        <div class="cozy-card p-6">
+          <h2 class="text-lg font-semibold text-brown mb-4">Expected Weather</h2>
+
+          <!-- Temperature Summary -->
+          <div class="grid grid-cols-3 gap-4 mb-4">
+            <div class="text-center">
+              <p class="text-sm text-brown-light">Low</p>
+              <p class="text-2xl font-bold text-sage-dark"><%= @weather[:low] %>°</p>
+            </div>
+            <div class="text-center">
+              <p class="text-sm text-brown-light">Average</p>
+              <p class="text-2xl font-bold text-brown"><%= @weather[:average] %>°</p>
+            </div>
+            <div class="text-center">
+              <p class="text-sm text-brown-light">High</p>
+              <p class="text-2xl font-bold text-rose-dark"><%= @weather[:high] %>°</p>
+            </div>
+          </div>
+
+          <!-- Weather Conditions -->
+          <div class="pt-4 border-t border-taupe-light">
+            <p class="text-sm text-brown-light mb-3">Conditions to expect</p>
+            <ul class="space-y-2">
+              <% @weather[:conditions].each do |condition, count| %>
+                <li class="flex items-center justify-between py-2 border-b border-taupe-light last:border-0">
+                  <div class="flex items-center gap-3">
+                    <span class="text-2xl"><%= weather_icon(condition) %></span>
+                    <span class="text-brown font-medium"><%= condition %></span>
+                  </div>
+                  <span class="text-brown-light">×<%= count %></span>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+
+          <p class="mt-4 text-xs text-taupe">Based on historical weather data</p>
+        </div>
+      <% end %>
+
+      <!-- Price -->
+      <% if @stay.price_total_cents.present? %>
+        <div class="cozy-card p-6">
+          <h2 class="text-lg font-semibold text-brown mb-2">Price</h2>
+          <p class="text-2xl font-bold text-brown"><%= @stay.price_formatted %></p>
+          <p class="text-sm text-brown-light">Total for <%= @stay.duration_days %> nights</p>
+          <% if @stay.duration_days > 0 %>
+            <p class="text-sm text-brown-light">
+              (~<%= @stay.currency %> <%= (@stay.price_total_cents / @stay.duration_days / 100.0).round(2) %>/night)
+            </p>
           <% end %>
         </div>
       <% end %>
