@@ -18,14 +18,9 @@
 
     <!-- Content -->
     <div class="flex-1 min-w-0">
-      <div class="flex items-center gap-2">
-        <span class="<%= bucket_list_item.completed? ? 'line-through text-brown-light' : 'text-brown' %>">
-          <%= bucket_list_item.title %>
-        </span>
-        <span class="badge badge-<%= bucket_list_item.category %> text-xs">
-          <%= bucket_list_item.category.titleize %>
-        </span>
-      </div>
+      <span class="<%= bucket_list_item.completed? ? 'line-through text-brown-light' : 'text-brown' %>">
+        <%= bucket_list_item.title %>
+      </span>
       <% if bucket_list_item.address.present? %>
         <p class="text-sm text-brown-light mt-0.5 flex items-center gap-1">
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

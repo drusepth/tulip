@@ -1,45 +1,40 @@
 <%= turbo_frame_tag dom_id(bucket_list_item) do %>
-  <div class="bucket-list-item py-2 px-3 rounded-xl bg-sage-light">
+  <div class="bucket-list-item my-2 p-4 rounded-2xl bg-rose-light border border-taupe-light shadow-sm">
     <%= form_with model: [bucket_list_item.stay, bucket_list_item],
-                  class: "space-y-3" do |f| %>
-      <div class="flex gap-2">
+                  class: "space-y-4" do |f| %>
+      <!-- Title field -->
+      <div>
+        <label class="text-xs text-brown-light mb-1 block">What do you want to do here?</label>
         <%= f.text_field :title,
-                         placeholder: "What do you want to do?",
-                         class: "cozy-input flex-1",
-                         required: true,
+                         placeholder: "e.g. Try the famous ramen",
+                         class: "w-full px-3 py-2 border border-taupe-light rounded-lg bg-cream text-brown text-sm placeholder-brown-lighter focus:outline-none focus:border-sage",
                          autofocus: true %>
-
-        <%= f.select :category,
-                     BucketListItem::CATEGORIES.map { |c| [c.titleize, c] },
-                     {},
-                     class: "cozy-select w-32" %>
       </div>
 
-      <div>
-        <label class="cozy-label" for="bucket_list_item_address">
-          Address (optional)
-        </label>
-        <%= f.text_field :address,
-                         placeholder: "e.g. 123 Main St, San Francisco",
-                         class: "cozy-input" %>
+      <!-- Optional fields -->
+      <div class="space-y-3 pt-2">
+        <div>
+          <label class="text-xs text-brown-light mb-1 block">Location</label>
+          <%= f.text_field :address,
+                           placeholder: "e.g. 123 Main St, San Francisco",
+                           class: "w-full px-3 py-2 border border-taupe-light rounded-lg bg-cream text-brown text-sm placeholder-brown-lighter focus:outline-none focus:border-sage" %>
+        </div>
+
+        <div>
+          <label class="text-xs text-brown-light mb-1 block">Notes</label>
+          <%= f.text_area :notes,
+                          placeholder: "Any details to remember...",
+                          rows: 2,
+                          class: "w-full px-3 py-2 border border-taupe-light rounded-lg bg-cream text-brown text-sm placeholder-brown-lighter focus:outline-none focus:border-sage resize-none" %>
+        </div>
       </div>
 
-      <div>
-        <label class="cozy-label" for="bucket_list_item_notes">
-          Notes (optional)
-        </label>
-        <%= f.text_area :notes,
-                        placeholder: "Any additional details...",
-                        rows: 2,
-                        class: "cozy-textarea" %>
-      </div>
-
-      <div class="flex gap-2 justify-end">
+      <div class="flex gap-2 justify-end pt-1">
         <%= link_to "Cancel",
                     stay_path(bucket_list_item.stay),
-                    class: "btn-outline text-sm py-1.5 px-3",
+                    class: "text-sm text-brown-light hover:text-brown px-3 py-1.5 transition-colors",
                     data: { turbo_stream: true } %>
-        <%= f.submit "Save", class: "btn-primary text-sm py-1.5 px-3" %>
+        <%= f.submit "Save", class: "btn-primary text-sm py-1.5 px-4" %>
       </div>
     <% end %>
   </div>

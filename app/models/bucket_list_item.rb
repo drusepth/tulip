@@ -3,7 +3,9 @@ class BucketListItem < ApplicationRecord
 
   belongs_to :stay
 
-  validates :title, presence: true
+  before_validation :set_title_from_address
+
+  validate :title_or_address_present
   validates :category, inclusion: { in: CATEGORIES }
 
   scope :pending, -> { where(completed: false) }
@@ -32,6 +34,18 @@ class BucketListItem < ApplicationRecord
   end
 
   private
+
+  def set_title_from_address
+    if title.blank? && address.present?
+      self.title = address
+    end
+  end
+
+  def title_or_address_present
+    if title.blank? && address.blank?
+      errors.add(:base, "Title or address must be provided")
+    end
+  end
 
   def should_geocode?
     address.present? && address_changed? && (latitude.blank? || longitude.blank?)
