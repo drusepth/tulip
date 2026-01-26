@@ -60,6 +60,8 @@ class StaysController < ApplicationController
         check_out: stay.check_out,
         city: stay.city,
         country: stay.country,
+        image_url: stay.image_url,
+        duration_days: stay.duration_days,
         url: stay_path(stay)
       }
     }

@@ -607,6 +607,119 @@ input[type="checkbox"]:focus {
 }
 
 /* ========================================
+   Map Popup Styling (Cottagecore)
+   ======================================== */
+
+.cozy-popup .leaflet-popup-content-wrapper {
+  background-color: var(--color-cream);
+  border-radius: 1rem;
+  box-shadow: 0 8px 30px rgba(93, 78, 78, 0.2);
+  padding: 0;
+  overflow: hidden;
+}
+
+.cozy-popup .leaflet-popup-content {
+  margin: 0;
+  font-family: inherit;
+  width: 100% !important;
+}
+
+.cozy-popup .leaflet-popup-tip {
+  background-color: var(--color-cream);
+}
+
+.cozy-popup .leaflet-popup-close-button {
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
+  z-index: 10;
+  text-shadow: none;
+  line-height: 1;
+}
+
+.cozy-popup .leaflet-popup-close-button:hover {
+  color: white;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Popup content structure */
+.popup-content {
+  width: 260px;
+}
+
+.popup-image {
+  width: 100%;
+  height: 120px;
+  overflow: hidden;
+}
+
+.popup-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.popup-body {
+  padding: 12px 16px 16px;
+}
+
+.popup-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.popup-nights {
+  font-size: 12px;
+  color: var(--color-brown-light);
+}
+
+.popup-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-brown);
+  margin: 0 0 4px;
+  line-height: 1.3;
+}
+
+.popup-location {
+  font-size: 14px;
+  color: var(--color-brown-light);
+  margin: 0;
+}
+
+.popup-dates {
+  font-size: 13px;
+  color: var(--color-taupe);
+  margin: 6px 0 0;
+}
+
+.popup-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-rose-dark);
+  text-decoration: none;
+}
+
+.popup-link:hover {
+  color: var(--color-rose);
+}
+
+/* ========================================
    Responsive Adjustments
    ======================================== */
 

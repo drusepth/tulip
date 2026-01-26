@@ -120,8 +120,8 @@ export default class extends Controller {
           : `<span class="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-800">Planned</span>`
 
         const imageHtml = stay.image_url
-          ? `<div class="w-full h-24 -mx-3 -mt-3 mb-3 overflow-hidden rounded-t-xl">
-               <img src="${stay.image_url}" alt="${stay.title}" class="w-full h-full object-cover"/>
+          ? `<div class="popup-image">
+               <img src="${stay.image_url}" alt="${stay.title}"/>
              </div>`
           : ''
 
@@ -129,27 +129,25 @@ export default class extends Controller {
         const checkOut = new Date(stay.check_out).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 
         marker.bindPopup(`
-          <div class="min-w-48">
+          <div class="popup-content">
             ${imageHtml}
-            <div class="px-3 pb-3 ${stay.image_url ? '' : 'pt-3'}">
-              <div class="flex items-center gap-2 mb-2">
+            <div class="popup-body">
+              <div class="popup-badges">
                 ${statusBadge}
-                <span class="text-xs text-gray-500">${stay.duration_days} nights</span>
+                <span class="popup-nights">${stay.duration_days} nights</span>
               </div>
-              <h3 class="font-semibold text-lg text-gray-800">${stay.title}</h3>
-              <p class="text-sm text-gray-500">${[stay.city, stay.country].filter(Boolean).join(', ')}</p>
-              <p class="text-sm text-gray-400 mt-1">
-                ${checkIn} - ${checkOut}
-              </p>
-              <a href="${stay.url}" class="inline-flex items-center gap-1 mt-3 text-sm font-medium text-rose-600 hover:text-rose-700">
+              <h3 class="popup-title">${stay.title}</h3>
+              <p class="popup-location">${[stay.city, stay.country].filter(Boolean).join(', ')}</p>
+              <p class="popup-dates">${checkIn} - ${checkOut}</p>
+              <a href="${stay.url}" class="popup-link">
                 View Details
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
               </a>
             </div>
           </div>
-        `, { className: 'cozy-popup', maxWidth: 280 })
+        `, { className: 'cozy-popup', maxWidth: 260 })
 
         marker.addTo(this.map)
         this.stayMarkers.push({ marker, stay })
