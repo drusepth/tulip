@@ -38,8 +38,32 @@
   </head>
 
   <body class="bg-cream min-h-screen">
+    <% if notice.present? %>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        <div class="alert-success p-4 flex items-center gap-3">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <p class="text-sm"><%= notice %></p>
+        </div>
+      </div>
+    <% end %>
+
+    <% if alert.present? %>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        <div class="alert-error p-4 flex items-center gap-3">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          <p class="text-sm"><%= alert %></p>
+        </div>
+      </div>
+    <% end %>
+
+    <%= yield %>
+
     <% if user_signed_in? %>
-      <nav class="bg-white/80 backdrop-blur-sm border-b border-taupe-light sticky top-0 z-50">
+      <nav class="bg-white/80 backdrop-blur-sm border-t border-taupe-light sticky bottom-0 z-50">
         <div class="px-4 sm:px-6">
           <div class="flex justify-between items-center h-14">
             <div class="flex items-center gap-6">
@@ -70,30 +94,6 @@
         </div>
       </nav>
     <% end %>
-
-    <% if notice.present? %>
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-        <div class="alert-success p-4 flex items-center gap-3">
-          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
-          <p class="text-sm"><%= notice %></p>
-        </div>
-      </div>
-    <% end %>
-
-    <% if alert.present? %>
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-        <div class="alert-error p-4 flex items-center gap-3">
-          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-          </svg>
-          <p class="text-sm"><%= alert %></p>
-        </div>
-      </div>
-    <% end %>
-
-    <%= yield %>
 
     <!-- Shared tooltip element for site-wide tooltips -->
     <div id="tooltip" class="cozy-tooltip hidden fixed text-sm px-4 py-3 rounded-2xl z-50 pointer-events-none"></div>
