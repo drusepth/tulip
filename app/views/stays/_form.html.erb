@@ -1,4 +1,4 @@
-<%= form_with(model: stay, class: "space-y-6", data: { controller: "booking-fields" }) do |form| %>
+<%= form_with(model: stay, class: "space-y-5", data: { controller: "booking-fields" }) do |form| %>
   <% if stay.errors.any? %>
     <div class="alert-error p-4">
       <h3 class="text-rose-dark font-medium"><%= pluralize(stay.errors.count, "error") %> prohibited this stay from being saved:</h3>
@@ -22,57 +22,70 @@
     </div>
   <% end %>
 
-  <!-- Booked Status -->
-  <div class="bg-taupe-light rounded-2xl p-4 border border-taupe">
-    <div class="flex items-center gap-3">
-      <%= form.check_box :booked, class: "h-5 w-5 rounded border-taupe text-sage focus:ring-sage", data: { booking_fields_target: "checkbox", action: "change->booking-fields#toggle" } %>
-      <%= form.label :booked, "I've booked accommodation for this stay", class: "text-sm font-medium text-brown" %>
-    </div>
-    <p class="mt-1 ml-8 text-sm text-brown-light">Uncheck to plan a stay without booking details</p>
+  <!-- Title Field -->
+  <div>
+    <%= form.label :title, class: "cozy-label" %>
+    <%= form.text_field :title, class: "cozy-input", placeholder: "Cozy apartment in Barcelona" %>
+    <p class="mt-1 text-sm text-brown-light">Use property name if booked, or destination name (e.g., "Austin, TX") if planning</p>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <!-- Always-visible fields -->
-    <div class="md:col-span-2">
-      <%= form.label :title, class: "block text-sm font-medium text-brown" %>
-      <%= form.text_field :title, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm", placeholder: "Cozy apartment in Barcelona" %>
-      <p class="mt-1 text-sm text-brown-light">Use property name if booked, or destination name (e.g., "Austin, TX") if planning</p>
-    </div>
+  <!-- Location Fields Group -->
+  <div class="cozy-field-group">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <%= form.label :city, class: "cozy-label" %>
+        <%= form.text_field :city, class: "cozy-input", placeholder: "Barcelona", required: true %>
+      </div>
 
-    <div>
-      <%= form.label :city, class: "block text-sm font-medium text-brown" %>
-      <%= form.text_field :city, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm", placeholder: "Barcelona", required: true %>
-    </div>
+      <div>
+        <%= form.label :state, "State/Province", class: "cozy-label" %>
+        <%= form.text_field :state, class: "cozy-input", placeholder: "California" %>
+      </div>
 
-    <div>
-      <%= form.label :state, "State/Province", class: "block text-sm font-medium text-brown" %>
-      <%= form.text_field :state, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm", placeholder: "California" %>
+      <div>
+        <%= form.label :country, class: "cozy-label" %>
+        <%= form.text_field :country, class: "cozy-input", placeholder: "Spain" %>
+      </div>
     </div>
+  </div>
 
-    <div>
-      <%= form.label :country, class: "block text-sm font-medium text-brown" %>
-      <%= form.text_field :country, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm", placeholder: "Spain" %>
-    </div>
+  <!-- Date Fields Group -->
+  <div class="cozy-field-group">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <%= form.label :check_in, "Check-in Date", class: "cozy-label" %>
+        <%= form.date_field :check_in, class: "cozy-input" %>
+      </div>
 
-    <div>
-      <%= form.label :check_in, "Check-in Date", class: "block text-sm font-medium text-brown" %>
-      <%= form.date_field :check_in, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm" %>
+      <div>
+        <%= form.label :check_out, "Check-out Date", class: "cozy-label" %>
+        <%= form.date_field :check_out, class: "cozy-input" %>
+      </div>
     </div>
+  </div>
 
-    <div>
-      <%= form.label :check_out, "Check-out Date", class: "block text-sm font-medium text-brown" %>
-      <%= form.date_field :check_out, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm" %>
-    </div>
+  <!-- Image URL -->
+  <div>
+    <%= form.label :image_url, "Image URL", class: "cozy-label" %>
+    <%= form.url_field :image_url, class: "cozy-input", placeholder: "https://..." %>
+  </div>
 
-    <div class="md:col-span-2">
-      <%= form.label :image_url, "Image URL", class: "block text-sm font-medium text-brown" %>
-      <%= form.url_field :image_url, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm", placeholder: "https://..." %>
-    </div>
+  <!-- Notes -->
+  <div>
+    <%= form.label :notes, class: "cozy-label" %>
+    <%= form.text_area :notes, rows: 3, class: "cozy-textarea", placeholder: "Any notes about this stay..." %>
+  </div>
 
-    <div class="md:col-span-2">
-      <%= form.label :notes, class: "block text-sm font-medium text-brown" %>
-      <%= form.text_area :notes, rows: 4, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm", placeholder: "Any notes about this stay..." %>
+  <!-- Booked Status Toggle -->
+  <div class="cozy-toggle-box">
+    <div class="flex items-center gap-3">
+      <svg class="w-5 h-5 text-sage-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <%= form.check_box :booked, class: "h-5 w-5 rounded border-sage text-sage focus:ring-sage", data: { booking_fields_target: "checkbox", action: "change->booking-fields#toggle" } %>
+      <%= form.label :booked, "I've booked accommodation for this stay", class: "text-sm font-medium text-brown" %>
     </div>
+    <p class="mt-1 ml-8 text-sm text-brown-light">Check to add booking details</p>
   </div>
 
   <!-- Booking-specific fields (shown when booked is checked) -->
@@ -80,32 +93,36 @@
     <div class="botanical-divider">
       <span>Booking Details</span>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <%= form.label :stay_type, "Stay Type", class: "block text-sm font-medium text-brown" %>
-        <%= form.select :stay_type, Stay::STAY_TYPES.map { |t| [t.titleize, t] }, { include_blank: "Select type..." }, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm" %>
+
+    <div class="cozy-field-group space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <%= form.label :stay_type, "Stay Type", class: "cozy-label" %>
+          <%= form.select :stay_type, Stay::STAY_TYPES.map { |t| [t.titleize, t] }, { include_blank: "Select type..." }, class: "cozy-select" %>
+        </div>
+
+        <div>
+          <%= form.label :booking_url, "Booking URL", class: "cozy-label" %>
+          <%= form.url_field :booking_url, class: "cozy-input", placeholder: "https://airbnb.com/..." %>
+        </div>
       </div>
 
       <div>
-        <%= form.label :booking_url, "Booking URL", class: "block text-sm font-medium text-brown" %>
-        <%= form.url_field :booking_url, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm", placeholder: "https://airbnb.com/..." %>
-      </div>
-
-      <div class="md:col-span-2">
-        <%= form.label :address, class: "block text-sm font-medium text-brown" %>
-        <%= form.text_field :address, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm", placeholder: "123 Main Street" %>
+        <%= form.label :address, class: "cozy-label" %>
+        <%= form.text_field :address, class: "cozy-input", placeholder: "123 Main Street" %>
         <p class="mt-1 text-sm text-brown-light">Address will be geocoded automatically</p>
       </div>
 
-      <div>
-        <%= form.label :price_total_cents, "Total Price (cents)", class: "block text-sm font-medium text-brown" %>
-        <%= form.number_field :price_total_cents, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm", placeholder: "50000" %>
-        <p class="mt-1 text-sm text-brown-light">Enter amount in cents (e.g., 50000 = $500.00)</p>
-      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <%= form.label :price_total_dollars, "Total Price", class: "cozy-label" %>
+          <%= form.number_field :price_total_dollars, class: "cozy-input", placeholder: "500", step: "1", min: "0" %>
+        </div>
 
-      <div>
-        <%= form.label :currency, class: "block text-sm font-medium text-brown" %>
-        <%= form.select :currency, Stay::CURRENCIES, {}, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm" %>
+        <div>
+          <%= form.label :currency, class: "cozy-label" %>
+          <%= form.select :currency, Stay::CURRENCIES, {}, class: "cozy-select" %>
+        </div>
       </div>
     </div>
   </div>

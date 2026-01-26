@@ -737,6 +737,119 @@ input[type="checkbox"]:focus {
 }
 
 /* ========================================
+   Cozy Form Inputs
+   ======================================== */
+
+/* Cozy input base */
+.cozy-input {
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--color-taupe);
+  background-color: white;
+  transition: all 0.2s ease;
+  font-size: 0.9375rem;
+  width: 100%;
+}
+
+.cozy-input:focus {
+  border-color: var(--color-sage);
+  box-shadow: 0 0 0 3px rgba(184, 201, 184, 0.2);
+  outline: none;
+}
+
+.cozy-input::placeholder {
+  color: var(--color-brown-lighter);
+}
+
+/* Cozy textarea with extra padding for rounded corners */
+.cozy-textarea {
+  padding: 1rem 1.25rem;
+  border-radius: 1.25rem;
+  border: 1px solid var(--color-taupe);
+  background-color: white;
+  transition: all 0.2s ease;
+  font-size: 0.9375rem;
+  width: 100%;
+  min-height: 80px;
+  resize: vertical;
+}
+
+.cozy-textarea:focus {
+  border-color: var(--color-sage);
+  box-shadow: 0 0 0 3px rgba(184, 201, 184, 0.2);
+  outline: none;
+}
+
+.cozy-textarea::placeholder {
+  color: var(--color-brown-lighter);
+}
+
+/* Cozy select dropdown */
+.cozy-select {
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--color-taupe);
+  background-color: white;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%235D4E4E'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25rem;
+  appearance: none;
+  transition: all 0.2s ease;
+  font-size: 0.9375rem;
+  width: 100%;
+  cursor: pointer;
+}
+
+.cozy-select:focus {
+  border-color: var(--color-sage);
+  box-shadow: 0 0 0 3px rgba(184, 201, 184, 0.2);
+  outline: none;
+}
+
+/* Cozy form label with decorative dot */
+.cozy-label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-brown);
+  margin-bottom: 0.5rem;
+}
+
+.cozy-label::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-sage);
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+/* Field group with subtle background */
+.cozy-field-group {
+  background-color: rgba(253, 248, 243, 0.5);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid var(--color-taupe-light);
+}
+
+/* Cozy booked toggle */
+.cozy-toggle-box {
+  background: linear-gradient(135deg, var(--color-sage-light) 0%, rgba(212, 228, 212, 0.6) 100%);
+  border-radius: 1.25rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--color-sage);
+  transition: all 0.2s ease;
+}
+
+.cozy-toggle-box:has(input:checked) {
+  background: linear-gradient(135deg, var(--color-sage-light) 0%, rgba(184, 201, 184, 0.4) 100%);
+  box-shadow: 0 2px 8px rgba(184, 201, 184, 0.3);
+}
+
+/* ========================================
    Responsive Adjustments
    ======================================== */
 
