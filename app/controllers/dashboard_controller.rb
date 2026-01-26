@@ -6,7 +6,7 @@ class DashboardController < ApplicationController
     update_statuses!(user_stays)
 
     # Alerts (only shown when action needed)
-    @gaps = find_gaps(user_stays)
+    @gaps = user_stays.find_gaps
     @booking_alert = booking_alert(user_stays)
 
     # Hero section: Current & Next
@@ -34,21 +34,6 @@ class DashboardController < ApplicationController
   def current_stay(stays)
     today = Date.current
     stays.find_by('check_in <= ? AND check_out >= ?', today, today)
-  end
-
-  def find_gaps(stays)
-    gaps = []
-    ordered_stays = stays.chronological.to_a
-    ordered_stays.each_cons(2) do |stay1, stay2|
-      if stay2.check_in > stay1.check_out
-        gaps << {
-          start_date: stay1.check_out,
-          end_date: stay2.check_in,
-          days: (stay2.check_in - stay1.check_out).to_i
-        }
-      end
-    end
-    gaps
   end
 
   def booking_alert(stays)

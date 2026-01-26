@@ -87,17 +87,27 @@ class Stay < ApplicationRecord
     where('check_in > ?', today).update_all(status: 'upcoming')
   end
 
+  # Find gaps between stays. Works on any relation (e.g., current_user.stays.find_gaps)
   def self.find_gaps
     gaps = []
-    stays = chronological.to_a
-    stays.each_cons(2) do |stay1, stay2|
-      if stay2.check_in > stay1.check_out
+    ordered_stays = chronological.to_a
+    return gaps if ordered_stays.empty?
+
+    # Track the furthest coverage date to handle overlapping stays
+    max_check_out = ordered_stays.first.check_out
+
+    ordered_stays[1..].each do |stay|
+      if stay.check_in > max_check_out
+        # There's a gap between coverage and this stay's check_in
         gaps << {
-          start_date: stay1.check_out,
-          end_date: stay2.check_in,
-          days: (stay2.check_in - stay1.check_out).to_i
+          type: :gap,
+          start_date: max_check_out,
+          end_date: stay.check_in,
+          days: (stay.check_in - max_check_out).to_i
         }
       end
+      # Extend coverage if this stay ends later
+      max_check_out = [max_check_out, stay.check_out].max
     end
     gaps
   end

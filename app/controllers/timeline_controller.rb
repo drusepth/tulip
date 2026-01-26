@@ -1,7 +1,7 @@
 class TimelineController < ApplicationController
   def index
     @stays = current_user.stays.chronological
-    @gaps = find_gaps(@stays)
+    @gaps = @stays.find_gaps
     @today = Date.current
 
     # Calculate default date range based on stays
@@ -35,39 +35,39 @@ class TimelineController < ApplicationController
 
   private
 
-  def find_gaps(stays)
-    gaps = []
-    ordered_stays = stays.to_a
-    ordered_stays.each_cons(2) do |stay1, stay2|
-      if stay2.check_in > stay1.check_out
-        gaps << {
-          type: :gap,
-          start_date: stay1.check_out,
-          end_date: stay2.check_in,
-          days: (stay2.check_in - stay1.check_out).to_i
-        }
-      end
-    end
-    gaps
-  end
-
   def build_timeline_items(stays, gaps)
     items = []
+    rows = []  # Array of arrays, each containing end_dates for that row
 
-    # Add stays as timeline items
+    # Add stays as timeline items with row assignment
     stays.each do |stay|
+      # Find first row where this stay fits (no overlap)
+      row_index = rows.find_index { |row| row.all? { |end_date| stay.check_in >= end_date } }
+
+      if row_index.nil?
+        # Need a new row
+        row_index = rows.length
+        rows << []
+      end
+
+      rows[row_index] << stay.check_out
+
       items << {
         type: :stay,
         object: stay,
         start_date: stay.check_in,
-        end_date: stay.check_out
+        end_date: stay.check_out,
+        row: row_index
       }
     end
 
-    # Add gaps as timeline items
+    # Gaps only appear on row 0 (between non-overlapping stays)
     gaps.each do |gap|
-      items << gap
+      items << gap.merge(row: 0)
     end
+
+    # Store total row count for view
+    @row_count = [ rows.length, 1 ].max
 
     # Sort by start date
     items.sort_by { |item| item[:start_date] }
