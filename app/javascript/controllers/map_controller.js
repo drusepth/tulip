@@ -137,7 +137,6 @@ export default class extends Controller {
                 <span class="popup-nights">${stay.duration_days} nights</span>
               </div>
               <h3 class="popup-title">${stay.title}</h3>
-              <p class="popup-location">${[stay.city, stay.country].filter(Boolean).join(', ')}</p>
               <p class="popup-dates">${checkIn} - ${checkOut}</p>
               <a href="${stay.url}" class="popup-link">
                 View Details
@@ -534,13 +533,19 @@ export default class extends Controller {
         routes.forEach(route => {
           if (route.geometry && route.geometry.length > 0) {
             const style = this.getTransitStyle(routeType, route.color)
-            const polyline = L.polyline(route.geometry, style)
-            polyline.bindPopup(`
-              <div class="p-1">
-                <strong>${route.name || routeType.charAt(0).toUpperCase() + routeType.slice(1)} Line</strong>
-              </div>
-            `)
-            layerGroup.addLayer(polyline)
+
+            // geometry is now array of paths - render each as separate polyline
+            route.geometry.forEach(path => {
+              if (path && path.length >= 2) {
+                const polyline = L.polyline(path, style)
+                polyline.bindPopup(`
+                  <div class="p-1">
+                    <strong>${route.name || routeType.charAt(0).toUpperCase() + routeType.slice(1)} Line</strong>
+                  </div>
+                `)
+                layerGroup.addLayer(polyline)
+              }
+            })
           }
         })
       })

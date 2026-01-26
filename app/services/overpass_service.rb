@@ -150,6 +150,7 @@ class OverpassService
       ways = {}
       relations = []
 
+      # Phase 1: Index all nodes and ways
       response['elements'].each do |element|
         case element['type']
         when 'node'
@@ -161,28 +162,126 @@ class OverpassService
         end
       end
 
+      # Phase 2: Process each relation
       relations.map do |relation|
-        members = relation['members'] || []
-        geometry = []
+        build_route_geometry(relation, ways, nodes)
+      end.compact
+    end
 
-        members.each do |member|
-          if member['type'] == 'way' && ways[member['ref']]
-            way_geometry = ways[member['ref']].map { |node_id| nodes[node_id] }.compact
-            geometry.concat(way_geometry)
-          elsif member['type'] == 'node' && nodes[member['ref']]
-            geometry << nodes[member['ref']]
-          end
-        end
+    def build_route_geometry(relation, ways, nodes)
+      members = relation['members'] || []
 
-        next if geometry.empty?
+      # Extract way members with their geometries
+      way_segments = extract_way_segments(members, ways, nodes)
+      return nil if way_segments.empty?
+
+      # Stitch ways into continuous paths
+      stitched_paths = stitch_ways(way_segments)
+      return nil if stitched_paths.empty?
+
+      {
+        name: relation.dig('tags', 'name') || relation.dig('tags', 'ref'),
+        osm_id: "relation/#{relation['id']}",
+        color: relation.dig('tags', 'colour') || relation.dig('tags', 'color'),
+        geometry: stitched_paths  # Now an array of paths (each path is array of [lat, lng])
+      }
+    end
+
+    def extract_way_segments(members, ways, nodes)
+      members.filter_map do |member|
+        next unless member['type'] == 'way' && ways[member['ref']]
+
+        node_ids = ways[member['ref']]
+        # Filter out nil coords and coords with nil lat/lon
+        coords = node_ids.map { |id| nodes[id] }.compact.select { |c| c[0] && c[1] }
+        next if coords.length < 2
 
         {
-          name: relation.dig('tags', 'name') || relation.dig('tags', 'ref'),
-          osm_id: "relation/#{relation['id']}",
-          color: relation.dig('tags', 'colour') || relation.dig('tags', 'color'),
-          geometry: geometry
+          id: member['ref'],
+          coords: coords,
+          start_coord: coords.first,
+          end_coord: coords.last
         }
-      end.compact
+      end
+    end
+
+    def stitch_ways(way_segments)
+      return [] if way_segments.empty?
+
+      # Build endpoint index: coord_key -> [segments that start/end here]
+      endpoint_index = build_endpoint_index(way_segments)
+
+      # Track which segments we've used
+      used = Set.new
+      paths = []
+
+      # Process each unused segment as a potential path start
+      way_segments.each do |segment|
+        next if used.include?(segment[:id])
+
+        path = build_path_from(segment, endpoint_index, used)
+        # Filter out any nil coordinates and ensure path has enough points
+        path = path.compact.select { |c| c.is_a?(Array) && c[0] && c[1] }
+        paths << path if path.length >= 2
+      end
+
+      paths
+    end
+
+    def build_endpoint_index(way_segments)
+      index = Hash.new { |h, k| h[k] = [] }
+
+      way_segments.each do |seg|
+        start_key = coord_key(seg[:start_coord])
+        end_key = coord_key(seg[:end_coord])
+
+        index[start_key] << { segment: seg, is_start: true }
+        index[end_key] << { segment: seg, is_start: false }
+      end
+
+      index
+    end
+
+    def build_path_from(start_segment, endpoint_index, used)
+      path = start_segment[:coords].dup
+      used.add(start_segment[:id])
+      current_end = start_segment[:end_coord]
+
+      # Keep extending the path while we find connected segments
+      loop do
+        next_segment = find_connected_segment(current_end, endpoint_index, used)
+        break unless next_segment
+
+        seg = next_segment[:segment]
+        used.add(seg[:id])
+
+        # Add coords (possibly reversed) excluding the shared point
+        if next_segment[:is_start]
+          # Segment starts at our current end - add in order, skip first point
+          path.concat(seg[:coords][1..])
+          current_end = seg[:end_coord]
+        else
+          # Segment ends at our current end - add reversed, skip first point
+          path.concat(seg[:coords][0..-2].reverse)
+          current_end = seg[:start_coord]
+        end
+      end
+
+      path
+    end
+
+    def find_connected_segment(coord, endpoint_index, used)
+      key = coord_key(coord)
+      return nil unless key
+
+      candidates = endpoint_index[key] || []
+      candidates.find { |c| !used.include?(c[:segment][:id]) }
+    end
+
+    def coord_key(coord)
+      return nil unless coord && coord[0] && coord[1]
+      # Round to ~1 meter precision to handle floating point differences
+      "#{coord[0].round(5)},#{coord[1].round(5)}"
     end
 
     def build_address(tags)
