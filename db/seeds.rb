@@ -6,7 +6,7 @@ Stay.destroy_all
 
 puts "Creating sample stays..."
 
-# Past stay - Tokyo
+# Past stay - Tokyo (booked)
 Stay.create!(
   title: "Modern Apartment in Shibuya",
   stay_type: "airbnb",
@@ -21,10 +21,11 @@ Stay.create!(
   currency: "JPY",
   notes: "Great location near Shibuya crossing. Walking distance to train station.",
   booking_url: "https://airbnb.com/rooms/example1",
-  image_url: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800"
+  image_url: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800",
+  booked: true
 )
 
-# Past stay - Barcelona
+# Past stay - Barcelona (booked)
 Stay.create!(
   title: "Cozy Studio in Gothic Quarter",
   stay_type: "airbnb",
@@ -39,10 +40,11 @@ Stay.create!(
   currency: "EUR",
   notes: "Beautiful historic neighborhood. Great tapas nearby!",
   booking_url: "https://airbnb.com/rooms/example2",
-  image_url: "https://images.unsplash.com/photo-1583422409516-2895a77efded?w=800"
+  image_url: "https://images.unsplash.com/photo-1583422409516-2895a77efded?w=800",
+  booked: true
 )
 
-# Current stay (or recent if needed for testing)
+# Current stay (booked)
 Stay.create!(
   title: "Charming Flat in Montmartre",
   stay_type: "airbnb",
@@ -57,10 +59,11 @@ Stay.create!(
   currency: "EUR",
   notes: "Stunning views of Sacre-Coeur. Lots of cafes and artists in the area.",
   booking_url: "https://airbnb.com/rooms/example3",
-  image_url: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800"
+  image_url: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800",
+  booked: true
 )
 
-# Upcoming stay - Lisbon
+# Upcoming stay - Lisbon (booked)
 Stay.create!(
   title: "Sunny Apartment in Alfama",
   stay_type: "airbnb",
@@ -75,28 +78,24 @@ Stay.create!(
   currency: "EUR",
   notes: "Traditional neighborhood with fado music. Near the castle.",
   booking_url: "https://airbnb.com/rooms/example4",
-  image_url: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=800"
+  image_url: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=800",
+  booked: true
 )
 
-# Future stay - Berlin
+# Future stay - Berlin (PLANNED - not yet booked)
 Stay.create!(
-  title: "Loft in Kreuzberg",
-  stay_type: "airbnb",
-  address: "Kreuzberg",
+  title: "Berlin, Germany",
   city: "Berlin",
+  state: "Berlin",
   country: "Germany",
-  latitude: 52.4934,
-  longitude: 13.4234,
   check_in: Date.current + 45,
   check_out: Date.current + 60,
-  price_total_cents: 110000,
-  currency: "EUR",
-  notes: "Hip neighborhood with great nightlife and food scene.",
-  booking_url: "https://airbnb.com/rooms/example5",
-  image_url: "https://images.unsplash.com/photo-1560969184-10fe8719e047?w=800"
+  notes: "Looking for a loft in Kreuzberg area. Hip neighborhood with great nightlife and food scene.",
+  image_url: "https://images.unsplash.com/photo-1560969184-10fe8719e047?w=800",
+  booked: false
 )
 
-# Future stay - Amsterdam
+# Future stay - Amsterdam (booked)
 Stay.create!(
   title: "Canal House Apartment",
   stay_type: "airbnb",
@@ -111,7 +110,20 @@ Stay.create!(
   currency: "EUR",
   notes: "Beautiful views of the canals. Bike-friendly area.",
   booking_url: "https://airbnb.com/rooms/example6",
-  image_url: "https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=800"
+  image_url: "https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=800",
+  booked: true
+)
+
+# Future stay - Prague (PLANNED - not yet booked)
+Stay.create!(
+  title: "Prague, Czech Republic",
+  city: "Prague",
+  country: "Czech Republic",
+  check_in: Date.current + 90,
+  check_out: Date.current + 100,
+  notes: "Want to explore Old Town and try local beer!",
+  image_url: "https://images.unsplash.com/photo-1519677100203-a0e668c92439?w=800",
+  booked: false
 )
 
 puts "Created #{Stay.count} stays!"
@@ -120,4 +132,8 @@ puts "Summary:"
 puts "  Past stays: #{Stay.past.count}"
 puts "  Current stay: #{Stay.current_stay&.title || 'None'}"
 puts "  Upcoming stays: #{Stay.upcoming.count}"
+puts "  Booked stays: #{Stay.booked.count}"
+puts "  Planned stays: #{Stay.planned.count}"
 puts "  Gaps to fill: #{Stay.find_gaps.count}"
+puts ""
+puts "Booking alert: #{Stay.booking_alert ? 'Yes - ' + Stay.booking_alert[:city] : 'None'}"

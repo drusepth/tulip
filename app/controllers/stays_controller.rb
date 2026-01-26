@@ -55,6 +55,7 @@ class StaysController < ApplicationController
         latitude: stay.latitude,
         longitude: stay.longitude,
         status: stay.status,
+        booked: stay.booked,
         check_in: stay.check_in,
         check_out: stay.check_out,
         city: stay.city,
@@ -74,7 +75,8 @@ class StaysController < ApplicationController
     params.require(:stay).permit(
       :title, :stay_type, :booking_url, :image_url,
       :address, :city, :state, :country, :latitude, :longitude,
-      :check_in, :check_out, :price_total_cents, :currency, :notes
+      :check_in, :check_out, :price_total_cents, :currency, :notes,
+      :booked
     )
   end
 end

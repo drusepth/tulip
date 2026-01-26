@@ -23,7 +23,7 @@
 
   <% if @stays.any? %>
     <!-- Legend -->
-    <div class="mb-6 flex items-center gap-6 text-sm">
+    <div class="mb-6 flex flex-wrap items-center gap-6 text-sm">
       <div class="flex items-center gap-2">
         <div class="w-4 h-4 rounded bg-green-500"></div>
         <span class="text-gray-600">Upcoming</span>
@@ -35,6 +35,10 @@
       <div class="flex items-center gap-2">
         <div class="w-4 h-4 rounded bg-gray-400"></div>
         <span class="text-gray-600">Past</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-4 h-4 rounded bg-amber-400 border-2 border-dashed border-amber-600"></div>
+        <span class="text-gray-600">Planned</span>
       </div>
       <div class="flex items-center gap-2">
         <div class="w-4 h-4 rounded bg-yellow-300 border-2 border-yellow-500"></div>
@@ -88,13 +92,24 @@
         <% @stays.each do |stay| %>
           <% left_offset = ((stay.check_in - @start_date).to_f / @total_days * 100).round(2) %>
           <% width = ((stay.check_out - stay.check_in).to_f / @total_days * 100).round(2) %>
-          <% bg_color = case stay.status
-                        when 'upcoming' then 'bg-green-500 hover:bg-green-600'
-                        when 'current' then 'bg-blue-500 hover:bg-blue-600'
-                        when 'past' then 'bg-gray-400 hover:bg-gray-500'
-                        end %>
-          <%= link_to stay_path(stay), class: "absolute h-12 rounded-lg #{bg_color} text-white px-3 py-2 shadow-sm transition-colors cursor-pointer overflow-hidden group", style: "left: #{left_offset}%; width: #{width}%; top: #{row * 60 + 10}px; min-width: 100px;" do %>
-            <div class="truncate font-medium text-sm"><%= stay.title %></div>
+          <% if stay.booked? %>
+            <% bg_color = case stay.status
+                          when 'upcoming' then 'bg-green-500 hover:bg-green-600'
+                          when 'current' then 'bg-blue-500 hover:bg-blue-600'
+                          when 'past' then 'bg-gray-400 hover:bg-gray-500'
+                          end %>
+            <% border_style = '' %>
+          <% else %>
+            <% bg_color = 'bg-amber-400 hover:bg-amber-500' %>
+            <% border_style = 'border-2 border-dashed border-amber-600' %>
+          <% end %>
+          <%= link_to stay_path(stay), class: "absolute h-12 rounded-lg #{bg_color} #{border_style} text-white px-3 py-2 shadow-sm transition-colors cursor-pointer overflow-hidden group", style: "left: #{left_offset}%; width: #{width}%; top: #{row * 60 + 10}px; min-width: 100px;" do %>
+            <div class="truncate font-medium text-sm">
+              <%= stay.title %>
+              <% unless stay.booked? %>
+                <span class="text-xs opacity-80">(Planned)</span>
+              <% end %>
+            </div>
             <div class="truncate text-xs opacity-80">
               <%= stay.city %>
               <span class="hidden group-hover:inline"> - <%= stay.duration_days %> nights</span>
@@ -163,14 +178,23 @@
                   <%= stay.duration_days %> nights
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                    <%= case stay.status
-                        when 'upcoming' then 'bg-green-100 text-green-800'
-                        when 'current' then 'bg-blue-100 text-blue-800'
-                        when 'past' then 'bg-gray-100 text-gray-800'
-                        end %>">
-                    <%= stay.status.capitalize %>
-                  </span>
+                  <div class="flex items-center gap-2">
+                    <% if stay.booked? %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                        <%= case stay.status
+                            when 'upcoming' then 'bg-green-100 text-green-800'
+                            when 'current' then 'bg-blue-100 text-blue-800'
+                            when 'past' then 'bg-gray-100 text-gray-800'
+                            end %>">
+                        <%= stay.status.capitalize %>
+                      </span>
+                    <% else %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                        Planned
+                      </span>
+                      <%= link_to "Book", edit_stay_path(stay), class: "text-xs text-indigo-600 hover:text-indigo-900" %>
+                    <% end %>
+                  </div>
                 </td>
               </tr>
             <% end %>

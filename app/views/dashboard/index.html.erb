@@ -70,16 +70,15 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             <div class="flex-1">
-              <h3 class="text-yellow-800 font-semibold">Time to book your next stay</h3>
+              <h3 class="text-yellow-800 font-semibold">Time to book <strong><%= @booking_alert[:city] %><%= ", #{@booking_alert[:state]}" if @booking_alert[:state].present? %></strong></h3>
               <p class="text-yellow-700 mt-1">
-                Your coverage ends on <strong><%= @booking_alert[:coverage_ends].strftime('%B %d, %Y') %></strong>
-                (<%= pluralize(@booking_alert[:days_remaining], 'day') %> from now).
-                Start looking for your next place!
+                Your planned stay starts in <%= pluralize(@booking_alert[:days_until_check_in], 'day') %>.
+                Find and book your accommodation!
               </p>
             </div>
-            <%= link_to new_stay_path,
+            <%= link_to edit_stay_path(@booking_alert[:destination]),
                 class: "ml-4 inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-yellow-800 bg-yellow-100 hover:bg-yellow-200 flex-shrink-0" do %>
-              Add Stay
+              Book Now
             <% end %>
           </div>
         </div>
@@ -92,7 +91,7 @@
     <!-- Current Stay -->
     <% if @current_stay %>
       <%= link_to stay_path(@current_stay), class: "block group" do %>
-        <div class="relative bg-white rounded-xl shadow-lg overflow-hidden h-72">
+        <div class="relative bg-white rounded-xl shadow-lg overflow-hidden h-72 <%= 'ring-2 ring-dashed ring-amber-400' unless @current_stay.booked? %>">
           <% if @current_stay.image_url.present? %>
             <img src="<%= @current_stay.image_url %>" alt="<%= @current_stay.title %>"
                  class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
@@ -105,6 +104,11 @@
               <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/80 text-white">
                 You are here
               </span>
+              <% unless @current_stay.booked? %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/80 text-white">
+                  Not booked
+                </span>
+              <% end %>
             </div>
             <h2 class="text-2xl font-bold group-hover:underline"><%= @current_stay.title %></h2>
             <p class="text-white/90 mt-1"><%= [@current_stay.city, @current_stay.country].compact.join(', ') %></p>
@@ -130,26 +134,36 @@
     <!-- Next Stay -->
     <% if @next_stay %>
       <%= link_to stay_path(@next_stay), class: "block group" do %>
-        <div class="relative bg-white rounded-xl shadow-lg overflow-hidden h-72">
+        <div class="relative bg-white rounded-xl shadow-lg overflow-hidden h-72 <%= 'ring-2 ring-dashed ring-amber-400' unless @next_stay.booked? %>">
           <% if @next_stay.image_url.present? %>
             <img src="<%= @next_stay.image_url %>" alt="<%= @next_stay.title %>"
                  class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
           <% else %>
-            <div class="absolute inset-0 bg-gradient-to-br from-green-500 to-green-700"></div>
+            <div class="absolute inset-0 bg-gradient-to-br <%= @next_stay.booked? ? 'from-green-500 to-green-700' : 'from-amber-400 to-amber-600' %>"></div>
           <% end %>
           <div class="absolute inset-0 p-6 flex flex-col justify-end text-white">
             <div class="flex items-center gap-2 mb-2">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/80 text-white">
-                Next up
-              </span>
+              <% if @next_stay.booked? %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/80 text-white">
+                  Next up
+                </span>
+              <% else %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/80 text-white">
+                  Planned
+                </span>
+              <% end %>
               <span class="text-white/90 text-sm">in <%= pluralize(@next_stay.days_until_check_in, 'day') %></span>
             </div>
             <h2 class="text-2xl font-bold group-hover:underline"><%= @next_stay.title %></h2>
             <p class="text-white/90 mt-1"><%= [@next_stay.city, @next_stay.country].compact.join(', ') %></p>
             <div class="mt-3 flex items-center justify-between text-sm text-white/80">
               <span><%= @next_stay.check_in.strftime('%b %d') %> - <%= @next_stay.check_out.strftime('%b %d, %Y') %></span>
-              <span class="font-semibold text-white"><%= pluralize(@next_stay.duration_days, 'night') %></span>
+              <% if @next_stay.booked? %>
+                <span class="font-semibold text-white"><%= pluralize(@next_stay.duration_days, 'night') %></span>
+              <% else %>
+                <%= link_to "Book this stay", edit_stay_path(@next_stay), class: "font-semibold text-white hover:underline" %>
+              <% end %>
             </div>
           </div>
         </div>
@@ -175,15 +189,22 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <% remaining_upcoming.each do |stay| %>
           <%= link_to stay_path(stay), class: "block group" do %>
-            <div class="relative bg-white rounded-lg shadow overflow-hidden h-48">
+            <div class="relative bg-white rounded-lg shadow overflow-hidden h-48 <%= 'ring-2 ring-dashed ring-amber-400' unless stay.booked? %>">
               <% if stay.image_url.present? %>
                 <img src="<%= stay.image_url %>" alt="<%= stay.title %>"
                      class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
               <% else %>
-                <div class="absolute inset-0 bg-gradient-to-br from-gray-400 to-gray-600"></div>
+                <div class="absolute inset-0 bg-gradient-to-br <%= stay.booked? ? 'from-gray-400 to-gray-600' : 'from-amber-300 to-amber-500' %>"></div>
               <% end %>
               <div class="absolute inset-0 p-4 flex flex-col justify-end text-white">
+                <div class="flex items-center gap-2 mb-1">
+                  <% unless stay.booked? %>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-500/80 text-white">
+                      Planned
+                    </span>
+                  <% end %>
+                </div>
                 <h3 class="font-semibold group-hover:underline truncate"><%= stay.title %></h3>
                 <p class="text-white/80 text-sm"><%= [stay.city, stay.country].compact.join(', ') %></p>
                 <div class="mt-2 flex items-center justify-between text-xs text-white/70">

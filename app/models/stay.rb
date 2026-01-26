@@ -9,7 +9,8 @@ class Stay < ApplicationRecord
   validates :title, presence: true
   validates :check_in, presence: true
   validates :check_out, presence: true
-  validates :stay_type, inclusion: { in: STAY_TYPES }
+  validates :city, presence: true
+  validates :stay_type, inclusion: { in: STAY_TYPES }, if: :booked?
   validates :status, inclusion: { in: STATUSES }
   validates :currency, inclusion: { in: CURRENCIES }
   validate :check_out_after_check_in
@@ -24,6 +25,8 @@ class Stay < ApplicationRecord
   scope :current, -> { where(status: 'current') }
   scope :past, -> { where(status: 'past').order(check_out: :desc) }
   scope :chronological, -> { order(:check_in) }
+  scope :booked, -> { where(booked: true) }
+  scope :planned, -> { where(booked: false) }
 
   def full_address
     [address, city, country].compact.join(', ')
@@ -85,22 +88,22 @@ class Stay < ApplicationRecord
     gaps
   end
 
-  # Returns booking alert info if the last booked stay ends within the threshold
+  # Returns booking alert info if there's an unbooked upcoming stay within the threshold
   # Returns nil if no action needed
   def self.booking_alert(months_threshold: 4)
-    last_stay = order(:check_out).last
-    return nil unless last_stay
+    next_unbooked = upcoming.planned.first
+    return nil unless next_unbooked
 
-    coverage_end = last_stay.check_out
-    alert_date = Date.current + months_threshold.months
+    days_until = next_unbooked.days_until_check_in
+    threshold_days = months_threshold * 30
 
-    return nil if coverage_end > alert_date
+    return nil if days_until > threshold_days
 
-    days_until_coverage_ends = (coverage_end - Date.current).to_i
     {
-      coverage_ends: coverage_end,
-      days_remaining: days_until_coverage_ends,
-      last_stay: last_stay
+      destination: next_unbooked,
+      days_until_check_in: days_until,
+      city: next_unbooked.city,
+      state: next_unbooked.state
     }
   end
 
