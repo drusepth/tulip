@@ -2,17 +2,17 @@
   <!-- Header -->
   <div class="mb-8 flex items-center justify-between">
     <div>
-      <h1 class="text-3xl font-bold text-gray-900">Timeline</h1>
-      <p class="mt-1 text-gray-600">Your travel schedule at a glance</p>
+      <h1 class="text-3xl font-bold text-brown decorative-heading">Timeline</h1>
+      <p class="mt-2 text-brown-light">Your travel schedule at a glance</p>
     </div>
     <div class="flex gap-3">
-      <%= link_to root_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+      <%= link_to root_path, class: "btn-outline" do %>
         Dashboard
       <% end %>
-      <%= link_to map_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+      <%= link_to map_path, class: "btn-outline" do %>
         Map View
       <% end %>
-      <%= link_to new_stay_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700" do %>
+      <%= link_to new_stay_path, class: "btn-primary" do %>
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
         </svg>
@@ -25,40 +25,40 @@
     <!-- Legend -->
     <div class="mb-6 flex flex-wrap items-center gap-6 text-sm">
       <div class="flex items-center gap-2">
-        <div class="w-4 h-4 rounded bg-green-500"></div>
-        <span class="text-gray-600">Upcoming</span>
+        <div class="w-4 h-4 rounded-full bg-sage"></div>
+        <span class="text-brown-light">Upcoming</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="w-4 h-4 rounded bg-blue-500"></div>
-        <span class="text-gray-600">Current</span>
+        <div class="w-4 h-4 rounded-full bg-rose"></div>
+        <span class="text-brown-light">Current</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="w-4 h-4 rounded bg-gray-400"></div>
-        <span class="text-gray-600">Past</span>
+        <div class="w-4 h-4 rounded-full bg-taupe"></div>
+        <span class="text-brown-light">Past</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="w-4 h-4 rounded bg-amber-400 border-2 border-dashed border-amber-600"></div>
-        <span class="text-gray-600">Planned</span>
+        <div class="w-4 h-4 rounded-full bg-lavender border-2 border-dashed border-lavender-dark"></div>
+        <span class="text-brown-light">Planned</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="w-4 h-4 rounded bg-yellow-300 border-2 border-yellow-500"></div>
-        <span class="text-gray-600">Gap</span>
+        <div class="w-4 h-4 rounded-full bg-coral-light border-2 border-dashed border-coral"></div>
+        <span class="text-brown-light">Gap</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="w-0.5 h-4 bg-red-500"></div>
-        <span class="text-gray-600">Today</span>
+        <div class="w-0.5 h-4 bg-rose-dark"></div>
+        <span class="text-brown-light">Today</span>
       </div>
     </div>
 
     <!-- Timeline Container -->
-    <div class="bg-white rounded-lg shadow p-6 overflow-x-auto"
+    <div class="cozy-card p-6 overflow-x-auto"
          data-controller="timeline"
          data-timeline-start-value="<%= @start_date.to_s %>"
          data-timeline-end-value="<%= @end_date.to_s %>"
          data-timeline-today-value="<%= @today.to_s %>">
 
       <!-- Month Headers -->
-      <div class="relative mb-4 border-b pb-2">
+      <div class="relative mb-4 border-b border-taupe-light pb-2">
         <div class="flex">
           <% current_month = @start_date.beginning_of_month %>
           <% while current_month <= @end_date %>
@@ -66,7 +66,7 @@
             <% month_end = [current_month.end_of_month, @end_date].min %>
             <% month_days = (month_end - month_start).to_i + 1 %>
             <% width_percent = (month_days.to_f / @total_days * 100).round(2) %>
-            <div style="width: <%= width_percent %>%;" class="text-center text-sm font-medium text-gray-700">
+            <div style="width: <%= width_percent %>%;" class="text-center text-sm font-medium text-brown">
               <%= current_month.strftime('%B %Y') %>
             </div>
             <% current_month = current_month.next_month.beginning_of_month %>
@@ -79,9 +79,9 @@
         <!-- Today Marker -->
         <% if @today >= @start_date && @today <= @end_date %>
           <% today_offset = ((@today - @start_date).to_f / @total_days * 100).round(2) %>
-          <div class="absolute top-0 bottom-0 w-0.5 bg-red-500 z-20"
+          <div class="absolute top-0 bottom-0 w-0.5 bg-rose-dark z-20"
                style="left: <%= today_offset %>%;">
-            <div class="absolute -top-6 -translate-x-1/2 text-xs font-medium text-red-600 whitespace-nowrap">
+            <div class="absolute -top-6 -translate-x-1/2 text-xs font-medium text-rose-dark whitespace-nowrap">
               Today
             </div>
           </div>
@@ -93,17 +93,17 @@
           <% left_offset = ((stay.check_in - @start_date).to_f / @total_days * 100).round(2) %>
           <% width = ((stay.check_out - stay.check_in).to_f / @total_days * 100).round(2) %>
           <% if stay.booked? %>
-            <% bg_color = case stay.status
-                          when 'upcoming' then 'bg-green-500 hover:bg-green-600'
-                          when 'current' then 'bg-blue-500 hover:bg-blue-600'
-                          when 'past' then 'bg-gray-400 hover:bg-gray-500'
+            <% bar_class = case stay.status
+                          when 'upcoming' then 'timeline-bar-upcoming'
+                          when 'current' then 'timeline-bar-current'
+                          when 'past' then 'timeline-bar-past'
                           end %>
             <% border_style = '' %>
           <% else %>
-            <% bg_color = 'bg-amber-400 hover:bg-amber-500' %>
-            <% border_style = 'border-2 border-dashed border-amber-600' %>
+            <% bar_class = 'timeline-bar-planned' %>
+            <% border_style = '' %>
           <% end %>
-          <%= link_to stay_path(stay), class: "absolute h-12 rounded-lg #{bg_color} #{border_style} text-white px-3 py-2 shadow-sm transition-colors cursor-pointer overflow-hidden group", style: "left: #{left_offset}%; width: #{width}%; top: #{row * 60 + 10}px; min-width: 100px;" do %>
+          <%= link_to stay_path(stay), class: "absolute h-12 rounded-2xl #{bar_class} text-white px-3 py-2 shadow-cozy transition-all cursor-pointer overflow-hidden group hover:shadow-cozy-lg", style: "left: #{left_offset}%; width: #{width}%; top: #{row * 60 + 10}px; min-width: 100px;" do %>
             <div class="truncate font-medium text-sm">
               <%= stay.title %>
               <% unless stay.booked? %>
@@ -123,10 +123,10 @@
           <% left_offset = ((gap[:start_date] - @start_date).to_f / @total_days * 100).round(2) %>
           <% width = ((gap[:end_date] - gap[:start_date]).to_f / @total_days * 100).round(2) %>
           <%= link_to new_stay_path(check_in: gap[:start_date], check_out: gap[:end_date]),
-              class: "absolute h-12 rounded-lg bg-yellow-100 border-2 border-yellow-400 border-dashed px-3 py-2 hover:bg-yellow-200 transition-colors cursor-pointer overflow-hidden group",
+              class: "absolute h-12 rounded-2xl timeline-gap px-3 py-2 hover:bg-coral transition-all cursor-pointer overflow-hidden group",
               style: "left: #{left_offset}%; width: #{width}%; top: #{row * 60 + 10}px; min-width: 80px;" do %>
-            <div class="truncate font-medium text-sm text-yellow-800"><%= gap[:days] %> days</div>
-            <div class="truncate text-xs text-yellow-600">
+            <div class="truncate font-medium text-sm text-coral-dark"><%= gap[:days] %> days</div>
+            <div class="truncate text-xs text-coral-dark">
               Gap
               <span class="hidden group-hover:inline"> - Click to add stay</span>
             </div>
@@ -136,63 +136,66 @@
       </div>
 
       <!-- Date Labels -->
-      <div class="relative mt-4 pt-2 border-t">
-        <div class="flex justify-between text-xs text-gray-500">
+      <div class="relative mt-4 pt-2 border-t border-taupe-light">
+        <div class="flex justify-between text-xs text-brown-light">
           <span><%= @start_date.strftime('%b %d, %Y') %></span>
           <span><%= @end_date.strftime('%b %d, %Y') %></span>
         </div>
       </div>
     </div>
 
+    <!-- Botanical Divider -->
+    <div class="botanical-divider">
+      <span>All Stays</span>
+    </div>
+
     <!-- Stay List -->
     <div class="mt-8">
-      <h2 class="text-xl font-semibold text-gray-900 mb-4">All Stays</h2>
-      <div class="bg-white rounded-lg shadow overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
+      <div class="cozy-card overflow-hidden cozy-table">
+        <table class="min-w-full divide-y divide-taupe-light">
+          <thead class="bg-taupe-light">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stay</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-in</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-out</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-brown uppercase tracking-wider">Stay</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-brown uppercase tracking-wider">Location</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-brown uppercase tracking-wider">Check-in</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-brown uppercase tracking-wider">Check-out</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-brown uppercase tracking-wider">Duration</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-brown uppercase tracking-wider">Status</th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
+          <tbody class="bg-white divide-y divide-taupe-light">
             <% @stays.each do |stay| %>
-              <tr class="hover:bg-gray-50">
+              <tr class="hover:bg-cream/50 transition-colors">
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <%= link_to stay.title, stay_path(stay), class: "text-indigo-600 hover:text-indigo-900 font-medium" %>
+                  <%= link_to stay.title, stay_path(stay), class: "text-sage-dark hover:text-sage font-medium" %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-brown-light">
                   <%= [stay.city, stay.country].compact.join(', ') %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-brown-light">
                   <%= stay.check_in.strftime('%b %d, %Y') %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-brown-light">
                   <%= stay.check_out.strftime('%b %d, %Y') %>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-brown-light">
                   <%= stay.duration_days %> nights
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center gap-2">
                     <% if stay.booked? %>
-                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                        <%= case stay.status
-                            when 'upcoming' then 'bg-green-100 text-green-800'
-                            when 'current' then 'bg-blue-100 text-blue-800'
-                            when 'past' then 'bg-gray-100 text-gray-800'
-                            end %>">
+                      <span class="badge <%= case stay.status
+                          when 'upcoming' then 'badge-upcoming'
+                          when 'current' then 'badge-current'
+                          when 'past' then 'badge-past'
+                          end %>">
                         <%= stay.status.capitalize %>
                       </span>
                     <% else %>
-                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                      <span class="badge badge-planned">
                         Planned
                       </span>
-                      <%= link_to "Book", edit_stay_path(stay), class: "text-xs text-indigo-600 hover:text-indigo-900" %>
+                      <%= link_to "Book", edit_stay_path(stay), class: "text-xs text-sage-dark hover:text-sage" %>
                     <% end %>
                   </div>
                 </td>
@@ -204,14 +207,14 @@
     </div>
   <% else %>
     <!-- Empty State -->
-    <div class="bg-white rounded-lg shadow p-12 text-center">
-      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="cozy-card p-12 text-center">
+      <svg class="mx-auto h-12 w-12 text-taupe" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
       </svg>
-      <h3 class="mt-4 text-lg font-medium text-gray-900">No stays yet</h3>
-      <p class="mt-2 text-gray-500">Get started by adding your first stay.</p>
+      <h3 class="mt-4 text-lg font-medium text-brown">No stays yet</h3>
+      <p class="mt-2 text-brown-light">Get started by adding your first stay.</p>
       <div class="mt-6">
-        <%= link_to new_stay_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700" do %>
+        <%= link_to new_stay_path, class: "btn-primary" do %>
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
           </svg>

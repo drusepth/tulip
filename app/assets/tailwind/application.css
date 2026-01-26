@@ -1,1 +1,585 @@
 @import "tailwindcss";
+
+/* ========================================
+   TULIP - Cozy Cottagecore Theme
+   ======================================== */
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap');
+
+/* ========================================
+   CSS Custom Properties (Color Palette)
+   ======================================== */
+:root {
+  /* Primary Colors (Muted Pastels) */
+  --color-cream: #FDF8F3;
+  --color-sage: #B8C9B8;
+  --color-sage-dark: #8FA68F;
+  --color-sage-light: #D4E4D4;
+  --color-rose: #D4A5A5;
+  --color-rose-dark: #B88888;
+  --color-rose-light: #F0E0E0;
+  --color-taupe: #C9B8A8;
+  --color-taupe-dark: #A69686;
+  --color-taupe-light: #E8DFD6;
+  --color-lavender: #C8BFD4;
+  --color-lavender-dark: #9E92B0;
+  --color-lavender-light: #E8E4EF;
+
+  /* Semantic Colors */
+  --color-coral: #E8B4A0;
+  --color-coral-dark: #C89880;
+  --color-coral-light: #FDF0E8;
+
+  /* Text Colors */
+  --color-brown: #5D4E4E;
+  --color-brown-light: #8B7E7E;
+  --color-brown-lighter: #A89C9C;
+
+  /* Typography */
+  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Nunito', -apple-system, sans-serif;
+}
+
+/* ========================================
+   Base Styles
+   ======================================== */
+html {
+  font-family: var(--font-body);
+  color: var(--color-brown);
+}
+
+body {
+  background-color: var(--color-cream);
+  /* Subtle paper texture overlay */
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  background-attachment: fixed;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  color: var(--color-brown);
+}
+
+/* ========================================
+   Custom Utility Classes
+   ======================================== */
+
+/* Background Colors */
+.bg-cream { background-color: var(--color-cream); }
+.bg-sage { background-color: var(--color-sage); }
+.bg-sage-dark { background-color: var(--color-sage-dark); }
+.bg-sage-light { background-color: var(--color-sage-light); }
+.bg-rose { background-color: var(--color-rose); }
+.bg-rose-dark { background-color: var(--color-rose-dark); }
+.bg-rose-light { background-color: var(--color-rose-light); }
+.bg-taupe { background-color: var(--color-taupe); }
+.bg-taupe-dark { background-color: var(--color-taupe-dark); }
+.bg-taupe-light { background-color: var(--color-taupe-light); }
+.bg-lavender { background-color: var(--color-lavender); }
+.bg-lavender-dark { background-color: var(--color-lavender-dark); }
+.bg-lavender-light { background-color: var(--color-lavender-light); }
+.bg-coral { background-color: var(--color-coral); }
+.bg-coral-dark { background-color: var(--color-coral-dark); }
+.bg-coral-light { background-color: var(--color-coral-light); }
+
+/* Hover Background Colors */
+.hover\:bg-sage:hover { background-color: var(--color-sage); }
+.hover\:bg-sage-dark:hover { background-color: var(--color-sage-dark); }
+.hover\:bg-rose:hover { background-color: var(--color-rose); }
+.hover\:bg-rose-dark:hover { background-color: var(--color-rose-dark); }
+.hover\:bg-taupe:hover { background-color: var(--color-taupe); }
+.hover\:bg-taupe-light:hover { background-color: var(--color-taupe-light); }
+.hover\:bg-lavender:hover { background-color: var(--color-lavender); }
+.hover\:bg-lavender-dark:hover { background-color: var(--color-lavender-dark); }
+.hover\:bg-coral:hover { background-color: var(--color-coral); }
+.hover\:bg-coral-light:hover { background-color: var(--color-coral-light); }
+
+/* Text Colors */
+.text-brown { color: var(--color-brown); }
+.text-brown-light { color: var(--color-brown-light); }
+.text-brown-lighter { color: var(--color-brown-lighter); }
+.text-sage { color: var(--color-sage); }
+.text-sage-dark { color: var(--color-sage-dark); }
+.text-rose { color: var(--color-rose); }
+.text-rose-dark { color: var(--color-rose-dark); }
+.text-taupe { color: var(--color-taupe); }
+.text-taupe-dark { color: var(--color-taupe-dark); }
+.text-lavender { color: var(--color-lavender); }
+.text-lavender-dark { color: var(--color-lavender-dark); }
+.text-coral { color: var(--color-coral); }
+.text-coral-dark { color: var(--color-coral-dark); }
+.text-cream { color: var(--color-cream); }
+
+/* Hover Text Colors */
+.hover\:text-sage-dark:hover { color: var(--color-sage-dark); }
+.hover\:text-rose-dark:hover { color: var(--color-rose-dark); }
+
+/* Border Colors */
+.border-cream { border-color: var(--color-cream); }
+.border-sage { border-color: var(--color-sage); }
+.border-sage-dark { border-color: var(--color-sage-dark); }
+.border-rose { border-color: var(--color-rose); }
+.border-rose-dark { border-color: var(--color-rose-dark); }
+.border-taupe { border-color: var(--color-taupe); }
+.border-taupe-light { border-color: var(--color-taupe-light); }
+.border-lavender { border-color: var(--color-lavender); }
+.border-lavender-dark { border-color: var(--color-lavender-dark); }
+.border-coral { border-color: var(--color-coral); }
+.border-coral-dark { border-color: var(--color-coral-dark); }
+
+/* Ring Colors */
+.ring-lavender { --tw-ring-color: var(--color-lavender); }
+.ring-lavender-dark { --tw-ring-color: var(--color-lavender-dark); }
+.ring-coral { --tw-ring-color: var(--color-coral); }
+.ring-sage { --tw-ring-color: var(--color-sage); }
+
+/* Focus Ring Colors */
+.focus\:ring-sage:focus { --tw-ring-color: var(--color-sage); }
+.focus\:border-sage:focus { border-color: var(--color-sage); }
+
+/* ========================================
+   Decorative Elements
+   ======================================== */
+
+/* Decorative Heading with Underline */
+.decorative-heading {
+  font-family: var(--font-heading);
+  position: relative;
+  display: inline-block;
+}
+
+.decorative-heading::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-sage), transparent);
+  margin-top: 0.5rem;
+}
+
+/* Botanical Divider */
+.botanical-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0;
+  color: var(--color-sage);
+  font-size: 0.875rem;
+}
+
+.botanical-divider::before,
+.botanical-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-taupe), transparent);
+}
+
+/* Warm Image Overlay */
+.warm-overlay {
+  position: relative;
+}
+
+.warm-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(253, 248, 243, 0.1),
+    rgba(212, 165, 165, 0.15)
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Polaroid-style Card */
+.polaroid {
+  background: white;
+  padding: 0.75rem 0.75rem 2rem;
+  box-shadow: 0 4px 15px rgba(93, 78, 78, 0.12);
+  transform: rotate(-1deg);
+  transition: transform 0.2s ease;
+}
+
+.polaroid:hover {
+  transform: rotate(0deg) scale(1.02);
+}
+
+/* Cozy Card Style */
+.cozy-card {
+  background: white;
+  border-radius: 1.5rem;
+  border: 1px solid var(--color-taupe-light);
+  box-shadow: 0 4px 20px rgba(93, 78, 78, 0.08);
+  transition: all 0.2s ease;
+}
+
+.cozy-card:hover {
+  box-shadow: 0 8px 30px rgba(93, 78, 78, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Cozy Shadow */
+.shadow-cozy {
+  box-shadow: 0 4px 20px rgba(93, 78, 78, 0.08);
+}
+
+.shadow-cozy-lg {
+  box-shadow: 0 8px 30px rgba(93, 78, 78, 0.12);
+}
+
+/* ========================================
+   Buttons
+   ======================================== */
+
+/* Primary Button (Sage) */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  background-color: var(--color-sage);
+  border: none;
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(184, 201, 184, 0.4);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-sage-dark);
+  box-shadow: 0 4px 12px rgba(184, 201, 184, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Secondary Button (Rose) */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  background-color: var(--color-rose);
+  border: none;
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(212, 165, 165, 0.4);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-rose-dark);
+  box-shadow: 0 4px 12px rgba(212, 165, 165, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Outline Button */
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-brown);
+  background-color: white;
+  border: 1px solid var(--color-taupe);
+  border-radius: 9999px;
+  box-shadow: 0 2px 4px rgba(93, 78, 78, 0.05);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-outline:hover {
+  background-color: var(--color-taupe-light);
+  border-color: var(--color-taupe-dark);
+  transform: translateY(-1px);
+}
+
+/* ========================================
+   Badges & Pills
+   ======================================== */
+
+/* Status Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  gap: 0.25rem;
+}
+
+.badge-current {
+  background-color: var(--color-rose-light);
+  color: var(--color-rose-dark);
+}
+
+.badge-upcoming {
+  background-color: var(--color-sage-light);
+  color: var(--color-sage-dark);
+}
+
+.badge-planned {
+  background-color: var(--color-lavender-light);
+  color: var(--color-lavender-dark);
+}
+
+.badge-past {
+  background-color: var(--color-taupe-light);
+  color: var(--color-taupe-dark);
+}
+
+.badge-alert {
+  background-color: var(--color-coral-light);
+  color: var(--color-coral-dark);
+}
+
+/* ========================================
+   Form Elements
+   ======================================== */
+
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="number"],
+input[type="date"],
+input[type="password"],
+textarea,
+select {
+  border-radius: 1rem;
+  border-color: var(--color-taupe);
+  transition: all 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--color-sage);
+  box-shadow: 0 0 0 3px rgba(184, 201, 184, 0.2);
+  outline: none;
+}
+
+input[type="checkbox"] {
+  border-radius: 0.375rem;
+  border-color: var(--color-taupe);
+}
+
+input[type="checkbox"]:checked {
+  background-color: var(--color-sage);
+  border-color: var(--color-sage);
+}
+
+input[type="checkbox"]:focus {
+  box-shadow: 0 0 0 3px rgba(184, 201, 184, 0.2);
+}
+
+/* ========================================
+   Alerts & Notifications
+   ======================================== */
+
+.alert-warning {
+  background-color: var(--color-coral-light);
+  border: 1px solid var(--color-coral);
+  border-radius: 1rem;
+  color: var(--color-coral-dark);
+}
+
+.alert-error {
+  background-color: var(--color-rose-light);
+  border: 1px solid var(--color-rose);
+  border-radius: 1rem;
+  color: var(--color-rose-dark);
+}
+
+.alert-success {
+  background-color: var(--color-sage-light);
+  border: 1px solid var(--color-sage);
+  border-radius: 1rem;
+  color: var(--color-sage-dark);
+}
+
+/* ========================================
+   Hero Cards
+   ======================================== */
+
+.hero-card {
+  position: relative;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(93, 78, 78, 0.15);
+  transition: all 0.3s ease;
+}
+
+.hero-card:hover {
+  box-shadow: 0 12px 40px rgba(93, 78, 78, 0.2);
+  transform: translateY(-4px);
+}
+
+.hero-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(93, 78, 78, 0.7) 0%,
+    rgba(93, 78, 78, 0.3) 40%,
+    rgba(253, 248, 243, 0.1) 100%
+  );
+}
+
+/* ========================================
+   Tulip Logo/Branding
+   ======================================== */
+
+.tulip-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tulip-icon {
+  width: 2rem;
+  height: 2rem;
+}
+
+/* Inline SVG Tulip Icon */
+.tulip-icon-inline {
+  display: inline-block;
+  width: 1.5em;
+  height: 1.5em;
+  vertical-align: middle;
+  margin-right: 0.25rem;
+}
+
+/* ========================================
+   Timeline Specific
+   ======================================== */
+
+.timeline-bar-current {
+  background-color: var(--color-rose);
+}
+
+.timeline-bar-current:hover {
+  background-color: var(--color-rose-dark);
+}
+
+.timeline-bar-upcoming {
+  background-color: var(--color-sage);
+}
+
+.timeline-bar-upcoming:hover {
+  background-color: var(--color-sage-dark);
+}
+
+.timeline-bar-planned {
+  background-color: var(--color-lavender);
+  border: 2px dashed var(--color-lavender-dark);
+}
+
+.timeline-bar-planned:hover {
+  background-color: var(--color-lavender-dark);
+}
+
+.timeline-bar-past {
+  background-color: var(--color-taupe);
+}
+
+.timeline-bar-past:hover {
+  background-color: var(--color-taupe-dark);
+}
+
+.timeline-gap {
+  background-color: var(--color-coral-light);
+  border: 2px dashed var(--color-coral);
+}
+
+.timeline-gap:hover {
+  background-color: var(--color-coral);
+}
+
+/* ========================================
+   Table Styles
+   ======================================== */
+
+.cozy-table {
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.cozy-table thead {
+  background-color: var(--color-taupe-light);
+}
+
+.cozy-table th {
+  color: var(--color-brown);
+  font-weight: 500;
+}
+
+.cozy-table tbody tr {
+  border-bottom: 1px solid var(--color-taupe-light);
+}
+
+.cozy-table tbody tr:hover {
+  background-color: rgba(253, 248, 243, 0.5);
+}
+
+/* ========================================
+   Map View Overrides
+   ======================================== */
+
+.map-panel {
+  background-color: var(--color-cream);
+  border-right: 1px solid var(--color-taupe-light);
+}
+
+.map-toggle-btn {
+  background-color: white;
+  border: 1px solid var(--color-taupe);
+  color: var(--color-brown);
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+
+.map-toggle-btn:hover {
+  background-color: var(--color-taupe-light);
+}
+
+.map-toggle-btn.active {
+  background-color: var(--color-sage);
+  border-color: var(--color-sage);
+  color: white;
+}
+
+/* ========================================
+   Responsive Adjustments
+   ======================================== */
+
+@media (max-width: 640px) {
+  .hero-card {
+    border-radius: 1rem;
+  }
+
+  .cozy-card {
+    border-radius: 1rem;
+  }
+
+  .decorative-heading::after {
+    width: 40px;
+  }
+}

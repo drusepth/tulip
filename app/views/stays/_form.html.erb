@@ -1,8 +1,8 @@
 <%= form_with(model: stay, class: "space-y-6", data: { controller: "booking-fields" }) do |form| %>
   <% if stay.errors.any? %>
-    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-      <h3 class="text-red-800 font-medium"><%= pluralize(stay.errors.count, "error") %> prohibited this stay from being saved:</h3>
-      <ul class="mt-2 list-disc list-inside text-red-700">
+    <div class="alert-error p-4">
+      <h3 class="text-rose-dark font-medium"><%= pluralize(stay.errors.count, "error") %> prohibited this stay from being saved:</h3>
+      <ul class="mt-2 list-disc list-inside text-rose-dark">
         <% stay.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>
@@ -11,10 +11,10 @@
   <% end %>
 
   <% if @overlapping_stays.present? %>
-    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-      <h3 class="text-yellow-800 font-medium">Warning: Date overlap detected</h3>
-      <p class="mt-1 text-yellow-700">These dates overlap with existing stays:</p>
-      <ul class="mt-2 list-disc list-inside text-yellow-700">
+    <div class="alert-warning p-4">
+      <h3 class="text-coral-dark font-medium">Warning: Date overlap detected</h3>
+      <p class="mt-1 text-coral-dark">These dates overlap with existing stays:</p>
+      <ul class="mt-2 list-disc list-inside text-coral-dark">
         <% @overlapping_stays.each do |overlap| %>
           <li><%= overlap.title %> (<%= overlap.check_in %> - <%= overlap.check_out %>)</li>
         <% end %>
@@ -23,95 +23,95 @@
   <% end %>
 
   <!-- Booked Status -->
-  <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+  <div class="bg-taupe-light rounded-2xl p-4 border border-taupe">
     <div class="flex items-center gap-3">
-      <%= form.check_box :booked, class: "h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500", data: { booking_fields_target: "checkbox", action: "change->booking-fields#toggle" } %>
-      <%= form.label :booked, "I've booked accommodation for this stay", class: "text-sm font-medium text-gray-700" %>
+      <%= form.check_box :booked, class: "h-5 w-5 rounded border-taupe text-sage focus:ring-sage", data: { booking_fields_target: "checkbox", action: "change->booking-fields#toggle" } %>
+      <%= form.label :booked, "I've booked accommodation for this stay", class: "text-sm font-medium text-brown" %>
     </div>
-    <p class="mt-1 ml-8 text-sm text-gray-500">Uncheck to plan a stay without booking details</p>
+    <p class="mt-1 ml-8 text-sm text-brown-light">Uncheck to plan a stay without booking details</p>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <!-- Always-visible fields -->
     <div class="md:col-span-2">
-      <%= form.label :title, class: "block text-sm font-medium text-gray-700" %>
-      <%= form.text_field :title, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "Cozy apartment in Barcelona" %>
-      <p class="mt-1 text-sm text-gray-500">Use property name if booked, or destination name (e.g., "Austin, TX") if planning</p>
+      <%= form.label :title, class: "block text-sm font-medium text-brown" %>
+      <%= form.text_field :title, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm", placeholder: "Cozy apartment in Barcelona" %>
+      <p class="mt-1 text-sm text-brown-light">Use property name if booked, or destination name (e.g., "Austin, TX") if planning</p>
     </div>
 
     <div>
-      <%= form.label :city, class: "block text-sm font-medium text-gray-700" %>
-      <%= form.text_field :city, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "Barcelona", required: true %>
+      <%= form.label :city, class: "block text-sm font-medium text-brown" %>
+      <%= form.text_field :city, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm", placeholder: "Barcelona", required: true %>
     </div>
 
     <div>
-      <%= form.label :state, "State/Province", class: "block text-sm font-medium text-gray-700" %>
-      <%= form.text_field :state, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "California" %>
+      <%= form.label :state, "State/Province", class: "block text-sm font-medium text-brown" %>
+      <%= form.text_field :state, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm", placeholder: "California" %>
     </div>
 
     <div>
-      <%= form.label :country, class: "block text-sm font-medium text-gray-700" %>
-      <%= form.text_field :country, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "Spain" %>
+      <%= form.label :country, class: "block text-sm font-medium text-brown" %>
+      <%= form.text_field :country, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm", placeholder: "Spain" %>
     </div>
 
     <div>
-      <%= form.label :check_in, "Check-in Date", class: "block text-sm font-medium text-gray-700" %>
-      <%= form.date_field :check_in, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+      <%= form.label :check_in, "Check-in Date", class: "block text-sm font-medium text-brown" %>
+      <%= form.date_field :check_in, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm" %>
     </div>
 
     <div>
-      <%= form.label :check_out, "Check-out Date", class: "block text-sm font-medium text-gray-700" %>
-      <%= form.date_field :check_out, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+      <%= form.label :check_out, "Check-out Date", class: "block text-sm font-medium text-brown" %>
+      <%= form.date_field :check_out, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm" %>
     </div>
 
     <div class="md:col-span-2">
-      <%= form.label :image_url, "Image URL", class: "block text-sm font-medium text-gray-700" %>
-      <%= form.url_field :image_url, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "https://..." %>
+      <%= form.label :image_url, "Image URL", class: "block text-sm font-medium text-brown" %>
+      <%= form.url_field :image_url, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm", placeholder: "https://..." %>
     </div>
 
     <div class="md:col-span-2">
-      <%= form.label :notes, class: "block text-sm font-medium text-gray-700" %>
-      <%= form.text_area :notes, rows: 4, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "Any notes about this stay..." %>
+      <%= form.label :notes, class: "block text-sm font-medium text-brown" %>
+      <%= form.text_area :notes, rows: 4, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm", placeholder: "Any notes about this stay..." %>
     </div>
   </div>
 
   <!-- Booking-specific fields (shown when booked is checked) -->
   <div data-booking-fields-target="fields" class="<%= stay.booked ? '' : 'hidden' %>">
-    <div class="border-t pt-6 mt-6">
-      <h3 class="text-lg font-medium text-gray-900 mb-4">Booking Details</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <%= form.label :stay_type, "Stay Type", class: "block text-sm font-medium text-gray-700" %>
-          <%= form.select :stay_type, Stay::STAY_TYPES.map { |t| [t.titleize, t] }, { include_blank: "Select type..." }, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
-        </div>
+    <div class="botanical-divider">
+      <span>Booking Details</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <%= form.label :stay_type, "Stay Type", class: "block text-sm font-medium text-brown" %>
+        <%= form.select :stay_type, Stay::STAY_TYPES.map { |t| [t.titleize, t] }, { include_blank: "Select type..." }, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm" %>
+      </div>
 
-        <div>
-          <%= form.label :booking_url, "Booking URL", class: "block text-sm font-medium text-gray-700" %>
-          <%= form.url_field :booking_url, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "https://airbnb.com/..." %>
-        </div>
+      <div>
+        <%= form.label :booking_url, "Booking URL", class: "block text-sm font-medium text-brown" %>
+        <%= form.url_field :booking_url, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm", placeholder: "https://airbnb.com/..." %>
+      </div>
 
-        <div class="md:col-span-2">
-          <%= form.label :address, class: "block text-sm font-medium text-gray-700" %>
-          <%= form.text_field :address, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "123 Main Street" %>
-          <p class="mt-1 text-sm text-gray-500">Address will be geocoded automatically</p>
-        </div>
+      <div class="md:col-span-2">
+        <%= form.label :address, class: "block text-sm font-medium text-brown" %>
+        <%= form.text_field :address, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm", placeholder: "123 Main Street" %>
+        <p class="mt-1 text-sm text-brown-light">Address will be geocoded automatically</p>
+      </div>
 
-        <div>
-          <%= form.label :price_total_cents, "Total Price (cents)", class: "block text-sm font-medium text-gray-700" %>
-          <%= form.number_field :price_total_cents, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "50000" %>
-          <p class="mt-1 text-sm text-gray-500">Enter amount in cents (e.g., 50000 = $500.00)</p>
-        </div>
+      <div>
+        <%= form.label :price_total_cents, "Total Price (cents)", class: "block text-sm font-medium text-brown" %>
+        <%= form.number_field :price_total_cents, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm", placeholder: "50000" %>
+        <p class="mt-1 text-sm text-brown-light">Enter amount in cents (e.g., 50000 = $500.00)</p>
+      </div>
 
-        <div>
-          <%= form.label :currency, class: "block text-sm font-medium text-gray-700" %>
-          <%= form.select :currency, Stay::CURRENCIES, {}, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
-        </div>
+      <div>
+        <%= form.label :currency, class: "block text-sm font-medium text-brown" %>
+        <%= form.select :currency, Stay::CURRENCIES, {}, class: "mt-1 block w-full rounded-2xl border-taupe shadow-sm focus:border-sage focus:ring-sage sm:text-sm" %>
       </div>
     </div>
   </div>
 
-  <div class="flex justify-end gap-3">
-    <%= link_to "Cancel", stays_path, class: "inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" %>
-    <%= form.submit class: "inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer" %>
+  <div class="flex justify-end gap-3 pt-4">
+    <%= link_to "Cancel", stays_path, class: "btn-outline" %>
+    <%= form.submit class: "btn-primary cursor-pointer" %>
   </div>
 <% end %>

@@ -3,42 +3,42 @@
      data-map-pois-url-value="/api/stays/:id/pois"
      data-map-transit-url-value="/api/stays/:id/transit_routes">
   <!-- Header -->
-  <div class="bg-white border-b px-4 py-3 flex items-center justify-between">
-    <h1 class="text-xl font-semibold text-gray-900">Map View</h1>
+  <div class="bg-cream border-b border-taupe-light px-4 py-3 flex items-center justify-between">
+    <h1 class="text-xl font-semibold text-brown">Map View</h1>
     <div class="flex items-center gap-4">
       <!-- POI Toggles -->
       <div class="flex items-center gap-2">
         <button type="button" data-action="click->map#togglePoi" data-category="transit_stops"
-                class="poi-toggle px-3 py-1 text-sm rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+                class="map-toggle-btn px-3 py-1 text-sm">
           Transit
         </button>
         <button type="button" data-action="click->map#togglePoi" data-category="coffee"
-                class="poi-toggle px-3 py-1 text-sm rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+                class="map-toggle-btn px-3 py-1 text-sm">
           Coffee
         </button>
         <button type="button" data-action="click->map#togglePoi" data-category="grocery"
-                class="poi-toggle px-3 py-1 text-sm rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+                class="map-toggle-btn px-3 py-1 text-sm">
           Grocery
         </button>
       </div>
 
       <!-- Transit Route Toggles -->
-      <div class="border-l pl-4 flex items-center gap-2">
+      <div class="border-l border-taupe-light pl-4 flex items-center gap-2">
         <button type="button" data-action="click->map#toggleTransit" data-route-type="subway"
-                class="transit-toggle px-3 py-1 text-sm rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+                class="map-toggle-btn px-3 py-1 text-sm">
           Subway
         </button>
         <button type="button" data-action="click->map#toggleTransit" data-route-type="tram"
-                class="transit-toggle px-3 py-1 text-sm rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+                class="map-toggle-btn px-3 py-1 text-sm">
           Tram
         </button>
         <button type="button" data-action="click->map#toggleTransit" data-route-type="bus"
-                class="transit-toggle px-3 py-1 text-sm rounded-full border border-gray-300 bg-white hover:bg-gray-50">
+                class="map-toggle-btn px-3 py-1 text-sm">
           Bus
         </button>
       </div>
 
-      <%= link_to new_stay_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700" do %>
+      <%= link_to new_stay_path, class: "btn-primary" do %>
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
         </svg>
@@ -50,19 +50,19 @@
   <!-- Map and Timeline Container -->
   <div class="flex-1 relative">
     <!-- Timeline Side-Panel -->
-    <div data-map-target="timeline" class="absolute left-0 top-0 bottom-0 w-80 bg-white shadow-lg z-[1000] transition-transform duration-300"
+    <div data-map-target="timeline" class="map-panel bg-cream absolute left-0 top-0 bottom-0 w-80 shadow-cozy-lg z-[1000] transition-transform duration-300"
          data-collapsed="false">
       <!-- Collapse Toggle Button -->
       <button data-action="click->map#toggleTimeline"
-              class="absolute -right-8 top-1/2 -translate-y-1/2 bg-white shadow-md rounded-r-lg p-2 hover:bg-gray-50">
-        <svg data-map-target="collapseIcon" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="absolute -right-8 top-1/2 -translate-y-1/2 bg-cream shadow-cozy rounded-r-2xl p-2 hover:bg-taupe-light border border-l-0 border-taupe-light">
+        <svg data-map-target="collapseIcon" class="w-4 h-4 text-brown transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
         </svg>
       </button>
 
       <!-- Panel Content -->
       <div class="h-full overflow-y-auto p-4">
-        <h2 class="text-lg font-semibold mb-4">Your Stays</h2>
+        <h2 class="text-lg font-semibold text-brown mb-4">Your Stays</h2>
         <div data-map-target="staysList" class="space-y-2">
           <!-- Stays populated dynamically -->
         </div>

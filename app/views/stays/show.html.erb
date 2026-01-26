@@ -1,13 +1,13 @@
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <% if notice.present? %>
-    <div class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
-      <p class="text-green-800"><%= notice %></p>
+    <div class="mb-6 alert-success p-4">
+      <p class="text-sage-dark"><%= notice %></p>
     </div>
   <% end %>
 
   <!-- Hero Image -->
   <% if @stay.image_url.present? %>
-    <div class="mb-8 rounded-lg overflow-hidden shadow-lg">
+    <div class="mb-8 rounded-3xl overflow-hidden shadow-cozy-lg warm-overlay">
       <img src="<%= @stay.image_url %>" alt="<%= @stay.title %>" class="w-full h-64 object-cover">
     </div>
   <% end %>
@@ -16,23 +16,22 @@
   <div class="mb-8 flex items-start justify-between">
     <div>
       <div class="flex items-center gap-3">
-        <h1 class="text-3xl font-bold text-gray-900"><%= @stay.title %></h1>
+        <h1 class="text-3xl font-bold text-brown"><%= @stay.title %></h1>
         <% if @stay.booked? %>
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-            <%= case @stay.status
-                when 'upcoming' then 'bg-green-100 text-green-800'
-                when 'current' then 'bg-blue-100 text-blue-800'
-                when 'past' then 'bg-gray-100 text-gray-800'
-                end %>">
+          <span class="badge <%= case @stay.status
+              when 'upcoming' then 'badge-upcoming'
+              when 'current' then 'badge-current'
+              when 'past' then 'badge-past'
+              end %>">
             <%= @stay.status.capitalize %>
           </span>
         <% else %>
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+          <span class="badge badge-planned">
             Planned
           </span>
         <% end %>
       </div>
-      <p class="mt-2 text-gray-600">
+      <p class="mt-2 text-brown-light">
         <span class="inline-flex items-center">
           <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
@@ -41,19 +40,19 @@
           <%= [@stay.city, @stay.country].compact.join(', ') %>
         </span>
         <% if @stay.booked? && @stay.stay_type.present? %>
-          <span class="mx-2">|</span>
+          <span class="mx-2 text-taupe">|</span>
           <span class="capitalize"><%= @stay.stay_type %></span>
         <% end %>
       </p>
     </div>
     <div class="flex gap-2">
-      <%= link_to edit_stay_path(@stay), class: "inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+      <%= link_to edit_stay_path(@stay), class: "btn-outline" do %>
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
         </svg>
         Edit
       <% end %>
-      <%= button_to stay_path(@stay), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "inline-flex items-center px-3 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50" do %>
+      <%= button_to stay_path(@stay), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn-outline border-rose text-rose-dark hover:bg-rose-light" do %>
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
         </svg>
@@ -66,30 +65,30 @@
     <!-- Main Content -->
     <div class="lg:col-span-2 space-y-8">
       <!-- Dates Card -->
-      <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Dates</h2>
+      <div class="cozy-card p-6">
+        <h2 class="text-lg font-semibold text-brown mb-4">Dates</h2>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <p class="text-sm text-gray-500">Check-in</p>
-            <p class="text-lg font-medium"><%= @stay.check_in.strftime('%B %d, %Y') %></p>
+            <p class="text-sm text-brown-light">Check-in</p>
+            <p class="text-lg font-medium text-brown"><%= @stay.check_in.strftime('%B %d, %Y') %></p>
           </div>
           <div>
-            <p class="text-sm text-gray-500">Check-out</p>
-            <p class="text-lg font-medium"><%= @stay.check_out.strftime('%B %d, %Y') %></p>
+            <p class="text-sm text-brown-light">Check-out</p>
+            <p class="text-lg font-medium text-brown"><%= @stay.check_out.strftime('%B %d, %Y') %></p>
           </div>
         </div>
-        <div class="mt-4 pt-4 border-t">
+        <div class="mt-4 pt-4 border-t border-taupe-light">
           <div class="flex items-center justify-between">
-            <span class="text-gray-600">Duration</span>
-            <span class="font-medium"><%= @stay.duration_days %> nights</span>
+            <span class="text-brown-light">Duration</span>
+            <span class="font-medium text-brown"><%= @stay.duration_days %> nights</span>
           </div>
           <% if @stay.status == 'upcoming' && @stay.days_until_check_in.present? %>
-            <div class="mt-2 flex items-center justify-between text-green-600">
+            <div class="mt-2 flex items-center justify-between text-sage-dark">
               <span>Countdown</span>
               <span class="font-medium"><%= @stay.days_until_check_in %> days until check-in</span>
             </div>
           <% elsif @stay.status == 'current' && @stay.days_until_check_out.present? %>
-            <div class="mt-2 flex items-center justify-between text-blue-600">
+            <div class="mt-2 flex items-center justify-between text-rose-dark">
               <span>Time remaining</span>
               <span class="font-medium"><%= @stay.days_until_check_out %> days until check-out</span>
             </div>
@@ -99,13 +98,13 @@
 
       <!-- Address & Mini Map -->
       <% if @stay.address.present? || @stay.latitude.present? %>
-        <div class="bg-white rounded-lg shadow p-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">Location</h2>
+        <div class="cozy-card p-6">
+          <h2 class="text-lg font-semibold text-brown mb-4">Location</h2>
           <% if @stay.address.present? %>
-            <p class="text-gray-700 mb-4"><%= @stay.full_address %></p>
+            <p class="text-brown mb-4"><%= @stay.full_address %></p>
           <% end %>
           <% if @stay.latitude.present? && @stay.longitude.present? %>
-            <div id="mini-map" class="h-48 rounded-lg"
+            <div id="mini-map" class="h-48 rounded-2xl"
                  data-controller="mini-map"
                  data-mini-map-lat-value="<%= @stay.latitude %>"
                  data-mini-map-lng-value="<%= @stay.longitude %>"
@@ -117,9 +116,9 @@
 
       <!-- Notes -->
       <% if @stay.notes.present? %>
-        <div class="bg-white rounded-lg shadow p-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">Notes</h2>
-          <div class="prose prose-sm text-gray-700">
+        <div class="cozy-card p-6">
+          <h2 class="text-lg font-semibold text-brown mb-4">Notes</h2>
+          <div class="prose prose-sm text-brown">
             <%= simple_format(@stay.notes) %>
           </div>
         </div>
@@ -127,19 +126,19 @@
 
       <!-- POIs -->
       <% if @pois_by_category.any? %>
-        <div class="bg-white rounded-lg shadow p-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">Nearby Points of Interest</h2>
+        <div class="cozy-card p-6">
+          <h2 class="text-lg font-semibold text-brown mb-4">Nearby Points of Interest</h2>
           <div class="space-y-6">
             <% @pois_by_category.each do |category, pois| %>
               <div>
-                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">
+                <h3 class="text-sm font-medium text-brown-light uppercase tracking-wide mb-2">
                   <%= category.titleize.gsub('_', ' ') %>
                 </h3>
                 <ul class="space-y-2">
                   <% pois.sort_by(&:distance_meters).first(5).each do |poi| %>
-                    <li class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-                      <span class="text-gray-900"><%= poi.name || 'Unnamed' %></span>
-                      <span class="text-sm text-gray-500"><%= poi.distance_meters %>m</span>
+                    <li class="flex items-center justify-between py-2 border-b border-taupe-light last:border-0">
+                      <span class="text-brown"><%= poi.name || 'Unnamed' %></span>
+                      <span class="text-sm text-brown-light"><%= poi.distance_meters %>m</span>
                     </li>
                   <% end %>
                 </ul>
@@ -154,12 +153,12 @@
     <div class="space-y-6">
       <!-- Price -->
       <% if @stay.price_total_cents.present? %>
-        <div class="bg-white rounded-lg shadow p-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-2">Price</h2>
-          <p class="text-2xl font-bold text-gray-900"><%= @stay.price_formatted %></p>
-          <p class="text-sm text-gray-500">Total for <%= @stay.duration_days %> nights</p>
+        <div class="cozy-card p-6">
+          <h2 class="text-lg font-semibold text-brown mb-2">Price</h2>
+          <p class="text-2xl font-bold text-brown"><%= @stay.price_formatted %></p>
+          <p class="text-sm text-brown-light">Total for <%= @stay.duration_days %> nights</p>
           <% if @stay.duration_days > 0 %>
-            <p class="text-sm text-gray-500">
+            <p class="text-sm text-brown-light">
               (~<%= @stay.currency %> <%= (@stay.price_total_cents / @stay.duration_days / 100.0).round(2) %>/night)
             </p>
           <% end %>
@@ -169,9 +168,9 @@
       <!-- Booking Status -->
       <% if @stay.booked? %>
         <% if @stay.booking_url.present? %>
-          <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">Booking</h2>
-            <%= link_to @stay.booking_url, target: "_blank", rel: "noopener", class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 w-full justify-center" do %>
+          <div class="cozy-card p-6">
+            <h2 class="text-lg font-semibold text-brown mb-4">Booking</h2>
+            <%= link_to @stay.booking_url, target: "_blank", rel: "noopener", class: "btn-primary w-full justify-center" do %>
               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
               </svg>
@@ -180,10 +179,10 @@
           </div>
         <% end %>
       <% else %>
-        <div class="bg-amber-50 border border-amber-200 rounded-lg shadow p-6">
-          <h2 class="text-lg font-semibold text-amber-800 mb-2">Not Yet Booked</h2>
-          <p class="text-sm text-amber-700 mb-4">This stay is planned but doesn't have accommodation booked yet.</p>
-          <%= link_to edit_stay_path(@stay), class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-amber-600 hover:bg-amber-700 w-full justify-center" do %>
+        <div class="bg-lavender-light border border-lavender rounded-3xl shadow-cozy p-6">
+          <h2 class="text-lg font-semibold text-lavender-dark mb-2">Not Yet Booked</h2>
+          <p class="text-sm text-lavender-dark mb-4">This stay is planned but doesn't have accommodation booked yet.</p>
+          <%= link_to edit_stay_path(@stay), class: "btn-secondary w-full justify-center bg-lavender hover:bg-lavender-dark" do %>
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
             </svg>
@@ -193,13 +192,13 @@
       <% end %>
 
       <!-- Quick Actions -->
-      <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Actions</h2>
+      <div class="cozy-card p-6">
+        <h2 class="text-lg font-semibold text-brown mb-4">Actions</h2>
         <div class="space-y-2">
-          <%= link_to map_path, class: "block w-full text-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+          <%= link_to map_path, class: "btn-outline w-full justify-center" do %>
             View on Map
           <% end %>
-          <%= link_to timeline_path, class: "block w-full text-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
+          <%= link_to timeline_path, class: "btn-outline w-full justify-center" do %>
             View Timeline
           <% end %>
         </div>
@@ -208,9 +207,12 @@
   </div>
 
   <!-- Back Link -->
-  <div class="mt-8 pt-8 border-t">
-    <%= link_to root_path, class: "text-indigo-600 hover:text-indigo-800" do %>
-      &larr; Back to Dashboard
+  <div class="mt-8 pt-8 border-t border-taupe-light">
+    <%= link_to root_path, class: "text-sage-dark hover:text-sage inline-flex items-center" do %>
+      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Back to Dashboard
     <% end %>
   </div>
 </div>
