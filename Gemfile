@@ -4,8 +4,8 @@ source "https://rubygems.org"
 gem "rails", "~> 8.0.2", ">= 8.0.2.1"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
-# Use sqlite3 as the database for Active Record
-gem "sqlite3", ">= 2.1"
+# Use sqlite3 as the database for Active Record (development/test only)
+# PostgreSQL is used in production for Heroku
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
@@ -52,6 +52,9 @@ gem "httparty"
 gem "devise"
 
 group :development, :test do
+  # Use sqlite3 for development and test
+  gem "sqlite3", ">= 2.1"
+
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 
@@ -75,4 +78,9 @@ group :test do
   gem "minitest", "~> 5.25"
   # HTTP request stubbing for testing external APIs
   gem "webmock"
+end
+
+group :production do
+  # Use PostgreSQL for Heroku production
+  gem "pg"
 end
