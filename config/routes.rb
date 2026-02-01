@@ -19,7 +19,15 @@ Rails.application.routes.draw do
         patch :toggle
       end
     end
+    resources :collaborations, only: [:index, :create, :destroy], controller: 'stay_collaborations' do
+      collection do
+        delete :leave
+      end
+    end
   end
+
+  # Magic link for accepting collaboration invites
+  get "invites/:token", to: "stay_collaborations#accept", as: :accept_invite
 
   get "map", to: "stays#index", as: :map
   get "timeline", to: "timeline#index", as: :timeline

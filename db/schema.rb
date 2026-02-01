@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_26_065531) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_26_100000) do
   create_table "bucket_list_items", force: :cascade do |t|
     t.integer "stay_id", null: false
     t.string "title", null: false
@@ -61,6 +61,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_26_065531) do
     t.index ["osm_id"], name: "index_pois_on_osm_id", unique: true
     t.index ["stay_id", "category"], name: "index_pois_on_stay_id_and_category"
     t.index ["stay_id"], name: "index_pois_on_stay_id"
+  end
+
+  create_table "stay_collaborations", force: :cascade do |t|
+    t.integer "stay_id", null: false
+    t.integer "user_id"
+    t.string "role", default: "editor", null: false
+    t.string "invite_token"
+    t.datetime "invite_accepted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invite_token"], name: "index_stay_collaborations_on_invite_token", unique: true
+    t.index ["stay_id", "user_id"], name: "index_stay_collaborations_on_stay_id_and_user_id", unique: true, where: "user_id IS NOT NULL"
+    t.index ["stay_id"], name: "index_stay_collaborations_on_stay_id"
+    t.index ["user_id"], name: "index_stay_collaborations_on_user_id"
   end
 
   create_table "stays", force: :cascade do |t|
@@ -152,6 +166,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_26_065531) do
 
   add_foreign_key "bucket_list_items", "stays"
   add_foreign_key "pois", "stays"
+  add_foreign_key "stay_collaborations", "stays"
+  add_foreign_key "stay_collaborations", "users"
   add_foreign_key "stays", "users"
   add_foreign_key "transit_routes", "stays"
 end

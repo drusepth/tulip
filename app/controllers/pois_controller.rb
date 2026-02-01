@@ -1,5 +1,6 @@
 class PoisController < ApplicationController
   before_action :set_stay, except: [:search]
+  before_action :require_stay_edit_permission, only: [:update, :destroy]
 
   def browse
     @current_category = params[:category].presence || 'coffee'
@@ -158,7 +159,7 @@ class PoisController < ApplicationController
   private
 
   def set_stay
-    @stay = current_user.stays.find(params[:stay_id] || params[:id])
+    @stay = find_accessible_stay(params[:stay_id] || params[:id])
   end
 
   def ensure_pois_cached(category)

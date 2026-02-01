@@ -1,6 +1,6 @@
 class TimelineController < ApplicationController
   def index
-    @stays = current_user.stays.chronological
+    @stays = current_user.accessible_stays.chronological
     @gaps = @stays.find_gaps
     @today = Date.current
 
