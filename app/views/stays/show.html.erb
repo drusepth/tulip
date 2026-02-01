@@ -403,14 +403,56 @@
       <% end %>
 
       <!-- Quick Actions -->
-      <div class="cozy-card p-6">
-        <h2 class="text-lg font-semibold text-brown mb-4">Actions</h2>
-        <div class="space-y-2">
-          <%= link_to map_path, class: "btn-outline w-full justify-center" do %>
-            View on Map
+      <div class="relative overflow-hidden cozy-card p-6">
+        <!-- Decorative corner flourish -->
+        <div class="absolute top-0 right-0 w-20 h-20 opacity-5">
+          <svg viewBox="0 0 100 100" fill="currentColor" class="text-taupe">
+            <path d="M100 0 Q60 10, 50 50 Q40 90, 0 100 L100 100 Z"/>
+          </svg>
+        </div>
+
+        <!-- Header -->
+        <div class="relative flex items-center gap-3 mb-5">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-taupe-light to-taupe flex items-center justify-center">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-brown">Quick Actions</h2>
+            <p class="text-xs text-brown-light">Explore your journey</p>
+          </div>
+        </div>
+
+        <div class="relative space-y-3">
+          <%= link_to map_path, class: "group flex items-center gap-3 p-3 rounded-2xl border-2 border-taupe-light hover:border-sage hover:bg-sage-light transition-all duration-200" do %>
+            <div class="w-10 h-10 rounded-full bg-sage-light group-hover:bg-sage flex items-center justify-center transition-colors">
+              <svg class="w-5 h-5 text-sage-dark group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="font-medium text-brown group-hover:text-sage-dark transition-colors">View on Map</p>
+              <p class="text-xs text-brown-light">See all your stays</p>
+            </div>
+            <svg class="w-5 h-5 text-taupe group-hover:text-sage-dark group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
           <% end %>
-          <%= link_to timeline_path, class: "btn-outline w-full justify-center" do %>
-            View Timeline
+
+          <%= link_to timeline_path, class: "group flex items-center gap-3 p-3 rounded-2xl border-2 border-taupe-light hover:border-lavender hover:bg-lavender-light transition-all duration-200" do %>
+            <div class="w-10 h-10 rounded-full bg-lavender-light group-hover:bg-lavender flex items-center justify-center transition-colors">
+              <svg class="w-5 h-5 text-lavender-dark group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="font-medium text-brown group-hover:text-lavender-dark transition-colors">View Timeline</p>
+              <p class="text-xs text-brown-light">Your travel schedule</p>
+            </div>
+            <svg class="w-5 h-5 text-taupe group-hover:text-lavender-dark group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
           <% end %>
         </div>
       </div>
