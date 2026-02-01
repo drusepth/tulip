@@ -1,17 +1,39 @@
 <%= turbo_frame_tag "bucket_list_section", class: "block" do %>
-  <div class="cozy-card p-6" data-controller="collapsible">
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-4">
-      <div class="flex items-center gap-2">
-        <svg class="w-5 h-5 text-sage-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
-        </svg>
-        <h2 class="text-lg font-semibold text-brown">Bucket List</h2>
+  <% pending_count = stay.bucket_list_items.pending.count %>
+  <% completed_count = stay.bucket_list_items.completed.count %>
+  <% total_count = pending_count + completed_count %>
+  <% progress_percent = total_count > 0 ? (completed_count.to_f / total_count * 100).round : 0 %>
+
+  <div class="relative overflow-hidden cozy-card p-6" data-controller="collapsible">
+    <!-- Decorative corner flourish -->
+    <div class="absolute top-0 right-0 w-20 h-20 opacity-5">
+      <svg viewBox="0 0 100 100" fill="currentColor" class="text-sage-dark">
+        <path d="M100 0 Q60 10, 50 50 Q40 90, 0 100 L100 100 Z"/>
+      </svg>
+    </div>
+
+    <!-- Header with progress -->
+    <div class="relative flex items-start justify-between mb-5">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-sage-light to-sage flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-lg font-semibold text-brown">Bucket List</h2>
+          <p class="text-xs text-brown-light">Things to do on this trip</p>
+        </div>
       </div>
-      <% pending_count = stay.bucket_list_items.pending.count %>
-      <% completed_count = stay.bucket_list_items.completed.count %>
-      <% if pending_count > 0 || completed_count > 0 %>
-        <span class="text-sm text-brown-light"><%= completed_count %>/<%= pending_count + completed_count %> completed</span>
+      <% if total_count > 0 %>
+        <div class="text-right">
+          <div class="flex items-center gap-2">
+            <div class="w-16 h-2 bg-taupe-light rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-sage to-sage-dark rounded-full transition-all duration-500" style="width: <%= progress_percent %>%"></div>
+            </div>
+            <span class="text-sm font-medium text-sage-dark"><%= completed_count %>/<%= total_count %></span>
+          </div>
+        </div>
       <% end %>
     </div>
 
@@ -19,43 +41,65 @@
     <%= render "bucket_list_items/form", stay: stay %>
 
     <!-- Pending Items -->
-    <div id="bucket_list_pending_items" class="mt-4 space-y-2">
-      <% stay.bucket_list_items.pending.ordered.each do |item| %>
-        <%= render "bucket_list_items/item", bucket_list_item: item %>
-      <% end %>
-    </div>
+    <% if pending_count > 0 %>
+      <div id="bucket_list_pending_items" class="mt-5 space-y-1">
+        <% stay.bucket_list_items.pending.ordered.each do |item| %>
+          <%= render "bucket_list_items/item", bucket_list_item: item %>
+        <% end %>
+      </div>
+    <% else %>
+      <div id="bucket_list_pending_items" class="mt-5">
+        <% if total_count == 0 %>
+          <div class="text-center py-6">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-taupe-light flex items-center justify-center">
+              <svg class="w-6 h-6 text-taupe" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+            </div>
+            <p class="text-brown-light text-sm">No items yet</p>
+            <p class="text-taupe text-xs mt-1">Add restaurants, attractions, or activities above</p>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
 
     <!-- Completed Items (Collapsible) -->
     <% completed_items = stay.bucket_list_items.completed.ordered %>
     <% if completed_items.any? %>
-      <div class="mt-4 pt-4 border-t border-taupe-light">
+      <div class="mt-5 pt-4 border-t border-taupe-light">
         <button type="button"
-                class="flex items-center gap-2 text-sm text-brown-light hover:text-brown transition-colors"
+                class="flex items-center gap-2 text-sm text-sage-dark hover:text-sage transition-colors"
                 data-action="click->collapsible#toggle"
                 data-collapsible-target="trigger">
-          <svg class="w-4 h-4 transform transition-transform" data-collapsible-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 transform transition-transform duration-200" data-collapsible-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
           </svg>
-          <span><%= completed_items.count %> completed item<%= completed_items.count == 1 ? '' : 's' %></span>
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"></path>
+          </svg>
+          <span><%= completed_items.count %> completed</span>
         </button>
-        <div class="hidden mt-2 space-y-2" data-collapsible-target="content" id="bucket_list_completed_items">
+        <div class="hidden mt-3 space-y-1" data-collapsible-target="content" id="bucket_list_completed_items">
           <% completed_items.each do |item| %>
             <%= render "bucket_list_items/item", bucket_list_item: item %>
           <% end %>
         </div>
       </div>
     <% else %>
-      <div id="bucket_list_completed_container" class="hidden mt-4 pt-4 border-t border-taupe-light">
+      <div id="bucket_list_completed_container" class="hidden mt-5 pt-4 border-t border-taupe-light">
         <button type="button"
-                class="flex items-center gap-2 text-sm text-brown-light hover:text-brown transition-colors"
+                class="flex items-center gap-2 text-sm text-sage-dark hover:text-sage transition-colors"
                 data-action="click->collapsible#toggle"
                 data-collapsible-target="trigger">
-          <svg class="w-4 h-4 transform transition-transform" data-collapsible-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 transform transition-transform duration-200" data-collapsible-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
           </svg>
-          <span data-collapsible-target="countLabel">0 completed items</span>
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"></path>
+          </svg>
+          <span data-collapsible-target="countLabel">0 completed</span>
         </button>
-        <div class="hidden mt-2 space-y-2" data-collapsible-target="content" id="bucket_list_completed_items">
+        <div class="hidden mt-3 space-y-1" data-collapsible-target="content" id="bucket_list_completed_items">
         </div>
       </div>
     <% end %>

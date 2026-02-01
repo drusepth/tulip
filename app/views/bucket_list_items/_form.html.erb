@@ -2,44 +2,53 @@
              id: "bucket_list_form",
              class: "bucket-list-form",
              data: { controller: "bucket-list-form" } do |f| %>
-  <div class="flex gap-2 items-center">
-    <%= f.text_field :title,
-                     placeholder: "Add something...",
-                     class: "flex-1 px-4 py-2 border border-taupe rounded-full bg-white text-brown placeholder-brown-lighter focus:outline-none focus:border-sage focus:ring-2 focus:ring-sage",
-                     data: { bucket_list_form_target: "titleInput" } %>
-
-    <%= f.submit "Add", class: "btn-primary" %>
-  </div>
-
-  <!-- Expandable extra fields -->
-  <div class="mt-2">
-    <button type="button"
-            class="text-sm text-brown-light hover:text-brown flex items-center gap-1 transition-colors"
-            data-action="click->bucket-list-form#toggleExpand"
-            data-bucket-list-form-target="expandButton">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-      </svg>
-      <span data-bucket-list-form-target="expandLabel">Add location or notes</span>
-    </button>
-
-    <div class="hidden mt-3 space-y-3" data-bucket-list-form-target="extraFields">
-      <div>
-        <label class="cozy-label" for="bucket_list_item_address">
-          Address (optional)
-        </label>
-        <%= f.text_field :address,
-                         placeholder: "e.g. 123 Main St, San Francisco",
-                         class: "cozy-input" %>
+  <div class="relative">
+    <div class="flex gap-2 items-center">
+      <div class="relative flex-1">
+        <div class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+          <svg class="w-4 h-4 text-taupe" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+        </div>
+        <%= f.text_field :title,
+                         placeholder: "Add a restaurant, activity, or place...",
+                         class: "w-full pl-10 pr-4 py-2.5 border-2 border-taupe-light rounded-2xl bg-white text-brown placeholder-brown-lighter focus:outline-none focus:border-sage focus:bg-sage-light transition-colors",
+                         data: { bucket_list_form_target: "titleInput" } %>
       </div>
-      <div>
-        <label class="cozy-label" for="bucket_list_item_notes">
-          Notes (optional)
-        </label>
-        <%= f.text_area :notes,
-                        placeholder: "Any additional details...",
-                        rows: 2,
-                        class: "cozy-textarea" %>
+
+      <%= f.submit "Add", class: "btn-primary px-5" %>
+    </div>
+
+    <!-- Expandable extra fields -->
+    <div class="mt-2 ml-1">
+      <button type="button"
+              class="text-xs text-brown-light hover:text-sage-dark flex items-center gap-1.5 transition-colors"
+              data-action="click->bucket-list-form#toggleExpand"
+              data-bucket-list-form-target="expandButton">
+        <svg class="w-3 h-3 transform transition-transform" data-bucket-list-form-target="expandIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+        <span data-bucket-list-form-target="expandLabel">More options</span>
+      </button>
+
+      <div class="hidden mt-3 ml-2 pl-4 border-l-2 border-taupe-light space-y-3" data-bucket-list-form-target="extraFields">
+        <div>
+          <label class="text-xs font-medium text-brown-light mb-1 block">
+            Location
+          </label>
+          <%= f.text_field :address,
+                           placeholder: "Where is it?",
+                           class: "w-full px-3 py-2 text-sm border border-taupe-light rounded-xl bg-white text-brown placeholder-brown-lighter focus:outline-none focus:border-sage" %>
+        </div>
+        <div>
+          <label class="text-xs font-medium text-brown-light mb-1 block">
+            Notes
+          </label>
+          <%= f.text_area :notes,
+                          placeholder: "Any details to remember...",
+                          rows: 2,
+                          class: "w-full px-3 py-2 text-sm border border-taupe-light rounded-xl bg-white text-brown placeholder-brown-lighter focus:outline-none focus:border-sage resize-none" %>
+        </div>
       </div>
     </div>
   </div>
