@@ -39,7 +39,59 @@
 
       <div>
         <%= form.label :state, "State/Province", class: "cozy-label" %>
-        <%= form.text_field :state, class: "cozy-input", placeholder: "California" %>
+        <%= form.text_field :state, class: "cozy-input", placeholder: "California", list: "us-states" %>
+        <datalist id="us-states">
+          <option value="Alabama">
+          <option value="Alaska">
+          <option value="Arizona">
+          <option value="Arkansas">
+          <option value="California">
+          <option value="Colorado">
+          <option value="Connecticut">
+          <option value="Delaware">
+          <option value="Florida">
+          <option value="Georgia">
+          <option value="Hawaii">
+          <option value="Idaho">
+          <option value="Illinois">
+          <option value="Indiana">
+          <option value="Iowa">
+          <option value="Kansas">
+          <option value="Kentucky">
+          <option value="Louisiana">
+          <option value="Maine">
+          <option value="Maryland">
+          <option value="Massachusetts">
+          <option value="Michigan">
+          <option value="Minnesota">
+          <option value="Mississippi">
+          <option value="Missouri">
+          <option value="Montana">
+          <option value="Nebraska">
+          <option value="Nevada">
+          <option value="New Hampshire">
+          <option value="New Jersey">
+          <option value="New Mexico">
+          <option value="New York">
+          <option value="North Carolina">
+          <option value="North Dakota">
+          <option value="Ohio">
+          <option value="Oklahoma">
+          <option value="Oregon">
+          <option value="Pennsylvania">
+          <option value="Rhode Island">
+          <option value="South Carolina">
+          <option value="South Dakota">
+          <option value="Tennessee">
+          <option value="Texas">
+          <option value="Utah">
+          <option value="Vermont">
+          <option value="Virginia">
+          <option value="Washington">
+          <option value="West Virginia">
+          <option value="Wisconsin">
+          <option value="Wyoming">
+        </datalist>
       </div>
 
       <div>
@@ -64,16 +116,30 @@
     </div>
   </div>
 
-  <!-- Image URL -->
-  <div>
-    <%= form.label :image_url, "Image URL", class: "cozy-label" %>
-    <%= form.url_field :image_url, class: "cozy-input", placeholder: "https://..." %>
-  </div>
+  <!-- Optional Fields (Collapsible) -->
+  <div data-controller="collapsible">
+    <button type="button"
+            class="flex items-center gap-2 text-sm text-sage-dark hover:text-sage transition-colors py-2"
+            data-action="click->collapsible#toggle"
+            data-collapsible-target="trigger">
+      <svg class="w-4 h-4 transform transition-transform duration-200" data-collapsible-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+      <span>Additional details (optional)</span>
+    </button>
+    <div class="<%= stay.image_url.present? || stay.notes.present? ? '' : 'hidden' %> mt-3 space-y-4" data-collapsible-target="content">
+      <!-- Image URL -->
+      <div>
+        <%= form.label :image_url, "Image URL", class: "cozy-label" %>
+        <%= form.url_field :image_url, class: "cozy-input", placeholder: "https://..." %>
+      </div>
 
-  <!-- Notes -->
-  <div>
-    <%= form.label :notes, class: "cozy-label" %>
-    <%= form.text_area :notes, rows: 3, class: "cozy-textarea", placeholder: "Any notes about this stay..." %>
+      <!-- Notes -->
+      <div>
+        <%= form.label :notes, class: "cozy-label" %>
+        <%= form.text_area :notes, rows: 3, class: "cozy-textarea", placeholder: "Any notes about this stay..." %>
+      </div>
+    </div>
   </div>
 
   <!-- Booked Status Toggle -->
