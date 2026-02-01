@@ -73,7 +73,7 @@
           <% end %>
           <div class="absolute inset-0 p-6 flex flex-col justify-end text-white">
             <div class="flex items-center gap-2 mb-2">
-              <span class="badge badge-current bg-rose/90 text-white">
+              <span class="badge badge-current bg-rose text-white">
                 You are here
               </span>
               <% unless @current_stay.booked? %>
@@ -83,8 +83,8 @@
               <% end %>
             </div>
             <h2 class="text-2xl font-bold group-hover:underline"><%= @current_stay.title %></h2>
-            <p class="text-white/90 mt-1"><%= [@current_stay.city, @current_stay.country].compact.join(', ') %></p>
-            <div class="mt-3 flex items-center justify-between text-sm text-white/80">
+            <p class="text-white mt-1"><%= [@current_stay.city, @current_stay.country].compact.join(', ') %></p>
+            <div class="mt-3 flex items-center justify-between text-sm text-white opacity-80">
               <span><%= @current_stay.check_in.strftime('%b %d') %> - <%= @current_stay.check_out.strftime('%b %d, %Y') %></span>
               <span class="font-semibold text-white"><%= pluralize(@current_stay.days_until_check_out, 'day') %> remaining</span>
             </div>
@@ -117,7 +117,7 @@
           <div class="absolute inset-0 p-6 flex flex-col justify-end text-white">
             <div class="flex items-center gap-2 mb-2">
               <% if @next_stay.booked? %>
-                <span class="badge badge-upcoming bg-sage/90 text-white">
+                <span class="badge badge-upcoming bg-sage text-white">
                   Next up
                 </span>
               <% else %>
@@ -125,11 +125,11 @@
                   Planned
                 </span>
               <% end %>
-              <span class="text-white/90 text-sm">in <%= pluralize(@next_stay.days_until_check_in, 'day') %></span>
+              <span class="text-white text-sm">in <%= pluralize(@next_stay.days_until_check_in, 'day') %></span>
             </div>
             <h2 class="text-2xl font-bold group-hover:underline"><%= @next_stay.title %></h2>
-            <p class="text-white/90 mt-1"><%= [@next_stay.city, @next_stay.country].compact.join(', ') %></p>
-            <div class="mt-3 flex items-center justify-between text-sm text-white/80">
+            <p class="text-white mt-1"><%= [@next_stay.city, @next_stay.country].compact.join(', ') %></p>
+            <div class="mt-3 flex items-center justify-between text-sm text-white opacity-80">
               <span><%= @next_stay.check_in.strftime('%b %d') %> - <%= @next_stay.check_out.strftime('%b %d, %Y') %></span>
               <% if @next_stay.booked? %>
                 <span class="font-semibold text-white"><%= pluralize(@next_stay.duration_days, 'night') %></span>
@@ -141,15 +141,22 @@
         </div>
       <% end %>
     <% else %>
-      <div class="cozy-card h-72 flex items-center justify-center">
-        <div class="text-center text-brown-light">
-          <svg class="w-12 h-12 mx-auto mb-3 text-taupe" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path>
-          </svg>
-          <p class="font-medium text-brown">No upcoming stays</p>
-          <%= link_to "Add your next adventure", new_stay_path, class: "text-sage-dark hover:text-sage text-sm" %>
+      <%= link_to new_stay_path, class: "block group" do %>
+        <div class="cozy-card h-72 flex items-center justify-center cursor-pointer
+                    transition-all duration-300 ease-out
+                    hover:shadow-xl hover:scale-[1.02] hover:border-sage
+                    hover:bg-gradient-to-br hover:from-white hover:to-sage-light/30">
+          <div class="text-center text-brown-light transition-transform duration-300 group-hover:scale-105">
+            <div class="relative">
+              <svg class="w-12 h-12 mx-auto mb-3 text-taupe transition-all duration-300 group-hover:text-sage group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path>
+              </svg>
+            </div>
+            <p class="font-medium text-brown transition-colors duration-300 group-hover:text-sage-dark">No upcoming stays</p>
+            <p class="text-sage-dark text-sm transition-all duration-300 group-hover:text-sage group-hover:font-medium">Add your next adventure</p>
+          </div>
         </div>
-      </div>
+      <% end %>
     <% end %>
   </div>
 
@@ -182,8 +189,8 @@
                   <% end %>
                 </div>
                 <h3 class="font-semibold group-hover:underline truncate"><%= stay.title %></h3>
-                <p class="text-white/80 text-sm"><%= [stay.city, stay.country].compact.join(', ') %></p>
-                <div class="mt-2 flex items-center justify-between text-xs text-white/70">
+                <p class="text-white opacity-80 text-sm"><%= [stay.city, stay.country].compact.join(', ') %></p>
+                <div class="mt-2 flex items-center justify-between text-xs text-white opacity-70">
                   <span><%= stay.check_in.strftime('%b %d') %> - <%= stay.check_out.strftime('%b %d') %></span>
                   <span>in <%= pluralize(stay.days_until_check_in, 'day') %></span>
                 </div>
@@ -237,7 +244,7 @@
           <ul class="divide-y divide-taupe-light">
             <% @recent_stays.each do |stay| %>
               <li>
-                <%= link_to stay_path(stay), class: "flex items-center gap-4 px-6 py-4 hover:bg-taupe-light/30 transition-colors" do %>
+                <%= link_to stay_path(stay), class: "flex items-center gap-4 px-6 py-4 hover:bg-taupe-light transition-colors" do %>
                   <% if stay.image_url.present? %>
                     <img src="<%= stay.image_url %>" alt="<%= stay.title %>"
                          class="w-12 h-12 rounded-xl object-cover flex-shrink-0">

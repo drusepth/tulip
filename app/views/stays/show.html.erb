@@ -1,10 +1,4 @@
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <% if notice.present? %>
-    <div class="mb-6 alert-success p-4">
-      <p class="text-sage-dark"><%= notice %></p>
-    </div>
-  <% end %>
-
   <!-- Hero Image -->
   <% if @stay.image_url.present? %>
     <div class="mb-8 rounded-3xl overflow-hidden shadow-cozy-lg warm-overlay">
@@ -78,21 +72,23 @@
           </div>
         </div>
         <div class="mt-4 pt-4 border-t border-taupe-light">
-          <div class="flex items-center justify-between">
-            <span class="text-brown-light">Duration</span>
-            <span class="font-medium text-brown"><%= @stay.duration_days %> nights</span>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-2xl font-bold text-brown"><%= @stay.duration_days %> nights</p>
+              <p class="text-sm text-brown-light">Duration</p>
+            </div>
+            <% if @stay.status == 'upcoming' && @stay.days_until_check_in.present? %>
+              <div class="text-right">
+                <p class="text-2xl font-bold text-sage-dark"><%= @stay.days_until_check_in %> days</p>
+                <p class="text-sm text-sage-dark">until check-in</p>
+              </div>
+            <% elsif @stay.status == 'current' && @stay.days_until_check_out.present? %>
+              <div class="text-right">
+                <p class="text-2xl font-bold text-rose-dark"><%= @stay.days_until_check_out %> days</p>
+                <p class="text-sm text-rose-dark">until check-out</p>
+              </div>
+            <% end %>
           </div>
-          <% if @stay.status == 'upcoming' && @stay.days_until_check_in.present? %>
-            <div class="mt-2 flex items-center justify-between text-sage-dark">
-              <span>Countdown</span>
-              <span class="font-medium"><%= @stay.days_until_check_in %> days until check-in</span>
-            </div>
-          <% elsif @stay.status == 'current' && @stay.days_until_check_out.present? %>
-            <div class="mt-2 flex items-center justify-between text-rose-dark">
-              <span>Time remaining</span>
-              <span class="font-medium"><%= @stay.days_until_check_out %> days until check-out</span>
-            </div>
-          <% end %>
         </div>
       </div>
 
@@ -191,88 +187,184 @@
       <!-- Booking Status -->
       <% if @stay.booked? %>
         <% if @stay.booking_url.present? %>
-          <div class="cozy-card p-6">
-            <h2 class="text-lg font-semibold text-brown mb-4">Booking</h2>
-            <%= link_to @stay.booking_url, target: "_blank", rel: "noopener", class: "btn-primary w-full justify-center" do %>
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-              </svg>
-              View Booking
-            <% end %>
-          </div>
+          <%= link_to @stay.booking_url, target: "_blank", rel: "noopener", class: "block group" do %>
+            <div class="relative overflow-hidden rounded-3xl shadow-cozy p-6 cursor-pointer
+                        bg-gradient-to-br from-sage-light via-white to-rose-light
+                        border-2 border-sage
+                        transition-all duration-300 ease-out
+                        hover:shadow-xl hover:scale-[1.02] hover:border-sage">
+              <!-- Decorative elements -->
+              <div class="absolute top-0 right-0 w-24 h-24 opacity-10 transform translate-x-8 -translate-y-8">
+                <svg viewBox="0 0 100 100" fill="currentColor" class="text-sage-dark">
+                  <path d="M50 5 C60 20, 80 20, 80 40 C80 60, 60 70, 50 95 C40 70, 20 60, 20 40 C20 20, 40 20, 50 5Z"/>
+                </svg>
+              </div>
+              <div class="absolute bottom-0 left-0 w-16 h-16 opacity-10 transform -translate-x-4 translate-y-4">
+                <svg viewBox="0 0 100 100" fill="currentColor" class="text-rose">
+                  <path d="M50 5 C60 20, 80 20, 80 40 C80 60, 60 70, 50 95 C40 70, 20 60, 20 40 C20 20, 40 20, 50 5Z"/>
+                </svg>
+              </div>
+
+              <div class="relative flex items-center justify-between">
+                <div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-sage-light">
+                      <svg class="w-4 h-4 text-sage-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                    </span>
+                    <span class="text-xs font-medium text-sage-dark uppercase tracking-wide">Confirmed</span>
+                  </div>
+                  <h2 class="text-lg font-semibold text-brown group-hover:text-sage-dark transition-colors">View Booking</h2>
+                  <p class="text-sm text-brown-light">Open reservation details</p>
+                </div>
+                <div class="flex-shrink-0">
+                  <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center group-hover:bg-sage group-hover:shadow-md transition-all duration-300">
+                    <svg class="w-5 h-5 text-sage-dark group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
         <% end %>
       <% else %>
         <% days_until = @stay.days_until_check_in %>
         <% needs_urgent_booking = @stay.needs_booking_alert? %>
-        <div class="<%= needs_urgent_booking ? 'bg-coral-light border-coral' : 'bg-lavender-light border-lavender' %> border rounded-3xl shadow-cozy p-6">
-          <h2 class="text-lg font-semibold <%= needs_urgent_booking ? 'text-coral-dark' : 'text-lavender-dark' %> mb-2">Not Yet Booked</h2>
-          <% if days_until && days_until > 0 %>
-            <p class="text-sm <%= needs_urgent_booking ? 'text-coral-dark font-medium' : 'text-lavender-dark' %> mb-2">
-              <strong><%= days_until %> days</strong> until check-in
-            </p>
-          <% end %>
-          <% if needs_urgent_booking %>
-            <p class="text-sm text-coral-dark mb-4">This stay is coming up soon! Make sure to book accommodation.</p>
-          <% else %>
-            <p class="text-sm text-lavender-dark mb-4">This stay is planned but doesn't have accommodation booked yet.</p>
-          <% end %>
-          <%= link_to edit_stay_path(@stay), class: "btn-secondary w-full justify-center #{needs_urgent_booking ? 'bg-coral hover:bg-coral-dark' : 'bg-lavender hover:bg-lavender-dark'}" do %>
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Book This Stay
-          <% end %>
-        </div>
+        <% card_gradient = needs_urgent_booking ? 'from-coral to-rose' : 'from-lavender to-lavender-dark' %>
+        <% text_color = needs_urgent_booking ? 'text-coral-dark' : 'text-lavender-dark' %>
+        <%= link_to edit_stay_path(@stay), class: "block group" do %>
+          <div class="relative overflow-hidden rounded-3xl shadow-cozy p-6 cursor-pointer bg-gradient-to-br <%= card_gradient %> transition-all duration-300 ease-out hover:shadow-xl hover:scale-[1.02] hover:brightness-105">
+            <!-- Decorative elements -->
+            <div class="absolute top-0 right-0 w-24 h-24 opacity-20 transform translate-x-8 -translate-y-8">
+              <svg viewBox="0 0 100 100" fill="currentColor" class="text-white">
+                <path d="M50 10 Q65 25, 65 45 Q65 65, 50 80 Q35 65, 35 45 Q35 25, 50 10 Z"/>
+                <path d="M30 30 Q45 35, 50 50 Q45 55, 30 50 Q25 40, 30 30 Z" opacity="0.6"/>
+                <path d="M70 30 Q55 35, 50 50 Q55 55, 70 50 Q75 40, 70 30 Z" opacity="0.6"/>
+              </svg>
+            </div>
+            <div class="absolute bottom-0 left-0 w-20 h-20 opacity-15 transform -translate-x-6 translate-y-6">
+              <svg viewBox="0 0 100 100" fill="currentColor" class="text-white">
+                <circle cx="50" cy="50" r="35"/>
+                <circle cx="50" cy="50" r="20" opacity="0.5"/>
+              </svg>
+            </div>
+
+            <div class="relative">
+              <!-- Status indicator -->
+              <div class="flex items-center gap-2 mb-3">
+                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full" style="background-color: rgba(255,255,255,0.3);">
+                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </span>
+                <span class="text-xs font-medium text-white uppercase tracking-wide">
+                  <%= needs_urgent_booking ? 'Book Soon' : 'Planned' %>
+                </span>
+              </div>
+
+              <!-- Main content -->
+              <h2 class="text-xl font-semibold text-white mb-1">
+                Find Your Stay
+              </h2>
+              <p class="text-sm text-white mb-4" style="opacity: 0.85;">
+                <%= needs_urgent_booking ? 'This adventure is coming up soon!' : 'Time to find the perfect place' %>
+              </p>
+
+              <% if days_until && days_until > 0 %>
+                <!-- Countdown pill -->
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full" style="background-color: rgba(255,255,255,0.9);">
+                  <span class="text-2xl font-bold <%= text_color %>"><%= days_until %></span>
+                  <span class="text-sm <%= text_color %>">days until check-in</span>
+                </div>
+              <% end %>
+
+              <!-- Arrow indicator -->
+              <div class="absolute top-0 right-0">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center group-hover:scale-110 transition-all duration-300" style="background-color: rgba(255,255,255,0.3);">
+                  <svg class="w-5 h-5 text-white group-hover:translate-x-0.5 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
       <% end %>
 
       <!-- Expected Weather -->
       <% if @weather.present? %>
-        <div class="cozy-card p-6">
-          <h2 class="text-lg font-semibold text-brown mb-4">Expected Weather</h2>
+        <%= link_to weather_stay_path(@stay), class: "block group" do %>
+          <div class="relative overflow-hidden rounded-3xl shadow-cozy p-6 cursor-pointer
+                      bg-gradient-to-br from-sky-50 via-white to-amber-50
+                      border border-taupe-light
+                      transition-all duration-300 ease-out
+                      hover:shadow-xl hover:scale-[1.02]">
+            <!-- Decorative sun -->
+            <div class="absolute -top-4 -right-4 w-20 h-20 opacity-20">
+              <svg viewBox="0 0 100 100" fill="currentColor" class="text-amber-400">
+                <circle cx="50" cy="50" r="20"/>
+                <g stroke="currentColor" stroke-width="4" fill="none">
+                  <line x1="50" y1="5" x2="50" y2="20"/>
+                  <line x1="50" y1="80" x2="50" y2="95"/>
+                  <line x1="5" y1="50" x2="20" y2="50"/>
+                  <line x1="80" y1="50" x2="95" y2="50"/>
+                  <line x1="18" y1="18" x2="28" y2="28"/>
+                  <line x1="72" y1="72" x2="82" y2="82"/>
+                  <line x1="18" y1="82" x2="28" y2="72"/>
+                  <line x1="72" y1="28" x2="82" y2="18"/>
+                </g>
+              </svg>
+            </div>
+            <!-- Decorative cloud -->
+            <div class="absolute bottom-2 left-2 w-16 h-10 opacity-10">
+              <svg viewBox="0 0 100 60" fill="currentColor" class="text-slate-400">
+                <path d="M80 60H25c-13.8 0-25-11.2-25-25 0-12.4 9.1-22.7 21-24.5C23.5 4.5 31.5 0 40.5 0c12.4 0 23 8.4 26.1 20 1.1-.1 2.3-.2 3.4-.2 16.6 0 30 13.4 30 30S96.6 60 80 60z"/>
+              </svg>
+            </div>
 
-          <!-- Temperature Summary -->
-          <div class="grid grid-cols-3 gap-4 mb-4">
-            <div class="text-center">
-              <p class="text-sm text-brown-light">Low</p>
-              <p class="text-2xl font-bold text-sage-dark"><%= @weather[:low] %>°</p>
+            <!-- Header -->
+            <div class="relative mb-4">
+              <h2 class="text-lg font-semibold text-brown group-hover:text-sage-dark transition-colors">Expected Weather</h2>
+              <p class="text-xs text-brown-light">for your dates</p>
             </div>
-            <div class="text-center">
-              <p class="text-sm text-brown-light">Average</p>
-              <p class="text-2xl font-bold text-brown"><%= @weather[:average] %>°</p>
-            </div>
-            <div class="text-center">
-              <p class="text-sm text-brown-light">High</p>
-              <p class="text-2xl font-bold text-rose-dark"><%= @weather[:high] %>°</p>
-            </div>
-          </div>
 
-          <!-- Weather Conditions -->
-          <div class="pt-4 border-t border-taupe-light">
-            <p class="text-sm text-brown-light mb-3">Conditions to expect</p>
-            <ul class="space-y-2">
+            <!-- Temperature Summary -->
+            <div class="relative grid grid-cols-3 gap-2 mb-4">
+              <div class="text-center p-3 rounded-2xl bg-white opacity-90">
+                <p class="text-2xl font-bold text-sage-dark"><%= @weather[:low] %>°</p>
+                <p class="text-xs text-brown-light">Low</p>
+              </div>
+              <div class="text-center p-3 rounded-2xl bg-white shadow-sm">
+                <p class="text-2xl font-bold text-brown"><%= @weather[:average] %>°</p>
+                <p class="text-xs text-brown-light">Avg</p>
+              </div>
+              <div class="text-center p-3 rounded-2xl bg-white opacity-90">
+                <p class="text-2xl font-bold text-rose-dark"><%= @weather[:high] %>°</p>
+                <p class="text-xs text-brown-light">High</p>
+              </div>
+            </div>
+
+            <!-- Weather Conditions - Compact -->
+            <div class="relative flex flex-wrap gap-2">
               <% @weather[:conditions].each do |condition, count| %>
-                <li class="flex items-center justify-between py-2 border-b border-taupe-light last:border-0">
-                  <div class="flex items-center gap-3">
-                    <span class="text-2xl"><%= weather_icon(condition) %></span>
-                    <span class="text-brown font-medium"><%= condition %></span>
-                  </div>
+                <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white text-sm">
+                  <span><%= weather_icon(condition) %></span>
                   <span class="text-brown-light">×<%= count %></span>
-                </li>
+                </div>
               <% end %>
-            </ul>
-          </div>
+            </div>
 
-          <div class="mt-4 pt-4 border-t border-taupe-light">
-            <%= link_to weather_stay_path(@stay), class: "text-sage-dark hover:text-sage text-sm inline-flex items-center" do %>
-              View detailed forecast
-              <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <!-- Footer hint -->
+            <div class="relative mt-4 pt-3 border-t border-taupe-light flex items-center justify-between">
+              <p class="text-xs text-taupe">Based on historical data</p>
+              <svg class="w-4 h-4 text-brown-light group-hover:text-sage-dark group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
               </svg>
-            <% end %>
+            </div>
           </div>
-
-          <p class="mt-3 text-xs text-taupe">Based on historical weather data from previous years</p>
-        </div>
+        <% end %>
       <% end %>
 
       <!-- Price -->

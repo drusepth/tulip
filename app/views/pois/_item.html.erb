@@ -1,7 +1,7 @@
 <%= turbo_frame_tag dom_id(poi) do %>
   <% has_details = poi_has_details?(poi) %>
   <li class="py-3 border-b border-taupe-light last:border-0" data-controller="collapsible">
-    <div class="flex items-start justify-between cursor-pointer hover:bg-cream/50 -mx-2 px-2 rounded-lg transition-colors"
+    <div class="flex items-start justify-between cursor-pointer hover:bg-cream -mx-2 px-2 rounded-lg transition-colors"
          data-action="click->collapsible#toggle">
       <div class="flex items-start gap-3 flex-1 min-w-0">
         <%= button_to stay_bucket_list_items_path(stay),

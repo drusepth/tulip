@@ -142,6 +142,41 @@ h1, h2, h3, h4, h5, h6 {
 .focus\:ring-sage:focus { --tw-ring-color: var(--color-sage); }
 .focus\:border-sage:focus { border-color: var(--color-sage); }
 
+/* Gradient Color Stops */
+.from-sage { --tw-gradient-from: var(--color-sage); --tw-gradient-to: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.from-sage-light { --tw-gradient-from: var(--color-sage-light); --tw-gradient-to: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.from-sage-dark { --tw-gradient-from: var(--color-sage-dark); --tw-gradient-to: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.from-rose { --tw-gradient-from: var(--color-rose); --tw-gradient-to: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.from-rose-light { --tw-gradient-from: var(--color-rose-light); --tw-gradient-to: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.from-rose-dark { --tw-gradient-from: var(--color-rose-dark); --tw-gradient-to: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.from-taupe { --tw-gradient-from: var(--color-taupe); --tw-gradient-to: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.from-taupe-light { --tw-gradient-from: var(--color-taupe-light); --tw-gradient-to: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.from-taupe-dark { --tw-gradient-from: var(--color-taupe-dark); --tw-gradient-to: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.from-lavender { --tw-gradient-from: var(--color-lavender); --tw-gradient-to: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.from-lavender-light { --tw-gradient-from: var(--color-lavender-light); --tw-gradient-to: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.from-lavender-dark { --tw-gradient-from: var(--color-lavender-dark); --tw-gradient-to: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.from-coral { --tw-gradient-from: var(--color-coral); --tw-gradient-to: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.from-coral-light { --tw-gradient-from: var(--color-coral-light); --tw-gradient-to: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.from-coral-dark { --tw-gradient-from: var(--color-coral-dark); --tw-gradient-to: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+.from-cream { --tw-gradient-from: var(--color-cream); --tw-gradient-to: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+
+.to-sage { --tw-gradient-to: var(--color-sage); }
+.to-sage-light { --tw-gradient-to: var(--color-sage-light); }
+.to-sage-dark { --tw-gradient-to: var(--color-sage-dark); }
+.to-rose { --tw-gradient-to: var(--color-rose); }
+.to-rose-light { --tw-gradient-to: var(--color-rose-light); }
+.to-rose-dark { --tw-gradient-to: var(--color-rose-dark); }
+.to-taupe { --tw-gradient-to: var(--color-taupe); }
+.to-taupe-light { --tw-gradient-to: var(--color-taupe-light); }
+.to-taupe-dark { --tw-gradient-to: var(--color-taupe-dark); }
+.to-lavender { --tw-gradient-to: var(--color-lavender); }
+.to-lavender-light { --tw-gradient-to: var(--color-lavender-light); }
+.to-lavender-dark { --tw-gradient-to: var(--color-lavender-dark); }
+.to-coral { --tw-gradient-to: var(--color-coral); }
+.to-coral-light { --tw-gradient-to: var(--color-coral-light); }
+.to-coral-dark { --tw-gradient-to: var(--color-coral-dark); }
+.to-cream { --tw-gradient-to: var(--color-cream); }
+
 /* ========================================
    Decorative Elements
    ======================================== */
