@@ -1,0 +1,7 @@
+<%= turbo_stream.remove dom_id(@collaboration) %>
+
+<%= turbo_stream.replace "flash" do %>
+  <div id="flash" class="mb-6 alert-success p-4">
+    <p class="text-sage-dark"><%= @collaboration.pending? ? "Invite cancelled" : "Collaborator removed" %></p>
+  </div>
+<% end %>

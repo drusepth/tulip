@@ -59,7 +59,7 @@ class TransitRoutesController < ApplicationController
   private
 
   def set_stay
-    @stay = current_user.stays.find(params[:stay_id] || params[:id])
+    @stay = find_accessible_stay(params[:stay_id] || params[:id])
   end
 
   def format_routes(routes)

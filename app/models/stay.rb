@@ -4,11 +4,42 @@ class Stay < ApplicationRecord
   CURRENCIES = %w[USD EUR GBP JPY AUD CAD CHF CNY INR MXN].freeze
   BOOKING_ALERT_MONTHS_THRESHOLD = 4
 
-  belongs_to :user
+  belongs_to :user # The owner of the stay
 
   has_many :pois, dependent: :destroy
   has_many :transit_routes, dependent: :destroy
   has_many :bucket_list_items, dependent: :destroy
+  has_many :stay_collaborations, dependent: :destroy
+  has_many :collaborators, -> { where.not(stay_collaborations: { invite_accepted_at: nil }) },
+           through: :stay_collaborations, source: :user
+
+  # Check if a user can access this stay (owner or accepted collaborator)
+  def accessible_by?(check_user)
+    return false unless check_user
+    user_id == check_user.id || stay_collaborations.accepted.exists?(user: check_user)
+  end
+
+  # Check if a user can edit this stay (owner or editor role)
+  def editable_by?(check_user)
+    return false unless check_user
+    user_id == check_user.id || stay_collaborations.accepted.editors.exists?(user: check_user)
+  end
+
+  # Check if a user is the owner
+  def owner?(check_user)
+    return false unless check_user
+    user_id == check_user.id
+  end
+
+  # Get the owner user
+  def owner
+    user
+  end
+
+  # Get accepted collaborators count
+  def collaborator_count
+    stay_collaborations.accepted.count
+  end
 
   validates :title, presence: true
   validates :check_in, presence: true
@@ -66,9 +97,12 @@ class Stay < ApplicationRecord
     self.price_total_cents = dollars.present? ? (dollars.to_f * 100).round : nil
   end
 
-  def overlapping_stays
-    Stay.where.not(id: id)
-        .where('check_in < ? AND check_out > ?', check_out, check_in)
+  # Find stays that overlap with this one within a given scope (typically user's accessible stays)
+  # If no scope provided, defaults to same user's stays
+  def overlapping_stays(scope = nil)
+    base_scope = scope || user&.accessible_stays || Stay.none
+    base_scope.where.not(id: id)
+              .where('check_in < ? AND check_out > ?', check_out, check_in)
   end
 
   def self.current_stay
