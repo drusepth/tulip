@@ -1,0 +1,3 @@
+<%= turbo_stream.replace "stay_#{@stay.id}_notes" do %>
+  <%= render "stays/notes_edit_form", stay: @stay %>
+<% end %>

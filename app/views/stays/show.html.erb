@@ -93,14 +93,7 @@
       </div>
 
       <!-- Notes -->
-      <% if @stay.notes.present? %>
-        <div class="cozy-card p-6">
-          <h2 class="text-lg font-semibold text-brown mb-4">Notes</h2>
-          <div class="prose prose-sm text-brown">
-            <%= simple_format(@stay.notes) %>
-          </div>
-        </div>
-      <% end %>
+      <%= render "stays/notes_section", stay: @stay %>
 
       <!-- Bucket List -->
       <%= render "bucket_list_items/section", stay: @stay %>
@@ -165,13 +158,41 @@
 
       <!-- Address & Mini Map -->
       <% if @stay.address.present? || @stay.latitude.present? %>
-        <div class="cozy-card p-6">
-          <h2 class="text-lg font-semibold text-brown mb-4">Location</h2>
+        <div class="relative overflow-hidden cozy-card p-6">
+          <!-- Decorative corner flourish -->
+          <div class="absolute top-0 right-0 w-20 h-20 opacity-5">
+            <svg viewBox="0 0 100 100" fill="currentColor" class="text-rose-dark">
+              <path d="M100 0 Q60 10, 50 50 Q40 90, 0 100 L100 100 Z"/>
+            </svg>
+          </div>
+
+          <!-- Header -->
+          <div class="relative flex items-start justify-between mb-5">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-rose-light to-rose flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-lg font-semibold text-brown">Location</h2>
+                <p class="text-xs text-brown-light">Where you'll be staying</p>
+              </div>
+            </div>
+            <%= link_to map_path, class: "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-rose-dark hover:bg-rose-light transition-colors" do %>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+              </svg>
+              View Map
+            <% end %>
+          </div>
+
           <% if @stay.address.present? %>
-            <p class="text-brown mb-4"><%= @stay.full_address %></p>
+            <p class="relative text-brown mb-4"><%= @stay.full_address %></p>
           <% end %>
           <% if @stay.latitude.present? && @stay.longitude.present? %>
-            <div id="mini-map" class="h-48 rounded-2xl"
+            <div id="mini-map" class="relative h-48 rounded-2xl"
                  data-controller="mini-map"
                  data-mini-map-lat-value="<%= @stay.latitude %>"
                  data-mini-map-lng-value="<%= @stay.longitude %>"

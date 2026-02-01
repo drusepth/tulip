@@ -1,5 +1,5 @@
 class StaysController < ApplicationController
-  before_action :set_stay, only: [:show, :edit, :update, :destroy, :weather]
+  before_action :set_stay, only: [:show, :edit, :update, :destroy, :weather, :edit_notes, :update_notes]
 
   def index
     @stays = current_user.stays.chronological
@@ -30,7 +30,8 @@ class StaysController < ApplicationController
   def new
     @stay = current_user.stays.new(
       check_in: params[:check_in],
-      check_out: params[:check_out]
+      check_out: params[:check_out],
+      country: "USA"
     )
     @overlapping_stays = []
   end
@@ -62,6 +63,25 @@ class StaysController < ApplicationController
   def destroy
     @stay.destroy
     redirect_to stays_url, notice: "Stay was successfully deleted."
+  end
+
+  def edit_notes
+    respond_to do |format|
+      format.turbo_stream
+      format.html
+    end
+  end
+
+  def update_notes
+    respond_to do |format|
+      if @stay.update(notes: params[:stay][:notes])
+        format.turbo_stream
+        format.html { redirect_to @stay, notice: "Notes updated." }
+      else
+        format.turbo_stream { render :edit_notes, status: :unprocessable_entity }
+        format.html { redirect_to @stay, alert: "Could not update notes." }
+      end
+    end
   end
 
   def map_data
