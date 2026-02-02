@@ -29,8 +29,15 @@
     <h2 class="text-lg font-semibold text-brown mb-4">Create Invite Link</h2>
     <p class="text-sm text-brown-light mb-4">Generate a shareable link that others can use to join this stay as a collaborator.</p>
 
-    <%= form_with url: stay_collaborations_path(@stay), method: :post, class: "flex items-end gap-4" do |f| %>
-      <div class="flex-1">
+    <%= form_with url: stay_collaborations_path(@stay), method: :post, class: "flex flex-wrap items-end gap-4" do |f| %>
+      <div class="flex-1 min-w-48">
+        <label class="block text-sm font-medium text-brown mb-1">Email (optional)</label>
+        <input type="email" name="invited_email"
+               placeholder="collaborator@example.com"
+               class="w-full rounded-xl border-taupe bg-cream-light px-4 py-2 text-brown focus:border-sage focus:ring-sage">
+        <p class="text-xs text-brown-light mt-1">If they have an account, they'll be notified</p>
+      </div>
+      <div class="flex-1 min-w-32">
         <label class="block text-sm font-medium text-brown mb-1">Role</label>
         <select name="role" class="w-full rounded-xl border-taupe bg-cream-light px-4 py-2 text-brown focus:border-sage focus:ring-sage">
           <option value="editor">Editor (can edit everything)</option>

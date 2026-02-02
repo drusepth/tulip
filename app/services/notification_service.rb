@@ -113,6 +113,27 @@ class NotificationService
       )
     end
 
+    def collaboration_invited(collaboration)
+      invited_user = collaboration.invited_user
+      return unless invited_user.present?
+
+      stay = collaboration.stay
+      inviter = stay.owner
+      return if invited_user == inviter
+
+      Notification.create!(
+        user: invited_user,
+        notification_type: "collaboration_invited",
+        notifiable: collaboration,
+        data: {
+          inviter_name: inviter.name,
+          stay_id: stay.id,
+          stay_title: stay.title,
+          invite_token: collaboration.invite_token
+        }
+      )
+    end
+
     private
 
     def recipients_for_stay(stay, exclude:)

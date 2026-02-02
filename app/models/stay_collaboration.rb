@@ -6,8 +6,10 @@ class StayCollaboration < ApplicationRecord
 
   validates :role, inclusion: { in: ROLES }
   validates :user_id, uniqueness: { scope: :stay_id, message: "is already a collaborator on this stay" }, if: :user_id?
+  validates :invited_email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
 
   before_create :generate_invite_token, unless: :invite_accepted?
+  after_create_commit :notify_invited_user, if: :should_notify_invited_user?
   after_update_commit :notify_on_acceptance, if: :saved_change_to_invite_accepted_at?
 
   scope :pending, -> { where(invite_accepted_at: nil) }
@@ -42,7 +44,20 @@ class StayCollaboration < ApplicationRecord
     Rails.application.routes.url_helpers.accept_invite_url(invite_token, host: default_url_host)
   end
 
+  def invited_user
+    return nil if invited_email.blank?
+    @invited_user ||= User.find_by(email: invited_email.downcase)
+  end
+
   private
+
+  def should_notify_invited_user?
+    invited_email.present? && invited_user.present?
+  end
+
+  def notify_invited_user
+    NotificationService.collaboration_invited(self)
+  end
 
   def notify_on_acceptance
     return unless invite_accepted_at.present?

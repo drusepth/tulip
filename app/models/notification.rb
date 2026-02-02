@@ -100,7 +100,13 @@ class Notification < ApplicationRecord
       stay_id = data["stay_id"]
       return nil unless stay_id
       Rails.application.routes.url_helpers.stay_path(stay_id, anchor: "bucket-list")
-    when "collaboration_invited", "collaboration_accepted"
+    when "collaboration_invited"
+      invite_token = data["invite_token"]
+      return Rails.application.routes.url_helpers.accept_invite_path(invite_token) if invite_token.present?
+      stay_id = data["stay_id"]
+      return nil unless stay_id
+      Rails.application.routes.url_helpers.stay_path(stay_id)
+    when "collaboration_accepted"
       stay_id = data["stay_id"]
       return nil unless stay_id
       Rails.application.routes.url_helpers.stay_path(stay_id)

@@ -4,6 +4,14 @@
       <div class="flex items-center gap-2 mb-2">
         <span class="badge badge-planned">Pending</span>
         <span class="text-xs text-brown-light">Created <%= time_ago_in_words(invite.created_at) %> ago</span>
+        <% if invite.invited_email.present? %>
+          <span class="text-xs text-brown">
+            for <span class="font-medium"><%= invite.invited_email %></span>
+            <% if invite.invited_user.present? %>
+              <span class="text-sage-dark">(notified)</span>
+            <% end %>
+          </span>
+        <% end %>
       </div>
       <div class="flex items-center gap-2">
         <input

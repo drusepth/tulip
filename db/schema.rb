@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_02_050000) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_02_051613) do
   create_table "bucket_list_item_ratings", force: :cascade do |t|
     t.integer "bucket_list_item_id", null: false
     t.integer "user_id", null: false
@@ -116,7 +116,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_050000) do
     t.datetime "invite_accepted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "invited_email"
     t.index ["invite_token"], name: "index_stay_collaborations_on_invite_token", unique: true
+    t.index ["invited_email"], name: "index_stay_collaborations_on_invited_email"
     t.index ["stay_id", "user_id"], name: "index_stay_collaborations_on_stay_id_and_user_id", unique: true, where: "user_id IS NOT NULL"
     t.index ["stay_id"], name: "index_stay_collaborations_on_stay_id"
     t.index ["user_id"], name: "index_stay_collaborations_on_user_id"

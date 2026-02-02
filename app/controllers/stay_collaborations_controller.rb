@@ -11,7 +11,8 @@ class StayCollaborationsController < ApplicationController
 
   def create
     @collaboration = @stay.stay_collaborations.build(
-      role: collaboration_params[:role] || 'editor'
+      role: collaboration_params[:role] || 'editor',
+      invited_email: collaboration_params[:invited_email]&.strip&.downcase
     )
 
     if @collaboration.save
@@ -105,6 +106,6 @@ class StayCollaborationsController < ApplicationController
   end
 
   def collaboration_params
-    params.permit(:role)
+    params.permit(:role, :invited_email)
   end
 end
