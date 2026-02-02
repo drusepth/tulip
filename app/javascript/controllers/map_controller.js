@@ -48,7 +48,7 @@ export default class extends Controller {
     // Show loading state
     btn.disabled = true
     btn.innerHTML = `
-      <svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+      <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
@@ -73,25 +73,25 @@ export default class extends Controller {
       })
 
       if (response.ok) {
+        btn.classList.add('success')
         btn.innerHTML = `
-          <svg class="w-3.5 h-3.5 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
           </svg>
           Added!
         `
-        btn.classList.add('text-sage')
       } else {
         throw new Error('Failed to add')
       }
     } catch (error) {
       btn.disabled = false
+      btn.classList.add('error')
       btn.innerHTML = `
-        <svg class="w-3.5 h-3.5 text-rose" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
-        Failed - try again
+        Try again
       `
-      btn.classList.add('text-rose')
     }
   }
 
@@ -508,25 +508,29 @@ export default class extends Controller {
             const miles = (poi.distance_meters / 1609.34).toFixed(1)
             const distanceText = miles < 0.1 ? `${Math.round(miles * 5280)} ft` : `${miles} mi`
             marker.bindPopup(`
-              <div class="p-2">
-                <strong>${poi.name || 'Unknown'}</strong>
-                <br><span class="text-sm text-gray-500">${distanceText} from stay</span>
-                ${poi.opening_hours ? `<br><span class="text-xs text-gray-400">${poi.opening_hours}</span>` : ''}
-                <div class="mt-2 pt-2 border-t border-gray-200">
-                  <button
-                    class="add-to-bucket-list-btn text-xs text-sage-dark hover:text-sage font-medium flex items-center gap-1"
-                    data-stay-id="${stay.id}"
-                    data-poi-name="${(poi.name || '').replace(/"/g, '&quot;')}"
-                    data-poi-address="${(poi.address || '').replace(/"/g, '&quot;')}"
-                  >
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                    Add to bucket list
-                  </button>
+              <div class="poi-popup">
+                <div class="poi-popup-header">
+                  <span class="poi-popup-category ${category}">${this.getCategoryLabel(category)}</span>
                 </div>
+                <h4 class="poi-popup-name">${poi.name || 'Unknown'}</h4>
+                <div class="poi-popup-details">
+                  <span class="poi-popup-distance">${distanceText} away</span>
+                  ${poi.address ? `<span class="poi-popup-address">${poi.address}</span>` : ''}
+                  ${poi.opening_hours ? `<span class="poi-popup-hours">${poi.opening_hours}</span>` : ''}
+                </div>
+                <button
+                  class="poi-popup-btn add-to-bucket-list-btn"
+                  data-stay-id="${stay.id}"
+                  data-poi-name="${(poi.name || '').replace(/"/g, '&quot;')}"
+                  data-poi-address="${(poi.address || '').replace(/"/g, '&quot;')}"
+                >
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                  </svg>
+                  Add to bucket list
+                </button>
               </div>
-            `)
+            `, { className: 'cozy-popup', minWidth: 260, maxWidth: 300 })
           layerGroup.addLayer(marker)
         }
       })
@@ -545,7 +549,8 @@ export default class extends Controller {
       gym: '#7c3aed',
       food: '#dc2626',
       coworking: '#0891b2',
-      library: '#4f46e5'
+      library: '#4f46e5',
+      parks: '#059669'
     }
 
     return L.divIcon({
@@ -554,6 +559,21 @@ export default class extends Controller {
       iconSize: [12, 12],
       iconAnchor: [6, 6]
     })
+  }
+
+  getCategoryLabel(category) {
+    const labels = {
+      coffee: 'Coffee',
+      food: 'Food & Dining',
+      grocery: 'Grocery',
+      gym: 'Fitness',
+      library: 'Library',
+      coworking: 'Coworking',
+      bus_stops: 'Bus Stop',
+      stations: 'Station',
+      parks: 'Park'
+    }
+    return labels[category] || category
   }
 
   removePOILayer(category) {
@@ -639,27 +659,30 @@ export default class extends Controller {
           const stayId = nearestStay ? nearestStay.id : null
 
           marker.bindPopup(`
-            <div class="p-2">
-              <strong>${poi.name || 'Unknown'}</strong>
-              ${poi.address ? `<br><span class="text-sm text-gray-500">${poi.address}</span>` : ''}
-              ${poi.opening_hours ? `<br><span class="text-xs text-gray-400">${poi.opening_hours}</span>` : ''}
+            <div class="poi-popup">
+              <div class="poi-popup-header">
+                <span class="poi-popup-category ${category}">${this.getCategoryLabel(category)}</span>
+              </div>
+              <h4 class="poi-popup-name">${poi.name || 'Unknown'}</h4>
+              <div class="poi-popup-details">
+                ${poi.address ? `<span class="poi-popup-address">${poi.address}</span>` : ''}
+                ${poi.opening_hours ? `<span class="poi-popup-hours">${poi.opening_hours}</span>` : ''}
+              </div>
               ${stayId ? `
-                <div class="mt-2 pt-2 border-t border-gray-200">
-                  <button
-                    class="add-to-bucket-list-btn text-xs text-sage-dark hover:text-sage font-medium flex items-center gap-1"
-                    data-stay-id="${stayId}"
-                    data-poi-name="${(poi.name || '').replace(/"/g, '&quot;')}"
-                    data-poi-address="${(poi.address || '').replace(/"/g, '&quot;')}"
-                  >
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                    Add to bucket list
-                  </button>
-                </div>
+                <button
+                  class="poi-popup-btn add-to-bucket-list-btn"
+                  data-stay-id="${stayId}"
+                  data-poi-name="${(poi.name || '').replace(/"/g, '&quot;')}"
+                  data-poi-address="${(poi.address || '').replace(/"/g, '&quot;')}"
+                >
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                  </svg>
+                  Add to bucket list
+                </button>
               ` : ''}
             </div>
-          `)
+          `, { className: 'cozy-popup', minWidth: 260, maxWidth: 300 })
           layerGroup.addLayer(marker)
         }
       })
