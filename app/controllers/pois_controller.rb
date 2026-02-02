@@ -9,9 +9,6 @@ class PoisController < ApplicationController
     ensure_pois_cached(@current_category)
     @pois = @stay.pois.by_category(@current_category).nearest
 
-    # Enrich POIs with Foursquare data (lazy, cached per-POI)
-    @pois.each { |poi| FoursquareService.enrich_poi(poi) }
-
     respond_to do |format|
       format.html
       format.turbo_stream do

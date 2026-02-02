@@ -53,9 +53,7 @@
       <%= render "pois/tabs", stay: @stay, current_category: @current_category %>
 
       <!-- POI List -->
-      <%= turbo_frame_tag "poi_list" do %>
-        <%= render "pois/list", pois: @pois, category: @current_category, stay: @stay %>
-      <% end %>
+      <%= render "pois/list", pois: @pois, category: @current_category, stay: @stay %>
     </div>
 
     <!-- Sidebar (1/3) - Sticky -->
