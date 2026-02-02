@@ -60,23 +60,17 @@
         </div>
       <% end %>
 
-      <!-- Completed Items (Collapsible) -->
+      <!-- Completed Items (Always Visible) -->
       <% completed_items = stay.bucket_list_items.completed.ordered %>
       <% if completed_items.any? %>
         <div class="mt-5 pt-4 border-t border-taupe-light">
-          <button type="button"
-                  class="flex items-center gap-2 text-sm text-sage-dark hover:text-sage transition-colors"
-                  data-action="click->collapsible#toggle"
-                  data-collapsible-target="trigger">
-            <svg class="w-4 h-4 transform transition-transform duration-200" data-collapsible-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
+          <div class="flex items-center gap-2 text-sm text-sage-dark mb-3">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"></path>
             </svg>
             <span><%= completed_items.count %> completed</span>
-          </button>
-          <div class="hidden mt-3 space-y-1" data-collapsible-target="content" id="bucket_list_completed_items">
+          </div>
+          <div class="space-y-1" id="bucket_list_completed_items">
             <% completed_items.each do |item| %>
               <%= render "bucket_list_items/item", bucket_list_item: item %>
             <% end %>
@@ -84,19 +78,13 @@
         </div>
       <% else %>
         <div id="bucket_list_completed_container" class="hidden mt-5 pt-4 border-t border-taupe-light">
-          <button type="button"
-                  class="flex items-center gap-2 text-sm text-sage-dark hover:text-sage transition-colors"
-                  data-action="click->collapsible#toggle"
-                  data-collapsible-target="trigger">
-            <svg class="w-4 h-4 transform transition-transform duration-200" data-collapsible-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
+          <div class="flex items-center gap-2 text-sm text-sage-dark mb-3">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"></path>
             </svg>
             <span data-collapsible-target="countLabel">0 completed</span>
-          </button>
-          <div class="hidden mt-3 space-y-1" data-collapsible-target="content" id="bucket_list_completed_items">
+          </div>
+          <div class="space-y-1" id="bucket_list_completed_items">
           </div>
         </div>
       <% end %>
