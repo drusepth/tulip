@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  stay: one
+  user: one
+  body: "This is going to be an amazing trip!"
+
+two:
+  stay: one
+  user: two
+  body: "Can't wait! Should we book any tours?"
+
+reply_to_one:
+  stay: one
+  user: two
+  parent: one
+  body: "I totally agree, let's plan some activities!"

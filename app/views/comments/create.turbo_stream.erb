@@ -1,0 +1,25 @@
+<%= turbo_stream.remove "comments_empty_state" %>
+
+<% if @comment.parent_id.present? %>
+  <%# Reply: replace parent comment (which will show replies container and reset reply form) %>
+  <%= turbo_stream.replace dom_id(@comment.parent) do %>
+    <%= render "comments/comment", comment: @comment.parent.reload, stay: @stay %>
+  <% end %>
+<% else %>
+  <%# Top-level comment: append to main list %>
+  <%= turbo_stream.append "comments_list" do %>
+    <%= render "comments/comment", comment: @comment, stay: @stay %>
+  <% end %>
+
+  <%# Reset main comment form %>
+  <%= turbo_stream.replace "comment_form" do %>
+    <%= render "comments/form", stay: @stay %>
+  <% end %>
+<% end %>
+
+<%# Update comment count %>
+<%= turbo_stream.update "comments_count" do %>
+  <span class="px-3 py-1 rounded-full bg-lavender-light text-lavender-dark text-sm font-medium">
+    <%= @stay.comments.count %> <%= "comment".pluralize(@stay.comments.count) %>
+  </span>
+<% end %>

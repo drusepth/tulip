@@ -10,6 +10,7 @@ class Stay < ApplicationRecord
   has_many :transit_routes, dependent: :destroy
   has_many :bucket_list_items, dependent: :destroy
   has_many :stay_collaborations, dependent: :destroy
+  has_many :comments, dependent: :destroy
   has_many :collaborators, -> { where.not(stay_collaborations: { invite_accepted_at: nil }) },
            through: :stay_collaborations, source: :user
 
