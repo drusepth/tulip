@@ -35,6 +35,7 @@ class StaysController < ApplicationController
 
   def new
     @stay = current_user.stays.new(
+      title: params[:title],
       check_in: params[:check_in],
       check_out: params[:check_out],
       city: params[:city],

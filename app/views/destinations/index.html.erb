@@ -12,7 +12,7 @@
   <!-- Destinations Grid -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
     <% @destinations.each do |destination| %>
-      <%= link_to new_stay_path(city: destination.city, country: destination.country), class: "block group" do %>
+      <%= link_to new_stay_path(city: destination.city, country: destination.country, title: "#{destination.city} Adventure"), class: "block group" do %>
         <div class="hero-card h-64 relative">
           <!-- Background Image -->
           <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"

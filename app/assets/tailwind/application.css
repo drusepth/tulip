@@ -90,12 +90,14 @@ h1, h2, h3, h4, h5, h6 {
 /* Hover Background Colors */
 .hover\:bg-sage:hover { background-color: var(--color-sage); }
 .hover\:bg-sage-dark:hover { background-color: var(--color-sage-dark); }
+.hover\:bg-sage-light:hover { background-color: var(--color-sage-light); }
 .hover\:bg-rose:hover { background-color: var(--color-rose); }
 .hover\:bg-rose-dark:hover { background-color: var(--color-rose-dark); }
 .hover\:bg-taupe:hover { background-color: var(--color-taupe); }
 .hover\:bg-taupe-light:hover { background-color: var(--color-taupe-light); }
 .hover\:bg-lavender:hover { background-color: var(--color-lavender); }
 .hover\:bg-lavender-dark:hover { background-color: var(--color-lavender-dark); }
+.hover\:bg-lavender-light:hover { background-color: var(--color-lavender-light); }
 .hover\:bg-coral:hover { background-color: var(--color-coral); }
 .hover\:bg-coral-light:hover { background-color: var(--color-coral-light); }
 
@@ -131,6 +133,11 @@ h1, h2, h3, h4, h5, h6 {
 .border-lavender-dark { border-color: var(--color-lavender-dark); }
 .border-coral { border-color: var(--color-coral); }
 .border-coral-dark { border-color: var(--color-coral-dark); }
+
+/* Left Border (accent) */
+.border-l-3 { border-left-width: 3px; }
+.border-l-sage { border-left-color: var(--color-sage); }
+.border-l-transparent { border-left-color: transparent; }
 
 /* Ring Colors */
 .ring-lavender { --tw-ring-color: var(--color-lavender); }
