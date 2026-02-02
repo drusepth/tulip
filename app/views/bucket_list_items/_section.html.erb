@@ -3,8 +3,10 @@
   <% completed_count = stay.bucket_list_items.completed.count %>
   <% total_count = pending_count + completed_count %>
   <% progress_percent = total_count > 0 ? (completed_count.to_f / total_count * 100).round : 0 %>
+  <% is_scrollable = local_assigns[:scrollable] %>
+  <% should_hide_browse_link = local_assigns[:hide_browse_link] %>
 
-  <div class="relative overflow-hidden cozy-card p-4 sm:p-6" data-controller="collapsible">
+  <div class="relative overflow-hidden cozy-card p-4 sm:p-6 <%= 'flex flex-col max-h-full' if is_scrollable %>" data-controller="collapsible">
     <!-- Decorative corner flourish (hidden on mobile) -->
     <div class="absolute top-0 right-0 w-20 h-20 opacity-5 hidden sm:block">
       <svg viewBox="0 0 100 100" fill="currentColor" class="text-sage-dark">
@@ -33,119 +35,124 @@
     <!-- Add Form -->
     <%= render "bucket_list_items/form", stay: stay %>
 
-    <!-- Pending Items -->
-    <% if pending_count > 0 %>
-      <div id="bucket_list_pending_items" class="mt-5 space-y-1">
-        <% stay.bucket_list_items.pending.ordered.each do |item| %>
-          <%= render "bucket_list_items/item", bucket_list_item: item %>
-        <% end %>
-      </div>
-    <% else %>
-      <div id="bucket_list_pending_items" class="mt-5 space-y-1">
-        <% if total_count == 0 %>
-          <div id="bucket_list_empty_state" class="text-center py-6">
-            <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-taupe-light flex items-center justify-center">
-              <svg class="w-6 h-6 text-taupe" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-              </svg>
-            </div>
-            <p class="text-brown-light text-sm">No items yet</p>
-            <p class="text-taupe text-xs mt-1">Add restaurants, attractions, or activities above</p>
-          </div>
-        <% end %>
-      </div>
-    <% end %>
-
-    <!-- Completed Items (Collapsible) -->
-    <% completed_items = stay.bucket_list_items.completed.ordered %>
-    <% if completed_items.any? %>
-      <div class="mt-5 pt-4 border-t border-taupe-light">
-        <button type="button"
-                class="flex items-center gap-2 text-sm text-sage-dark hover:text-sage transition-colors"
-                data-action="click->collapsible#toggle"
-                data-collapsible-target="trigger">
-          <svg class="w-4 h-4 transform transition-transform duration-200" data-collapsible-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"></path>
-          </svg>
-          <span><%= completed_items.count %> completed</span>
-        </button>
-        <div class="hidden mt-3 space-y-1" data-collapsible-target="content" id="bucket_list_completed_items">
-          <% completed_items.each do |item| %>
+    <!-- Scrollable Items Container (when in scrollable mode) -->
+    <div class="<%= 'flex-1 overflow-y-auto -mr-2 pr-2' if is_scrollable %>">
+      <!-- Pending Items -->
+      <% if pending_count > 0 %>
+        <div id="bucket_list_pending_items" class="mt-5 space-y-1">
+          <% stay.bucket_list_items.pending.ordered.each do |item| %>
             <%= render "bucket_list_items/item", bucket_list_item: item %>
           <% end %>
         </div>
-      </div>
-    <% else %>
-      <div id="bucket_list_completed_container" class="hidden mt-5 pt-4 border-t border-taupe-light">
-        <button type="button"
-                class="flex items-center gap-2 text-sm text-sage-dark hover:text-sage transition-colors"
-                data-action="click->collapsible#toggle"
-                data-collapsible-target="trigger">
-          <svg class="w-4 h-4 transform transition-transform duration-200" data-collapsible-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"></path>
-          </svg>
-          <span data-collapsible-target="countLabel">0 completed</span>
-        </button>
-        <div class="hidden mt-3 space-y-1" data-collapsible-target="content" id="bucket_list_completed_items">
-        </div>
-      </div>
-    <% end %>
-
-    <!-- Nearby Places Section -->
-    <% if stay.latitude.present? && stay.longitude.present? %>
-      <div class="mt-5 pt-4 border-t border-taupe-light"
-           data-controller="poi-category-picker"
-           data-poi-category-picker-stay-id-value="<%= stay.id %>">
-        <p class="text-xs text-brown-light mb-3">Nearby places</p>
-
-        <!-- Category chips -->
-        <div class="flex flex-wrap gap-2 mb-3">
-          <% Poi::BROWSABLE_CATEGORIES.each do |category| %>
-            <button type="button"
-                    class="category-pill"
-                    data-action="click->poi-category-picker#loadCategory"
-                    data-poi-category-picker-category-param="<%= category %>">
-              <%= category_icon(category) %>
-              <span><%= category.titleize %></span>
-            </button>
+      <% else %>
+        <div id="bucket_list_pending_items" class="mt-5 space-y-1">
+          <% if total_count == 0 %>
+            <div id="bucket_list_empty_state" class="text-center py-6">
+              <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-taupe-light flex items-center justify-center">
+                <svg class="w-6 h-6 text-taupe" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+              </div>
+              <p class="text-brown-light text-sm">No items yet</p>
+              <p class="text-taupe text-xs mt-1">Add restaurants, attractions, or activities above</p>
+            </div>
           <% end %>
         </div>
+      <% end %>
 
-        <!-- Inline POI results -->
-        <div data-poi-category-picker-target="results" class="hidden mb-3"></div>
+      <!-- Completed Items (Collapsible) -->
+      <% completed_items = stay.bucket_list_items.completed.ordered %>
+      <% if completed_items.any? %>
+        <div class="mt-5 pt-4 border-t border-taupe-light">
+          <button type="button"
+                  class="flex items-center gap-2 text-sm text-sage-dark hover:text-sage transition-colors"
+                  data-action="click->collapsible#toggle"
+                  data-collapsible-target="trigger">
+            <svg class="w-4 h-4 transform transition-transform duration-200" data-collapsible-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"></path>
+            </svg>
+            <span><%= completed_items.count %> completed</span>
+          </button>
+          <div class="hidden mt-3 space-y-1" data-collapsible-target="content" id="bucket_list_completed_items">
+            <% completed_items.each do |item| %>
+              <%= render "bucket_list_items/item", bucket_list_item: item %>
+            <% end %>
+          </div>
+        </div>
+      <% else %>
+        <div id="bucket_list_completed_container" class="hidden mt-5 pt-4 border-t border-taupe-light">
+          <button type="button"
+                  class="flex items-center gap-2 text-sm text-sage-dark hover:text-sage transition-colors"
+                  data-action="click->collapsible#toggle"
+                  data-collapsible-target="trigger">
+            <svg class="w-4 h-4 transform transition-transform duration-200" data-collapsible-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"></path>
+            </svg>
+            <span data-collapsible-target="countLabel">0 completed</span>
+          </button>
+          <div class="hidden mt-3 space-y-1" data-collapsible-target="content" id="bucket_list_completed_items">
+          </div>
+        </div>
+      <% end %>
+    </div>
 
-        <!-- Full browse link -->
-        <%= link_to browse_stay_pois_path(stay), data: { turbo_frame: "_top" }, class: "group flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-sage-light to-lavender-light hover:from-sage hover:to-lavender text-sage-dark hover:text-white transition-all duration-200" do %>
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+    <!-- Nearby Places Section -->
+    <% unless should_hide_browse_link %>
+      <% if stay.latitude.present? && stay.longitude.present? %>
+        <div class="mt-5 pt-4 border-t border-taupe-light"
+             data-controller="poi-category-picker"
+             data-poi-category-picker-stay-id-value="<%= stay.id %>">
+          <p class="text-xs text-brown-light mb-3">Nearby places</p>
+
+          <!-- Category chips -->
+          <div class="flex flex-wrap gap-2 mb-3">
+            <% Poi::BROWSABLE_CATEGORIES.each do |category| %>
+              <button type="button"
+                      class="category-pill"
+                      data-action="click->poi-category-picker#loadCategory"
+                      data-poi-category-picker-category-param="<%= category %>">
+                <%= category_icon(category) %>
+                <span><%= category.titleize %></span>
+              </button>
+            <% end %>
+          </div>
+
+          <!-- Inline POI results -->
+          <div data-poi-category-picker-target="results" class="hidden mb-3"></div>
+
+          <!-- Full browse link -->
+          <%= link_to browse_stay_pois_path(stay), data: { turbo_frame: "_top" }, class: "group flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-sage-light to-lavender-light hover:from-sage hover:to-lavender text-sage-dark hover:text-white transition-all duration-200" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            <span class="font-medium">See all nearby places</span>
+            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
           </svg>
-          <span class="font-medium">See all nearby places</span>
-          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-        </svg>
-        <% end %>
-      </div>
-    <% else %>
-      <!-- Fallback for stays without coordinates -->
-      <div class="mt-5 pt-4 border-t border-taupe-light">
-        <%= link_to browse_stay_pois_path(stay), data: { turbo_frame: "_top" }, class: "group flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-sage-light to-lavender-light hover:from-sage hover:to-lavender text-sage-dark hover:text-white transition-all duration-200" do %>
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-          </svg>
-          <span class="font-medium">See all nearby places</span>
-          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-        <% end %>
-      </div>
+          <% end %>
+        </div>
+      <% else %>
+        <!-- Fallback for stays without coordinates -->
+        <div class="mt-5 pt-4 border-t border-taupe-light">
+          <%= link_to browse_stay_pois_path(stay), data: { turbo_frame: "_top" }, class: "group flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-sage-light to-lavender-light hover:from-sage hover:to-lavender text-sage-dark hover:text-white transition-all duration-200" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            <span class="font-medium">See all nearby places</span>
+            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          <% end %>
+        </div>
+      <% end %>
     <% end %>
   </div>
 <% end %>

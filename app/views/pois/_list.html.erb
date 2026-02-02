@@ -1,10 +1,17 @@
-<div class="cozy-card p-6">
-  <div class="flex items-center justify-between mb-4">
+<div class="cozy-card p-6 relative overflow-hidden">
+  <!-- Decorative corner flourish -->
+  <div class="absolute top-0 right-0 w-20 h-20 opacity-5">
+    <svg viewBox="0 0 100 100" fill="currentColor" class="text-sage-dark">
+      <path d="M100 0 Q60 10, 50 50 Q40 90, 0 100 L100 100 Z"/>
+    </svg>
+  </div>
+
+  <div class="relative flex items-center justify-between mb-4">
     <h2 class="text-lg font-semibold text-brown flex items-center gap-2">
       <%= category_icon(category) %>
       <%= category.titleize %>
     </h2>
-    <span class="text-sm text-brown-light"><%= pois.count %> places</span>
+    <span class="px-2 py-1 text-xs font-medium rounded-full bg-rose-light text-rose-dark"><%= pois.count %> places</span>
   </div>
 
   <% if pois.any? %>
