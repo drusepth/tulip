@@ -1,0 +1,21 @@
+<%= turbo_stream.replace "ratings_#{@bucket_list_item.id}" do %>
+  <%= render "bucket_list_item_ratings/ratings", bucket_list_item: @bucket_list_item, stay: @stay %>
+<% end %>
+
+<%# If a new rating was just created (has a comment), append it to the comments list %>
+<% if @rating.comment.present? && @rating.created_at == @rating.updated_at %>
+  <%= turbo_stream.remove "comments_empty_state" %>
+
+  <%= turbo_stream.append "comments_list" do %>
+    <%= render "comments/comment", comment: @rating.comment, stay: @stay %>
+  <% end %>
+
+  <%= turbo_stream.replace "comments_count" do %>
+    <% comments_count = @stay.comments.count %>
+    <div id="comments_count" class="flex items-center gap-2">
+      <span class="px-3 py-1 rounded-full bg-lavender-light text-lavender-dark text-sm font-medium">
+        <%= comments_count %> <%= "comment".pluralize(comments_count) %>
+      </span>
+    </div>
+  <% end %>
+<% end %>

@@ -10,7 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_02_032643) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_02_041109) do
+  create_table "bucket_list_item_ratings", force: :cascade do |t|
+    t.integer "bucket_list_item_id", null: false
+    t.integer "user_id", null: false
+    t.integer "rating", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bucket_list_item_id", "user_id"], name: "index_bucket_list_item_ratings_unique", unique: true
+    t.index ["bucket_list_item_id"], name: "index_bucket_list_item_ratings_on_bucket_list_item_id"
+    t.index ["user_id"], name: "index_bucket_list_item_ratings_on_user_id"
+  end
+
   create_table "bucket_list_items", force: :cascade do |t|
     t.integer "stay_id", null: false
     t.string "title", null: false
@@ -35,9 +46,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_032643) do
     t.integer "stay_id", null: false
     t.integer "user_id", null: false
     t.integer "parent_id"
-    t.text "body", null: false
+    t.text "body"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "bucket_list_item_rating_id"
+    t.index ["bucket_list_item_rating_id"], name: "index_comments_on_bucket_list_item_rating_id"
     t.index ["parent_id"], name: "index_comments_on_parent_id"
     t.index ["stay_id", "created_at"], name: "index_comments_on_stay_id_and_created_at"
     t.index ["stay_id"], name: "index_comments_on_stay_id"
@@ -184,8 +197,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_032643) do
     t.index ["grid_key"], name: "index_viewport_pois_on_grid_key"
   end
 
+  add_foreign_key "bucket_list_item_ratings", "bucket_list_items"
+  add_foreign_key "bucket_list_item_ratings", "users"
   add_foreign_key "bucket_list_items", "stays"
   add_foreign_key "bucket_list_items", "users"
+  add_foreign_key "comments", "bucket_list_item_ratings"
   add_foreign_key "comments", "comments", column: "parent_id"
   add_foreign_key "comments", "stays"
   add_foreign_key "comments", "users"
