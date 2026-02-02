@@ -6,17 +6,18 @@
         <div class="flex items-center gap-3 mb-2">
           <div class="w-10 h-10 rounded-full bg-gradient-to-br from-lavender-light to-lavender flex items-center justify-center">
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
             </svg>
           </div>
           <div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-brown">Destination Gallery</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-brown">Places to Visit</h1>
             <p class="text-brown-light"><%= @stay.city.present? ? @stay.city : @stay.title %><%= ", #{@stay.country}" if @stay.country.present? %></p>
           </div>
         </div>
       </div>
       <div class="flex gap-2">
-        <%= button_to refresh_stay_gallery_path(@stay), method: :post, class: "btn-outline", data: { turbo_confirm: "Refresh the gallery with new images?" } do %>
+        <%= button_to refresh_stay_gallery_path(@stay), method: :post, class: "btn-outline", data: { turbo_confirm: "Refresh the gallery with new venues?" } do %>
           <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
           </svg>
@@ -32,54 +33,28 @@
     </div>
   </div>
 
-  <% if @images.any? %>
-    <!-- Image Grid -->
+  <% if @venues.any? %>
+    <!-- Venue Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      <% @images.each do |image| %>
-        <div class="group relative rounded-2xl overflow-hidden shadow-cozy hover:shadow-cozy-lg transition-all duration-300 hover:-translate-y-1"
-             style="background-color: <%= image['color'] || '#f5f5f0' %>">
-          <!-- Image Container - links to Unsplash page per their guidelines -->
-          <a href="<%= image['unsplash_url'] %>" target="_blank" rel="noopener" class="block aspect-square overflow-hidden">
-            <img
-              src="<%= image['thumb_url'] %>"
-              alt="<%= image['title'] || "Photo of #{@stay.city}" %>"
-              class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              loading="lazy"
-            >
-          </a>
-
-          <!-- Overlay with photographer attribution -->
-          <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black to-transparent p-3 pt-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <a href="<%= image['photographer_url'] %>?utm_source=tulip&utm_medium=referral"
-               target="_blank"
-               rel="noopener"
-               class="text-xs text-white hover:underline truncate block">
-              Photo by <%= image['photographer'] %>
-            </a>
-          </div>
-
-          <!-- View on Unsplash indicator -->
-          <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <div class="w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center">
-              <svg class="w-4 h-4 text-brown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
+      <% venue_titles = @venues.map { |v| v['name'] }.compact %>
+      <% added_titles = @stay.bucket_list_items.where(title: venue_titles).pluck(:title).to_set %>
+      <% @venues.each do |venue| %>
+        <% next if venue['name'].blank? %>
+        <% added = added_titles.include?(venue['name']) %>
+        <%= render partial: "galleries/venue_card", locals: { venue: venue, added: added } %>
       <% end %>
     </div>
 
-    <!-- Attribution notice (required by Unsplash) -->
+    <!-- Attribution notice (required by Foursquare) -->
     <div class="mt-8 p-4 rounded-2xl bg-cream border border-taupe-light">
       <div class="flex items-start gap-3">
         <svg class="w-5 h-5 text-taupe flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M7.5 6.75V0h9v6.75h-9zm9 3.75H24V24H0V10.5h7.5v6.75h9V10.5z"/>
+          <path d="M17.724 3H6.104c-.866 0-1.569.713-1.569 1.59v15.398c0 .538.264 1.012.71 1.012.18 0 .37-.058.553-.175l5.83-4.142a1.12 1.12 0 01.652-.206h.053c.237 0 .465.073.652.206l5.877 4.18c.184.117.374.137.553.137.447 0 .711-.474.711-1.012V4.59C20.126 3.713 19.423 3 18.557 3h-.833z"/>
         </svg>
         <div>
           <p class="text-sm text-brown-light">
-            Photos provided by <a href="https://unsplash.com/?utm_source=tulip&utm_medium=referral" target="_blank" rel="noopener" class="text-sage-dark hover:underline font-medium">Unsplash</a>.
-            Click any image to view on Unsplash. Hover to see photographer credits.
+            Venue data provided by <a href="https://foursquare.com" target="_blank" rel="noopener" class="text-sage-dark hover:underline font-medium">Foursquare</a>.
+            Click any venue to view on Foursquare for more details.
           </p>
         </div>
       </div>
@@ -89,13 +64,14 @@
     <div class="cozy-card p-12 text-center">
       <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-lavender-light flex items-center justify-center">
         <svg class="w-10 h-10 text-lavender-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
         </svg>
       </div>
-      <h2 class="text-xl font-semibold text-brown mb-2">No Photos Found</h2>
-      <% if @stay.city.blank? && @stay.country.blank? %>
+      <h2 class="text-xl font-semibold text-brown mb-2">No Venues Found</h2>
+      <% if @stay.latitude.blank? || @stay.longitude.blank? %>
         <p class="text-brown-light mb-4">
-          This stay doesn't have a city or country set yet. Add location details to discover photos of your destination.
+          This stay doesn't have coordinates yet. Add an address to discover nearby places to visit.
         </p>
         <%= link_to edit_stay_path(@stay), class: "btn-primary inline-flex items-center" do %>
           <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,7 +81,7 @@
         <% end %>
       <% else %>
         <p class="text-brown-light mb-4">
-          We couldn't find any photos for this destination. Try refreshing or check back later.
+          We couldn't find any venues with photos near this location. Try refreshing or check back later.
         </p>
         <%= button_to refresh_stay_gallery_path(@stay), method: :post, class: "btn-primary inline-flex items-center" do %>
           <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

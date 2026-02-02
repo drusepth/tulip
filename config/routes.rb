@@ -26,6 +26,7 @@ Rails.application.routes.draw do
     end
     resource :gallery, only: [:show] do
       post :refresh
+      post :add_to_bucket_list
     end
   end
 
