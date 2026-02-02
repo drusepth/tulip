@@ -1,6 +1,6 @@
 class FoursquareService
   BASE_URL = 'https://places-api.foursquare.com'.freeze
-  API_VERSION = '2025-02-05'.freeze
+  API_VERSION = '2025-06-17'.freeze
   SEARCH_RADIUS = 50 # meters
   MATCH_THRESHOLD = 0.6 # 60% similarity required for a match
 

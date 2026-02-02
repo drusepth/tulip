@@ -1,6 +1,6 @@
 class FoursquareGalleryService
   BASE_URL = 'https://places-api.foursquare.com'.freeze
-  API_VERSION = '2025-02-05'.freeze
+  API_VERSION = '2025-06-17'.freeze
   MATCH_RADIUS = 100 # meters for matching existing POIs
   MATCH_THRESHOLD = 0.6 # 60% similarity required for a match
 
@@ -61,8 +61,8 @@ class FoursquareGalleryService
     private
 
     def save_venue_as_poi(stay:, venue:)
-      venue_lat = venue.dig('location', 'latitude')
-      venue_lng = venue.dig('location', 'longitude')
+      venue_lat = venue['latitude']
+      venue_lng = venue['longitude']
       venue_name = venue['name']
       fsq_id = venue['fsq_place_id']
 
@@ -123,8 +123,8 @@ class FoursquareGalleryService
     def create_poi_from_venue(stay:, venue:)
       photo = venue['photos']&.first
       category = venue.dig('categories', 0)
-      venue_lat = venue.dig('location', 'latitude')
-      venue_lng = venue.dig('location', 'longitude')
+      venue_lat = venue['latitude']
+      venue_lng = venue['longitude']
 
       # Calculate distance from stay
       distance = haversine_distance(stay.latitude, stay.longitude, venue_lat, venue_lng)
@@ -229,7 +229,7 @@ class FoursquareGalleryService
           radius: radius,
           categories: CATEGORIES.join(','),
           limit: limit,
-          fields: 'fsq_place_id,name,location,categories,photos,rating,price'
+          fields: 'fsq_place_id,name,latitude,longitude,location,categories,photos,rating,price'
         },
         timeout: 15
       )
@@ -254,8 +254,8 @@ class FoursquareGalleryService
         'category_icon' => build_category_icon_url(category),
         'photo_url' => build_photo_url(photo, '600x400'),
         'thumb_url' => build_photo_url(photo, '300x300'),
-        'lat' => venue.dig('location', 'latitude'),
-        'lng' => venue.dig('location', 'longitude'),
+        'lat' => venue['latitude'],
+        'lng' => venue['longitude'],
         'rating' => venue['rating'],
         'price' => venue['price'],
         'source' => 'foursquare'
