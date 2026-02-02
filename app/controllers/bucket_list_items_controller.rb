@@ -1,7 +1,27 @@
 class BucketListItemsController < ApplicationController
-  before_action :set_stay
-  before_action :require_stay_edit_permission
+  before_action :set_stay, except: [:map_index]
+  before_action :require_stay_edit_permission, except: [:map_index]
   before_action :set_bucket_list_item, only: [:edit, :update, :destroy, :toggle]
+
+  def map_index
+    @items = BucketListItem.includes(:stay)
+                           .where(stay: current_user.accessible_stays)
+                           .with_location
+
+    render json: @items.map { |item|
+      {
+        id: item.id,
+        title: item.title,
+        address: item.address,
+        latitude: item.latitude,
+        longitude: item.longitude,
+        completed: item.completed?,
+        category: item.category,
+        stay_id: item.stay_id,
+        stay_title: item.stay.title
+      }
+    }
+  end
 
   def create
     @bucket_list_item = @stay.bucket_list_items.build(bucket_list_item_params)

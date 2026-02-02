@@ -19,6 +19,7 @@ Rails.application.routes.draw do
         patch :toggle
       end
     end
+    resources :comments, only: [:create, :edit, :update, :destroy]
     resources :collaborations, only: [:index, :create, :destroy], controller: 'stay_collaborations' do
       collection do
         delete :leave
@@ -42,6 +43,7 @@ Rails.application.routes.draw do
   get "api/stays/:id/pois", to: "pois#fetch", as: :api_stay_pois
   get "api/stays/:id/transit_routes", to: "transit_routes#fetch", as: :api_stay_transit_routes
   get "api/pois/search", to: "pois#search", as: :api_pois_search
+  get "api/bucket_list_items", to: "bucket_list_items#map_index", as: :api_bucket_list_items
 
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check

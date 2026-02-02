@@ -2,12 +2,13 @@ import { Controller } from "@hotwired/stimulus"
 // Leaflet is loaded globally via CDN in application.html.erb
 
 export default class extends Controller {
-  static targets = ["container", "timeline", "upcomingStaysList", "previousStaysList", "previousStaysToggle", "previousStaysChevron", "previousStaysCount", "collapseIcon", "floatingCard", "floatingCardTitle", "floatingCardLocation", "floatingCardDates"]
+  static targets = ["container", "timeline", "upcomingStaysList", "previousStaysList", "previousStaysToggle", "previousStaysChevron", "previousStaysCount", "collapseIcon", "floatingCard", "floatingCardTitle", "floatingCardLocation", "floatingCardDates", "bucketListToggle"]
   static values = {
     staysUrl: String,
     poisUrl: String,
     transitUrl: String,
-    poisSearchUrl: String
+    poisSearchUrl: String,
+    bucketListUrl: String
   }
 
   connect() {
@@ -28,6 +29,9 @@ export default class extends Controller {
     this.viewportSearchAbortControllers = {} // AbortControllers for viewport POI searches
     this.viewportChangeTimeout = null // Debounce timeout for viewport changes
     this.loadingCounts = {}    // Track in-flight request counts per category/routeType
+    this.bucketListLayer = null      // Layer group for bucket list markers
+    this.bucketListVisible = false   // Track visibility of bucket list markers
+    this.bucketListItems = null      // Cached bucket list items
 
     // Auto-load POIs/transit when viewport changes
     this.map.on('moveend', () => this.onViewportChange())
@@ -835,6 +839,91 @@ export default class extends Controller {
         delete this.fetchedTransit[key]
       }
     })
+  }
+
+  toggleBucketList(event) {
+    const button = event.currentTarget
+
+    if (this.bucketListVisible) {
+      this.bucketListVisible = false
+      button.classList.remove('active')
+      this.removeBucketListLayer()
+    } else {
+      this.bucketListVisible = true
+      button.classList.add('active')
+      this.loadBucketListItems()
+    }
+  }
+
+  async loadBucketListItems() {
+    if (this.bucketListItems) {
+      this.renderBucketListMarkers()
+      return
+    }
+
+    const button = this.element.querySelector('[data-action="click->map#toggleBucketList"]')
+    if (button) button.classList.add('loading')
+
+    try {
+      const response = await fetch(this.bucketListUrlValue)
+      this.bucketListItems = await response.json()
+      this.renderBucketListMarkers()
+    } catch (error) {
+      console.error('Failed to load bucket list items:', error)
+    } finally {
+      if (button) button.classList.remove('loading')
+    }
+  }
+
+  renderBucketListMarkers() {
+    this.removeBucketListLayer()
+
+    if (!this.bucketListItems || this.bucketListItems.length === 0) return
+
+    this.bucketListLayer = L.layerGroup()
+
+    this.bucketListItems.forEach(item => {
+      const icon = this.getBucketListIcon(item.completed)
+      const marker = L.marker([item.latitude, item.longitude], { icon })
+      marker.bindPopup(this.getBucketListPopupContent(item), { className: 'cozy-popup', minWidth: 200, maxWidth: 280 })
+      this.bucketListLayer.addLayer(marker)
+    })
+
+    this.bucketListLayer.addTo(this.map)
+  }
+
+  getBucketListIcon(completed) {
+    const color = completed ? '#9ca3af' : '#ec4899' // gray if completed, pink if not
+    return L.divIcon({
+      className: 'custom-div-icon',
+      html: `<div style="background-color: ${color}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+      iconSize: [12, 12],
+      iconAnchor: [6, 6]
+    })
+  }
+
+  getBucketListPopupContent(item) {
+    const badgeClass = item.completed ? 'bg-gray-100 text-gray-700' : 'bg-pink-100 text-pink-700'
+    const badgeText = item.completed ? 'Completed' : 'Bucket List'
+    return `
+      <div class="poi-popup">
+        <div class="poi-popup-header">
+          <span class="inline-block px-2 py-0.5 text-xs font-medium rounded-full ${badgeClass}">${badgeText}</span>
+        </div>
+        <h4 class="poi-popup-name">${item.title}</h4>
+        <div class="poi-popup-details">
+          ${item.address ? `<span class="poi-popup-address">${item.address}</span>` : ''}
+          <span class="text-xs text-brown-light">From: ${item.stay_title}</span>
+        </div>
+      </div>
+    `
+  }
+
+  removeBucketListLayer() {
+    if (this.bucketListLayer) {
+      this.map.removeLayer(this.bucketListLayer)
+      this.bucketListLayer = null
+    }
   }
 
   findNearestStay(lat, lng) {

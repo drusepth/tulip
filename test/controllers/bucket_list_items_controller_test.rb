@@ -138,4 +138,46 @@ class BucketListItemsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Golden Gate Bridge, San Francisco, CA", item.address
     assert_equal "Best views at sunset", item.notes
   end
+
+  test "should get map_index as json" do
+    # Create a bucket list item with coordinates
+    item_with_location = BucketListItem.create!(
+      stay: @stay,
+      title: "Coffee shop",
+      category: "restaurant",
+      address: "123 Main St",
+      latitude: 37.7749,
+      longitude: -122.4194
+    )
+
+    get api_bucket_list_items_path, as: :json
+    assert_response :success
+
+    json_response = JSON.parse(response.body)
+    assert_kind_of Array, json_response
+
+    # Should include the item with coordinates
+    item_data = json_response.find { |item| item["id"] == item_with_location.id }
+    assert_not_nil item_data
+    assert_equal "Coffee shop", item_data["title"]
+    assert_in_delta 37.7749, item_data["latitude"].to_f, 0.0001
+    assert_in_delta(-122.4194, item_data["longitude"].to_f, 0.0001)
+    assert_equal @stay.title, item_data["stay_title"]
+  end
+
+  test "map_index should not include items without coordinates" do
+    # Create item without coordinates
+    item_without_location = BucketListItem.create!(
+      stay: @stay,
+      title: "Something to do",
+      category: "activity"
+    )
+
+    get api_bucket_list_items_path, as: :json
+    assert_response :success
+
+    json_response = JSON.parse(response.body)
+    item_ids = json_response.map { |item| item["id"] }
+    assert_not_includes item_ids, item_without_location.id
+  end
 end

@@ -7,6 +7,8 @@ class User < ApplicationRecord
   has_many :stays, dependent: :destroy # Stays this user owns
   has_many :stay_collaborations, dependent: :destroy
   has_many :collaborated_stays, through: :stay_collaborations, source: :stay
+  has_many :comments, dependent: :destroy
+  has_many :bucket_list_items, through: :stays
 
   # All stays this user can access (owned + collaborated)
   # Returns an ActiveRecord::Relation for chainability
