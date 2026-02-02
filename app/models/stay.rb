@@ -62,6 +62,7 @@ class Stay < ApplicationRecord
   after_validation :geocode, if: :should_geocode?
 
   before_save :update_status
+  after_commit :enqueue_poi_fetch, on: [:create, :update], if: :should_fetch_pois?
 
   scope :with_dates, -> { where.not(check_in: nil).where.not(check_out: nil) }
   scope :wishlist, -> { where(check_in: nil).or(where(check_out: nil)) }
@@ -274,5 +275,14 @@ class Stay < ApplicationRecord
                   else
                     'upcoming'
                   end
+  end
+
+  def should_fetch_pois?
+    latitude.present? && longitude.present? &&
+      (saved_change_to_latitude? || saved_change_to_longitude? || pois_cached_categories.blank?)
+  end
+
+  def enqueue_poi_fetch
+    FetchBrowsablePoisJob.perform_later(id)
   end
 end
