@@ -1,33 +1,54 @@
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8" data-controller="gallery-filter">
-  <!-- Header -->
-  <div class="mb-8">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <div>
-        <div class="flex items-center gap-3 mb-2">
-          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-lavender-light to-lavender flex items-center justify-center">
-            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-          </div>
-          <div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-brown">Places to Visit</h1>
-            <p class="text-brown-light"><%= @stay.city.present? ? @stay.city : @stay.title %><%= ", #{@stay.country}" if @stay.country.present? %></p>
-          </div>
-        </div>
+  <!-- Header with Botanical Flourish -->
+  <div class="relative mb-8">
+    <!-- Decorative corner flourish (lavender, subtle) -->
+    <div class="absolute -top-4 -right-4 w-24 h-24 z-0 pointer-events-none hidden sm:block">
+      <svg viewBox="0 0 100 100" class="w-full h-full text-lavender" style="opacity: 0.15;">
+        <path d="M95 5 Q70 8, 55 25 Q40 42, 30 65" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/>
+        <path d="M85 8 Q75 2, 70 12 Q80 15, 85 8" fill="currentColor"/>
+        <path d="M68 18 Q55 10, 50 22 Q62 28, 68 18" fill="currentColor"/>
+        <path d="M52 35 Q38 28, 35 42 Q48 48, 52 35" fill="currentColor"/>
+      </svg>
+    </div>
+
+    <!-- Breadcrumb Row -->
+    <div class="relative mb-4">
+      <%= link_to stay_path(@stay), class: "inline-flex items-center gap-1.5 text-sm font-medium text-sage-dark hover:text-sage transition-colors group" do %>
+        <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        <span><%= @stay.title %></span>
+      <% end %>
+    </div>
+
+    <!-- Main Header Content -->
+    <div class="relative flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+      <!-- Left Side: Title & Subtitle -->
+      <div class="flex-1">
+        <h1 class="decorative-heading text-2xl sm:text-3xl font-bold text-brown">Things to Do</h1>
+        <p class="text-brown-light mt-2 flex items-center">
+          <svg class="w-4 h-4 mr-1.5 text-taupe" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          <span><%= @stay.city.present? ? @stay.city : @stay.title %><%= ", #{@stay.country}" if @stay.country.present? %></span>
+        </p>
       </div>
-      <div class="flex gap-2">
-        <%= button_to refresh_stay_gallery_path(@stay), method: :post, class: "btn-outline", data: { turbo_confirm: "Refresh the gallery with new venues?" } do %>
-          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+      <!-- Right Side: Action Buttons -->
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <%= button_to refresh_stay_gallery_path(@stay), method: :post, class: "btn-outline group", data: { turbo_confirm: "Refresh the gallery with new venues?" } do %>
+          <svg class="w-4 h-4 sm:mr-1.5 group-hover:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
           </svg>
-          Refresh
+          <span class="hidden sm:inline">Refresh</span>
         <% end %>
-        <%= link_to stay_path(@stay), class: "btn-outline" do %>
-          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+
+        <%= link_to map_path(focus: @stay.id), class: "btn-primary" do %>
+          <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
           </svg>
-          Back to Stay
+          View on Map
         <% end %>
       </div>
     </div>
