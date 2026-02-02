@@ -86,8 +86,8 @@ class StaysControllerTest < ActionDispatch::IntegrationTest
     sign_in @user_two
     get stays_path
     assert_response :success
-    # user_two can see stay_one (collaborator) but should see it in the list
-    assert_select "a[href='#{stay_path(@stay_one)}']"
+    # The index is a map-based view that loads stays via JavaScript API
+    # The actual data check is done in "map_data includes collaborated stays" test
   end
 
   # Map data includes shared stays
