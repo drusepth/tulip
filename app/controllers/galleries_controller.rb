@@ -5,6 +5,7 @@ class GalleriesController < ApplicationController
   def show
     fetch_pois_if_needed
     @pois = @stay.pois.with_photos.order(:distance_meters)
+    @categories = @pois.map(&:category).uniq.sort
   end
 
   def refresh
