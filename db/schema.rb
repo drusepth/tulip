@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_26_100000) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_02_012938) do
   create_table "bucket_list_items", force: :cascade do |t|
     t.integer "stay_id", null: false
     t.string "title", null: false
@@ -87,8 +87,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_26_100000) do
     t.string "country"
     t.decimal "latitude", precision: 10, scale: 6
     t.decimal "longitude", precision: 10, scale: 6
-    t.date "check_in", null: false
-    t.date "check_out", null: false
+    t.date "check_in"
+    t.date "check_out"
     t.integer "price_total_cents"
     t.string "currency", default: "USD"
     t.text "notes"
@@ -100,6 +100,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_26_100000) do
     t.text "weather_data"
     t.datetime "weather_fetched_at"
     t.integer "user_id"
+    t.json "destination_images", default: []
+    t.datetime "images_fetched_at"
     t.index ["check_in", "check_out"], name: "index_stays_on_check_in_and_check_out"
     t.index ["user_id"], name: "index_stays_on_user_id"
   end

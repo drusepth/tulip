@@ -24,6 +24,9 @@ Rails.application.routes.draw do
         delete :leave
       end
     end
+    resource :gallery, only: [:show] do
+      post :refresh
+    end
   end
 
   # Magic link for accepting collaboration invites
@@ -31,6 +34,7 @@ Rails.application.routes.draw do
 
   get "map", to: "stays#index", as: :map
   get "timeline", to: "timeline#index", as: :timeline
+  get "destinations", to: "destinations#index", as: :destinations
 
   # API endpoints for map
   get "api/stays", to: "stays#map_data", as: :api_stays
