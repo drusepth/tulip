@@ -7,10 +7,10 @@
   <% end %>
 
   <!-- Header -->
-  <div class="mb-8 flex items-start justify-between">
+  <div class="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
     <div>
       <div class="flex items-center gap-3 flex-wrap">
-        <h1 class="text-3xl font-bold text-brown"><%= @stay.title %></h1>
+        <h1 class="text-2xl sm:text-3xl font-bold text-brown"><%= @stay.title %></h1>
         <% if @stay.booked? %>
           <span class="badge <%= case @stay.status
               when 'upcoming' then 'badge-upcoming'
@@ -56,7 +56,7 @@
         <% end %>
       </p>
     </div>
-    <div class="flex gap-2 flex-wrap">
+    <div class="flex gap-2 flex-wrap sm:flex-nowrap">
       <% if @can_edit %>
         <%= link_to edit_stay_path(@stay), class: "btn-outline" do %>
           <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -240,7 +240,7 @@
                 <p class="text-xs text-brown-light">Where you'll be staying</p>
               </div>
             </div>
-            <%= link_to map_path, class: "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-rose-dark hover:bg-rose-light transition-colors" do %>
+            <%= link_to map_path(focus: @stay.id), class: "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-rose-dark hover:bg-rose-light transition-colors" do %>
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
               </svg>
@@ -475,7 +475,7 @@
           </div>
         </div>
 
-        <%= link_to map_path, class: "group flex items-center gap-3 p-4 rounded-2xl bg-white shadow-cozy hover:shadow-cozy-lg hover:bg-sage-light border border-taupe-light hover:border-sage transition-all duration-200" do %>
+        <%= link_to map_path(focus: @stay.id), class: "group flex items-center gap-3 p-4 rounded-2xl bg-white shadow-cozy hover:shadow-cozy-lg hover:bg-sage-light border border-taupe-light hover:border-sage transition-all duration-200" do %>
           <div class="w-10 h-10 rounded-full bg-sage-light group-hover:bg-sage flex items-center justify-center transition-colors">
             <svg class="w-5 h-5 text-sage-dark group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>

@@ -97,8 +97,25 @@ export default class extends Controller {
       this.stays = stays
       this.renderStayMarkers(stays)
       this.renderTimeline(stays)
+      this.focusOnStayFromUrl()
     } catch (error) {
       console.error('Failed to load stays:', error)
+    }
+  }
+
+  focusOnStayFromUrl() {
+    const params = new URLSearchParams(window.location.search)
+    const focusId = params.get('focus')
+    if (!focusId || !this.stays) return
+
+    const stay = this.stays.find(s => s.id == focusId)
+    if (stay && stay.latitude && stay.longitude) {
+      // If it's a previous stay and markers are hidden, show them first
+      if (stay.status === 'past' && !this.previousStaysVisible) {
+        this.togglePreviousStays()
+      }
+      this.map.setView([stay.latitude, stay.longitude], 14)
+      this.showFloatingCard(stay)
     }
   }
 
@@ -126,7 +143,9 @@ export default class extends Controller {
       }
     })
 
-    if (bounds.length > 0) {
+    // Only auto-fit bounds if no focus parameter is present
+    const params = new URLSearchParams(window.location.search)
+    if (bounds.length > 0 && !params.get('focus')) {
       this.map.fitBounds(bounds, { padding: [50, 50] })
     }
   }
@@ -239,8 +258,8 @@ export default class extends Controller {
          </div>`
 
     const cardClasses = isPrevious
-      ? 'w-full text-left rounded-xl border border-gray-200 overflow-hidden relative transition-all duration-200 hover:shadow-md hover:border-taupe hover:-translate-y-0.5'
-      : 'w-full text-left rounded-xl border border-taupe-light overflow-hidden relative transition-all duration-200 hover:shadow-md hover:border-sage hover:-translate-y-0.5'
+      ? 'w-full text-left rounded-xl border border-gray-200 overflow-hidden relative transition-all duration-200 hover:shadow-md hover:border-taupe hover:-translate-y-0.5 cursor-pointer'
+      : 'w-full text-left rounded-xl border border-taupe-light overflow-hidden relative transition-all duration-200 hover:shadow-md hover:border-sage hover:-translate-y-0.5 cursor-pointer'
 
     const textClasses = isPrevious ? 'text-brown-light' : 'text-brown'
 
