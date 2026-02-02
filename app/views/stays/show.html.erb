@@ -45,14 +45,60 @@
           <span class="mx-2 text-taupe">|</span>
           <span class="capitalize"><%= @stay.stay_type %></span>
         <% end %>
-        <% if @stay.collaborator_count > 0 %>
+        <% all_people = [@stay.user] + @stay.collaborators.to_a %>
+        <% if all_people.size > 1 || @is_owner %>
           <span class="mx-2 text-taupe">|</span>
-          <span class="text-lavender-dark">
-            <svg class="w-4 h-4 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-            </svg>
-            <%= @stay.collaborator_count %> <%= 'collaborator'.pluralize(@stay.collaborator_count) %>
-          </span>
+          <div class="relative inline-block" data-controller="collaborators-popover">
+            <!-- Clickable avatar stack -->
+            <button type="button" class="flex -space-x-2 cursor-pointer hover:opacity-80 transition-opacity" data-action="click->collaborators-popover#toggle">
+              <!-- Owner avatar -->
+              <%= avatar_tag(@stay.user, size: 28, html_options: {
+                class: "w-7 h-7 ring-2 ring-sage border border-cream"
+              }) %>
+              <!-- Collaborator avatars (max 4) -->
+              <% @stay.collaborators.limit(4).each do |collaborator| %>
+                <%= avatar_tag(collaborator, size: 28, html_options: {
+                  class: "w-7 h-7 ring-2 ring-lavender border border-cream"
+                }) %>
+              <% end %>
+              <!-- Overflow indicator -->
+              <% if @stay.collaborator_count > 4 %>
+                <span class="flex items-center justify-center w-7 h-7 rounded-full bg-taupe-light ring-2 ring-taupe border border-cream text-xs font-medium text-brown">
+                  +<%= @stay.collaborator_count - 4 %>
+                </span>
+              <% end %>
+            </button>
+
+            <!-- Popover dropdown -->
+            <div data-collaborators-popover-target="popover" class="hidden absolute left-0 top-full mt-2 z-50 min-w-48 bg-white rounded-xl shadow-cozy-lg border border-taupe-light p-3">
+              <div class="text-xs font-medium text-brown-light uppercase tracking-wide mb-2">Travelers</div>
+              <div class="space-y-2">
+                <!-- Owner -->
+                <div class="flex items-center gap-2">
+                  <%= avatar_tag(@stay.user, size: 32, html_options: { class: "w-8 h-8 ring-2 ring-sage" }) %>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-sm font-medium text-brown truncate"><%= @stay.user.email %></div>
+                    <div class="text-xs text-sage-dark">Owner</div>
+                  </div>
+                </div>
+                <!-- Collaborators -->
+                <% @stay.collaborators.each do |collaborator| %>
+                  <div class="flex items-center gap-2">
+                    <%= avatar_tag(collaborator, size: 32, html_options: { class: "w-8 h-8 ring-2 ring-lavender" }) %>
+                    <div class="flex-1 min-w-0">
+                      <div class="text-sm font-medium text-brown truncate"><%= collaborator.email %></div>
+                      <div class="text-xs text-lavender-dark">Editor</div>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+              <% if @is_owner %>
+                <%= link_to stay_collaborations_path(@stay), class: "block mt-3 pt-2 border-t border-taupe-light text-xs text-center text-sage-dark hover:text-sage font-medium" do %>
+                  Manage collaborators
+                <% end %>
+              <% end %>
+            </div>
+          </div>
         <% end %>
       </p>
     </div>
