@@ -101,20 +101,56 @@ export default class extends Controller {
     }
   }
 
+  // Handle layer toggle events from the layers panel controller
+  handleLayerToggle(event) {
+    const { type, key, active } = event.detail
+
+    if (type === 'poi') {
+      if (active) {
+        this.activeCategories.add(key)
+        this.loadPOIs(key)
+        this.searchViewportPOIs(key)
+      } else {
+        this.activeCategories.delete(key)
+        this.removePOILayer(key)
+      }
+    } else if (type === 'transit') {
+      if (active) {
+        this.activeTransitTypes.add(key)
+        this.loadTransitRoutes(key)
+      } else {
+        this.activeTransitTypes.delete(key)
+        this.removeTransitLayer(key)
+      }
+    } else if (type === 'bucket-list') {
+      if (active) {
+        this.bucketListVisible = true
+        this.loadBucketListItems()
+      } else {
+        this.bucketListVisible = false
+        this.removeBucketListLayer()
+      }
+    }
+  }
+
   // Loading state helpers
   startLoading(type, key) {
     const loadingKey = `${type}-${key}`
     this.loadingCounts[loadingKey] = (this.loadingCounts[loadingKey] || 0) + 1
-    const button = this.element.querySelector(`[data-${type === 'poi' ? 'category' : 'route-type'}="${key}"]`)
-    if (button) button.classList.add('loading')
+    // Dispatch event for layers panel to show loading state
+    document.dispatchEvent(new CustomEvent('map:loading-start', {
+      detail: { type, key }
+    }))
   }
 
   stopLoading(type, key) {
     const loadingKey = `${type}-${key}`
     this.loadingCounts[loadingKey] = Math.max(0, (this.loadingCounts[loadingKey] || 1) - 1)
     if (this.loadingCounts[loadingKey] === 0) {
-      const button = this.element.querySelector(`[data-${type === 'poi' ? 'category' : 'route-type'}="${key}"]`)
-      if (button) button.classList.remove('loading')
+      // Dispatch event for layers panel to hide loading state
+      document.dispatchEvent(new CustomEvent('map:loading-stop', {
+        detail: { type, key }
+      }))
     }
   }
 

@@ -1,102 +1,10 @@
-<div class="h-[calc(100vh-3.5rem)] flex flex-col" data-controller="map"
+<div class="h-[calc(100vh-3.5rem)] flex flex-col" data-controller="map map-layers"
      data-map-stays-url-value="<%= api_stays_path %>"
      data-map-pois-url-value="/api/stays/:id/pois"
      data-map-transit-url-value="/api/stays/:id/transit_routes"
      data-map-pois-search-url-value="<%= api_pois_search_path %>"
-     data-map-bucket-list-url-value="<%= api_bucket_list_items_path %>">
-  <!-- Header -->
-  <div class="bg-cream border-b border-taupe-light px-4 py-3 flex items-center gap-4 overflow-x-auto">
-    <!-- POI Toggles -->
-    <div class="flex items-center gap-2">
-      <button type="button" data-action="click->map#togglePoi" data-category="bus_stops"
-              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-        <span class="loading-spinner"></span>
-        <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #65a30d;"></span>
-        Bus Stops
-      </button>
-      <button type="button" data-action="click->map#togglePoi" data-category="stations"
-              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-        <span class="loading-spinner"></span>
-        <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #ef4444;"></span>
-        Rail Stops
-      </button>
-      <button type="button" data-action="click->map#togglePoi" data-category="coffee"
-              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-        <span class="loading-spinner"></span>
-        <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #92400e;"></span>
-        Coffee
-      </button>
-      <button type="button" data-action="click->map#togglePoi" data-category="grocery"
-              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-        <span class="loading-spinner"></span>
-        <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #f59e0b;"></span>
-        Grocery
-      </button>
-      <button type="button" data-action="click->map#togglePoi" data-category="food"
-              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-        <span class="loading-spinner"></span>
-        <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #dc2626;"></span>
-        Food
-      </button>
-      <button type="button" data-action="click->map#togglePoi" data-category="gym"
-              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-        <span class="loading-spinner"></span>
-        <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #7c3aed;"></span>
-        Gyms
-      </button>
-      <button type="button" data-action="click->map#togglePoi" data-category="coworking"
-              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-        <span class="loading-spinner"></span>
-        <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #0891b2;"></span>
-        Coworking
-      </button>
-      <button type="button" data-action="click->map#togglePoi" data-category="library"
-              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-        <span class="loading-spinner"></span>
-        <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #4f46e5;"></span>
-        Libraries
-      </button>
-    </div>
-
-    <!-- Transit Route Toggles -->
-    <div class="border-l border-taupe-light pl-4 flex items-center gap-2">
-      <button type="button" data-action="click->map#toggleTransit" data-route-type="train"
-              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-        <span class="loading-spinner"></span>
-        <span class="legend-dot w-3 h-1 rounded-sm" style="background-color: #1d4ed8;"></span>
-        Train
-      </button>
-      <button type="button" data-action="click->map#toggleTransit" data-route-type="rails"
-              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-        <span class="loading-spinner"></span>
-        <span class="legend-dot w-3 h-1 rounded-sm" style="background-color: #e11d48;"></span>
-        Rails
-      </button>
-      <button type="button" data-action="click->map#toggleTransit" data-route-type="bus"
-              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-        <span class="loading-spinner"></span>
-        <span class="legend-dot w-3 h-1 rounded-sm" style="background-color: #65a30d;"></span>
-        Bus
-      </button>
-      <button type="button" data-action="click->map#toggleTransit" data-route-type="ferry"
-              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5">
-        <span class="loading-spinner"></span>
-        <span class="legend-dot w-3 h-1 rounded-sm" style="background-color: #0284c7;"></span>
-        Ferry
-      </button>
-    </div>
-
-    <!-- Bucket List Toggle -->
-    <div class="border-l border-taupe-light pl-4 flex items-center gap-2">
-      <button type="button" data-action="click->map#toggleBucketList"
-              class="map-toggle-btn px-3 py-1 text-sm flex items-center gap-1.5"
-              data-map-target="bucketListToggle">
-        <span class="loading-spinner"></span>
-        <span class="legend-dot w-2.5 h-2.5 rounded-full" style="background-color: #ec4899;"></span>
-        Bucket List
-      </button>
-    </div>
-  </div>
+     data-map-bucket-list-url-value="<%= api_bucket_list_items_path %>"
+     data-action="layers:toggle->map#handleLayerToggle">
 
   <!-- Map and Timeline Container -->
   <div class="flex-1 relative">
@@ -173,7 +81,7 @@
 
     <!-- Floating Stay Card -->
     <div data-map-target="floatingCard"
-         class="hidden absolute bottom-4 right-4 z-[1000] cozy-card p-4 min-w-56 max-w-72 cursor-pointer transition-all duration-200 hover:shadow-cozy-lg hover:-translate-y-0.5 overflow-visible"
+         class="hidden absolute bottom-4 right-4 z-[1000] cozy-card p-4 w-[260px] cursor-pointer transition-all duration-200 hover:shadow-cozy-lg hover:-translate-y-0.5 overflow-visible"
          data-action="click->map#goToStayDetails">
       <!-- Decorative vine flourish (top-right) -->
       <div class="absolute -top-3 -right-3 w-10 h-10 opacity-70">
@@ -206,6 +114,220 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
           </svg>
         </span>
+      </div>
+    </div>
+
+    <!-- Floating Explore FAB Button -->
+    <button data-action="click->map-layers#togglePanel"
+            data-map-layers-target="fab"
+            class="layers-fab">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      </svg>
+      <span class="layers-fab-label">Explore</span>
+    </button>
+
+    <!-- Floating Explore Panel -->
+    <div data-map-layers-target="panel" class="layers-panel">
+      <!-- Panel Header -->
+      <div class="layers-panel-header">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-sage-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          <h3 class="layers-panel-title">Explore</h3>
+        </div>
+        <button data-action="click->map-layers#togglePanel" class="layers-panel-close">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Panel Content -->
+      <div class="layers-panel-content">
+        <!-- Places Group -->
+        <div data-map-layers-target="group" data-group-id="places" class="layers-group">
+          <button data-action="click->map-layers#toggleGroup" class="layers-group-header">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-sage-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <span>Places</span>
+            </div>
+            <svg class="layers-group-chevron w-4 h-4 rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          <div class="layers-group-content">
+            <button data-action="click->map-layers#toggleLayer" data-layer-type="poi" data-category="coffee" class="layers-toggle">
+              <span class="layers-toggle-indicator" style="background-color: #92400e;"></span>
+              <svg class="layers-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h1a4 4 0 110 8h-1M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8zm0 0V5a2 2 0 012-2h3.5"></path>
+              </svg>
+              <span class="layers-toggle-label">Coffee</span>
+              <span class="layers-toggle-spinner"></span>
+            </button>
+            <button data-action="click->map-layers#toggleLayer" data-layer-type="poi" data-category="food" class="layers-toggle">
+              <span class="layers-toggle-indicator" style="background-color: #dc2626;"></span>
+              <svg class="layers-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              <span class="layers-toggle-label">Food & Dining</span>
+              <span class="layers-toggle-spinner"></span>
+            </button>
+            <button data-action="click->map-layers#toggleLayer" data-layer-type="poi" data-category="grocery" class="layers-toggle">
+              <span class="layers-toggle-indicator" style="background-color: #f59e0b;"></span>
+              <svg class="layers-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+              </svg>
+              <span class="layers-toggle-label">Grocery</span>
+              <span class="layers-toggle-spinner"></span>
+            </button>
+            <button data-action="click->map-layers#toggleLayer" data-layer-type="poi" data-category="gym" class="layers-toggle">
+              <span class="layers-toggle-indicator" style="background-color: #7c3aed;"></span>
+              <svg class="layers-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h2m12 0h2M4 12h2m12 0h2M7 6v12m10-12v12M9 6h6v12H9z"></path>
+              </svg>
+              <span class="layers-toggle-label">Gyms</span>
+              <span class="layers-toggle-spinner"></span>
+            </button>
+            <button data-action="click->map-layers#toggleLayer" data-layer-type="poi" data-category="library" class="layers-toggle">
+              <span class="layers-toggle-indicator" style="background-color: #4f46e5;"></span>
+              <svg class="layers-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+              </svg>
+              <span class="layers-toggle-label">Libraries</span>
+              <span class="layers-toggle-spinner"></span>
+            </button>
+            <button data-action="click->map-layers#toggleLayer" data-layer-type="poi" data-category="coworking" class="layers-toggle">
+              <span class="layers-toggle-indicator" style="background-color: #0891b2;"></span>
+              <svg class="layers-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+              <span class="layers-toggle-label">Coworking</span>
+              <span class="layers-toggle-spinner"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- My Lists Group -->
+        <div data-map-layers-target="group" data-group-id="lists" class="layers-group">
+          <button data-action="click->map-layers#toggleGroup" class="layers-group-header">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-rose-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+              </svg>
+              <span>My Lists</span>
+            </div>
+            <svg class="layers-group-chevron w-4 h-4 rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          <div class="layers-group-content">
+            <button data-action="click->map-layers#toggleLayer" data-layer-type="bucket-list" class="layers-toggle">
+              <span class="layers-toggle-indicator" style="background-color: #ec4899;"></span>
+              <svg class="layers-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+              </svg>
+              <span class="layers-toggle-label">Bucket List</span>
+              <span class="layers-toggle-spinner"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Transit Group -->
+        <div data-map-layers-target="group" data-group-id="transit" class="layers-group collapsed">
+          <button data-action="click->map-layers#toggleGroup" class="layers-group-header">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-sage-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8m-8 5h8m-4-9v18m-4-4l4 4 4-4"></path>
+              </svg>
+              <span>Transit Routes</span>
+            </div>
+            <svg class="layers-group-chevron w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          <div class="layers-group-content hidden">
+            <button data-action="click->map-layers#toggleLayer" data-layer-type="transit" data-route-type="train" class="layers-toggle">
+              <span class="layers-toggle-indicator layers-toggle-line" style="background-color: #1d4ed8 !important;"></span>
+              <svg class="layers-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 0l-4 4m4-4l4 4M5 12h14"></path>
+              </svg>
+              <span class="layers-toggle-label">Train</span>
+              <span class="layers-toggle-spinner"></span>
+            </button>
+            <button data-action="click->map-layers#toggleLayer" data-layer-type="transit" data-route-type="rails" class="layers-toggle">
+              <span class="layers-toggle-indicator layers-toggle-line" style="background-color: #e11d48 !important;"></span>
+              <svg class="layers-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
+              </svg>
+              <span class="layers-toggle-label">Light Rail</span>
+              <span class="layers-toggle-spinner"></span>
+            </button>
+            <button data-action="click->map-layers#toggleLayer" data-layer-type="transit" data-route-type="bus" class="layers-toggle">
+              <span class="layers-toggle-indicator layers-toggle-line" style="background-color: #65a30d !important;"></span>
+              <svg class="layers-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8M8 11h8m-8 4h4m-6 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v11a2 2 0 002 2z"></path>
+              </svg>
+              <span class="layers-toggle-label">Bus Routes</span>
+              <span class="layers-toggle-spinner"></span>
+            </button>
+            <button data-action="click->map-layers#toggleLayer" data-layer-type="transit" data-route-type="ferry" class="layers-toggle">
+              <span class="layers-toggle-indicator layers-toggle-line" style="background-color: #0284c7 !important;"></span>
+              <svg class="layers-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 17h18M5 17l2-8h10l2 8M7 9V6a1 1 0 011-1h8a1 1 0 011 1v3"></path>
+              </svg>
+              <span class="layers-toggle-label">Ferry</span>
+              <span class="layers-toggle-spinner"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Stops Group -->
+        <div data-map-layers-target="group" data-group-id="stops" class="layers-group collapsed">
+          <button data-action="click->map-layers#toggleGroup" class="layers-group-header">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-sage-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+              </svg>
+              <span>Stops</span>
+            </div>
+            <svg class="layers-group-chevron w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          <div class="layers-group-content hidden">
+            <button data-action="click->map-layers#toggleLayer" data-layer-type="poi" data-category="bus_stops" class="layers-toggle">
+              <span class="layers-toggle-indicator" style="background-color: #65a30d;"></span>
+              <svg class="layers-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5M5 12h14"></path>
+              </svg>
+              <span class="layers-toggle-label">Bus Stops</span>
+              <span class="layers-toggle-spinner"></span>
+            </button>
+            <button data-action="click->map-layers#toggleLayer" data-layer-type="poi" data-category="stations" class="layers-toggle">
+              <span class="layers-toggle-indicator" style="background-color: #ef4444;"></span>
+              <svg class="layers-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              </svg>
+              <span class="layers-toggle-label">Rail Stops</span>
+              <span class="layers-toggle-spinner"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel Footer with Decorative Flourish -->
+      <div class="layers-panel-footer">
+        <svg class="w-full h-4 opacity-40" viewBox="0 0 100 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 8 Q25 2 50 8 T100 8" stroke="#8FA68F" stroke-width="1" fill="none"/>
+          <circle cx="50" cy="8" r="2" fill="#8FA68F"/>
+          <circle cx="35" cy="6" r="1.5" fill="#D4A5A5"/>
+          <circle cx="65" cy="6" r="1.5" fill="#D4A5A5"/>
+        </svg>
       </div>
     </div>
   </div>
