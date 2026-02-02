@@ -31,6 +31,68 @@ export default class extends Controller {
 
     // Auto-load POIs/transit when viewport changes
     this.map.on('moveend', () => this.onViewportChange())
+
+    // Listen for clicks on bucket list buttons in popups
+    this.bucketListClickHandler = this.handleBucketListClick.bind(this)
+    document.addEventListener('click', this.bucketListClickHandler)
+  }
+
+  async handleBucketListClick(event) {
+    const btn = event.target.closest('.add-to-bucket-list-btn')
+    if (!btn) return
+
+    const stayId = btn.dataset.stayId
+    const poiName = btn.dataset.poiName
+    const poiAddress = btn.dataset.poiAddress
+
+    // Show loading state
+    btn.disabled = true
+    btn.innerHTML = `
+      <svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      Adding...
+    `
+
+    try {
+      const response = await fetch(`/stays/${stayId}/bucket_list_items`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          bucket_list_item: {
+            title: poiName,
+            address: poiAddress,
+            category: 'other'
+          }
+        })
+      })
+
+      if (response.ok) {
+        btn.innerHTML = `
+          <svg class="w-3.5 h-3.5 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          Added!
+        `
+        btn.classList.add('text-sage')
+      } else {
+        throw new Error('Failed to add')
+      }
+    } catch (error) {
+      btn.disabled = false
+      btn.innerHTML = `
+        <svg class="w-3.5 h-3.5 text-rose" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        Failed - try again
+      `
+      btn.classList.add('text-rose')
+    }
   }
 
   // Loading state helpers
@@ -438,7 +500,7 @@ export default class extends Controller {
       // Render all POIs at once
       results.forEach(result => {
         if (!result) return // Skip aborted requests
-        const { pois } = result
+        const { stay, pois } = result
         pois.forEach(poi => {
           if (poi.latitude && poi.longitude) {
             const icon = this.getPOIIcon(category)
@@ -446,10 +508,23 @@ export default class extends Controller {
             const miles = (poi.distance_meters / 1609.34).toFixed(1)
             const distanceText = miles < 0.1 ? `${Math.round(miles * 5280)} ft` : `${miles} mi`
             marker.bindPopup(`
-              <div class="p-1">
+              <div class="p-2">
                 <strong>${poi.name || 'Unknown'}</strong>
                 <br><span class="text-sm text-gray-500">${distanceText} from stay</span>
-                ${poi.opening_hours ? `<br><span class="text-xs">${poi.opening_hours}</span>` : ''}
+                ${poi.opening_hours ? `<br><span class="text-xs text-gray-400">${poi.opening_hours}</span>` : ''}
+                <div class="mt-2 pt-2 border-t border-gray-200">
+                  <button
+                    class="add-to-bucket-list-btn text-xs text-sage-dark hover:text-sage font-medium flex items-center gap-1"
+                    data-stay-id="${stay.id}"
+                    data-poi-name="${(poi.name || '').replace(/"/g, '&quot;')}"
+                    data-poi-address="${(poi.address || '').replace(/"/g, '&quot;')}"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Add to bucket list
+                  </button>
+                </div>
               </div>
             `)
           layerGroup.addLayer(marker)
@@ -558,11 +633,31 @@ export default class extends Controller {
         if (poi.latitude && poi.longitude) {
           const icon = this.getPOIIcon(category)
           const marker = L.marker([poi.latitude, poi.longitude], { icon })
+
+          // Find nearest stay to this POI for bucket list button
+          const nearestStay = this.findNearestStay(poi.latitude, poi.longitude)
+          const stayId = nearestStay ? nearestStay.id : null
+
           marker.bindPopup(`
-            <div class="p-1">
+            <div class="p-2">
               <strong>${poi.name || 'Unknown'}</strong>
               ${poi.address ? `<br><span class="text-sm text-gray-500">${poi.address}</span>` : ''}
-              ${poi.opening_hours ? `<br><span class="text-xs">${poi.opening_hours}</span>` : ''}
+              ${poi.opening_hours ? `<br><span class="text-xs text-gray-400">${poi.opening_hours}</span>` : ''}
+              ${stayId ? `
+                <div class="mt-2 pt-2 border-t border-gray-200">
+                  <button
+                    class="add-to-bucket-list-btn text-xs text-sage-dark hover:text-sage font-medium flex items-center gap-1"
+                    data-stay-id="${stayId}"
+                    data-poi-name="${(poi.name || '').replace(/"/g, '&quot;')}"
+                    data-poi-address="${(poi.address || '').replace(/"/g, '&quot;')}"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Add to bucket list
+                  </button>
+                </div>
+              ` : ''}
             </div>
           `)
           layerGroup.addLayer(marker)
@@ -719,7 +814,36 @@ export default class extends Controller {
     })
   }
 
+  findNearestStay(lat, lng) {
+    if (!this.stays || this.stays.length === 0) return null
+
+    let nearest = null
+    let minDistance = Infinity
+
+    this.stays.forEach(stay => {
+      if (stay.latitude && stay.longitude) {
+        const distance = this.calculateDistance(lat, lng, stay.latitude, stay.longitude)
+        if (distance < minDistance) {
+          minDistance = distance
+          nearest = stay
+        }
+      }
+    })
+
+    return nearest
+  }
+
+  calculateDistance(lat1, lng1, lat2, lng2) {
+    // Simple Euclidean distance (good enough for nearby comparisons)
+    const dLat = lat2 - lat1
+    const dLng = lng2 - lng1
+    return Math.sqrt(dLat * dLat + dLng * dLng)
+  }
+
   disconnect() {
+    if (this.bucketListClickHandler) {
+      document.removeEventListener('click', this.bucketListClickHandler)
+    }
     if (this.map) {
       this.map.remove()
     }

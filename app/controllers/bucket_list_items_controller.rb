@@ -12,9 +12,11 @@ class BucketListItemsController < ApplicationController
       if @bucket_list_item.save
         format.turbo_stream
         format.html { redirect_to @stay, notice: "Bucket list item was successfully added." }
+        format.json { render json: { success: true, item: @bucket_list_item }, status: :created }
       else
         format.turbo_stream { render :create_error, status: :unprocessable_entity }
         format.html { redirect_to @stay, alert: @bucket_list_item.errors.full_messages.join(", ") }
+        format.json { render json: { success: false, errors: @bucket_list_item.errors.full_messages }, status: :unprocessable_entity }
       end
     end
   end
