@@ -1,7 +1,5 @@
-<%= turbo_frame_tag "venue-card-#{poi.foursquare_id}" do %>
-  <div class="group relative rounded-2xl overflow-hidden shadow-cozy hover:shadow-cozy-lg transition-all duration-300 hover:-translate-y-1 bg-cream"
-       data-gallery-filter-target="card"
-       data-category="<%= poi.category %>">
+<%= turbo_frame_tag "venue-card-#{poi.foursquare_id}", data: { gallery_filter_target: "card", category: poi.category } do %>
+  <div class="group relative rounded-2xl overflow-hidden shadow-cozy hover:shadow-cozy-lg transition-all duration-300 hover:-translate-y-1 bg-cream">
     <!-- Image Container - links to Foursquare page for attribution -->
     <a href="https://foursquare.com/v/<%= poi.foursquare_id %>" target="_blank" rel="noopener" class="block aspect-square overflow-hidden">
       <% if poi.foursquare_photo_url.present? %>
