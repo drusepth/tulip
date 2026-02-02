@@ -24,19 +24,28 @@
         <!-- Content -->
         <div class="flex-1 min-w-0">
           <!-- Header with rating info -->
+          <%
+            rating_value = comment.bucket_list_item_rating.rating
+            rating_verb = case rating_value
+              when 5 then "loved"
+              when 4 then "really liked"
+              when 3 then "liked"
+              when 2 then "didn't love"
+              else "tried"
+            end
+          %>
           <div class="flex items-center gap-2 flex-wrap">
             <!-- Checkmark icon -->
             <svg class="w-4 h-4 text-sage-dark" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
             </svg>
             <span class="font-medium text-brown text-sm"><%= comment.user.name %></span>
-            <span class="text-xs text-brown-light">loved</span>
+            <span class="text-xs text-brown-light"><%= rating_verb %></span>
             <span class="font-semibold text-sage-dark text-sm"><%= comment.bucket_list_item&.title %></span>
           </div>
 
           <!-- Star rating display -->
           <div class="mt-2 flex items-center gap-1">
-            <% rating_value = comment.bucket_list_item_rating.rating %>
             <% (1..5).each do |star_num| %>
               <% filled = rating_value >= star_num %>
               <% if filled %>
