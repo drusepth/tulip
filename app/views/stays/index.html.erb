@@ -124,6 +124,29 @@
           <!-- Upcoming stays populated dynamically -->
         </div>
 
+        <!-- Dream Destinations Section (wishlist stays without dates) -->
+        <div class="mt-6 pt-4 border-t border-taupe-light">
+          <button data-action="click->map#toggleDreamDestinations"
+                  data-map-target="dreamDestinationsToggle"
+                  class="w-full flex items-center justify-between text-left mb-3 group">
+            <h2 class="text-lg font-semibold text-lavender-dark group-hover:text-lavender transition-colors flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+              </svg>
+              Dream Destinations
+            </h2>
+            <div class="flex items-center gap-2">
+              <span data-map-target="dreamDestinationsCount" class="text-sm text-lavender"></span>
+              <svg data-map-target="dreamDestinationsChevron" class="w-4 h-4 text-lavender-dark transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </button>
+          <div data-map-target="dreamDestinationsList" class="space-y-2 hidden">
+            <!-- Dream destinations populated dynamically -->
+          </div>
+        </div>
+
         <!-- Previous Stays Section -->
         <div class="mt-6 pt-4 border-t border-taupe-light">
           <button data-action="click->map#togglePreviousStays"

@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 // Leaflet is loaded globally via CDN in application.html.erb
 
 export default class extends Controller {
-  static targets = ["container", "timeline", "upcomingStaysList", "previousStaysList", "previousStaysToggle", "previousStaysChevron", "previousStaysCount", "collapseIcon", "floatingCard", "floatingCardTitle", "floatingCardLocation", "floatingCardDates", "bucketListToggle"]
+  static targets = ["container", "timeline", "upcomingStaysList", "previousStaysList", "previousStaysToggle", "previousStaysChevron", "previousStaysCount", "dreamDestinationsList", "dreamDestinationsToggle", "dreamDestinationsChevron", "dreamDestinationsCount", "collapseIcon", "floatingCard", "floatingCardTitle", "floatingCardLocation", "floatingCardDates", "bucketListToggle"]
   static values = {
     staysUrl: String,
     poisUrl: String,
@@ -23,6 +23,8 @@ export default class extends Controller {
     this.fetchedTransit = {}   // Track fetched transit by `${routeType}-${stayId}`
     this.previousStaysVisible = false  // Track visibility of previous stays markers
     this.previousStayMarkers = []      // Separate array for previous stay markers
+    this.dreamDestinationsVisible = false  // Track visibility of dream destinations
+    this.dreamDestinationMarkers = []      // Separate array for dream destination markers
     this.poiAbortControllers = {}    // AbortControllers for in-flight POI requests
     this.transitAbortControllers = {} // AbortControllers for in-flight transit requests
     this.searchedGridCells = {}      // Track searched viewport grid cells by `${category}-${gridKey}`
@@ -180,15 +182,21 @@ export default class extends Controller {
       if (stay.status === 'past' && !this.previousStaysVisible) {
         this.togglePreviousStays()
       }
+      // If it's a dream destination and markers are hidden, show them first
+      if (stay.wishlist && !this.dreamDestinationsVisible) {
+        this.toggleDreamDestinations()
+      }
       this.map.setView([stay.latitude, stay.longitude], 14)
-      this.showFloatingCard(stay)
+      this.showFloatingCard(stay, stay.wishlist)
     }
   }
 
   renderStayMarkers(stays) {
     const bounds = []
-    const upcomingStays = stays.filter(s => s.status === 'upcoming' || s.status === 'current')
+    // Filter out wishlist stays (no dates) from upcoming
+    const upcomingStays = stays.filter(s => (s.status === 'upcoming' || s.status === 'current') && !s.wishlist)
     const previousStays = stays.filter(s => s.status === 'past')
+    const dreamDestinations = stays.filter(s => s.wishlist)
 
     // Render upcoming/current stays (always visible)
     upcomingStays.forEach(stay => {
@@ -209,6 +217,15 @@ export default class extends Controller {
       }
     })
 
+    // Render dream destinations (hidden by default)
+    dreamDestinations.forEach(stay => {
+      if (stay.latitude && stay.longitude) {
+        const marker = this.createStayMarker(stay, true)
+        // Don't add to map initially - they're hidden by default
+        this.dreamDestinationMarkers.push({ marker, stay })
+      }
+    })
+
     // Only auto-fit bounds if no focus parameter is present
     const params = new URLSearchParams(window.location.search)
     if (bounds.length > 0 && !params.get('focus')) {
@@ -216,20 +233,22 @@ export default class extends Controller {
     }
   }
 
-  createStayMarker(stay) {
-    const color = this.getStatusColor(stay.status)
+  createStayMarker(stay, isDream = false) {
+    const color = isDream ? '#a78bfa' : this.getStatusColor(stay.status) // lavender for dreams
     const marker = L.circleMarker([stay.latitude, stay.longitude], {
-      radius: 10,
+      radius: isDream ? 8 : 10,
       fillColor: color,
       color: '#fff',
       weight: 2,
       opacity: 1,
-      fillOpacity: 0.8
+      fillOpacity: isDream ? 0.6 : 0.8
     })
 
-    const statusBadge = stay.booked
-      ? `<span class="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-800">Booked</span>`
-      : `<span class="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-800">Planned</span>`
+    const statusBadge = isDream
+      ? `<span class="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-800">Dream</span>`
+      : stay.booked
+        ? `<span class="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-800">Booked</span>`
+        : `<span class="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-800">Planned</span>`
 
     const imageHtml = stay.image_url
       ? `<div class="popup-image">
@@ -237,8 +256,17 @@ export default class extends Controller {
          </div>`
       : ''
 
-    const checkIn = new Date(stay.check_in).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-    const checkOut = new Date(stay.check_out).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    // Only format dates if the stay has them (not a dream destination)
+    let datesHtml = ''
+    let nightsHtml = ''
+    if (!isDream && stay.check_in && stay.check_out) {
+      const checkIn = new Date(stay.check_in).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      const checkOut = new Date(stay.check_out).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      datesHtml = `<p class="popup-dates">${checkIn} - ${checkOut}</p>`
+      nightsHtml = `<span class="popup-nights">${stay.duration_days} nights</span>`
+    } else if (isDream) {
+      datesHtml = `<p class="popup-dates text-lavender-dark italic">Dates not set yet</p>`
+    }
 
     marker.bindPopup(`
       <div class="popup-content">
@@ -246,10 +274,10 @@ export default class extends Controller {
         <div class="popup-body">
           <div class="popup-badges">
             ${statusBadge}
-            <span class="popup-nights">${stay.duration_days} nights</span>
+            ${nightsHtml}
           </div>
           <h3 class="popup-title">${stay.title}</h3>
-          <p class="popup-dates">${checkIn} - ${checkOut}</p>
+          ${datesHtml}
           <a href="${stay.url}" class="popup-link">
             View Details
             <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -273,14 +301,17 @@ export default class extends Controller {
   }
 
   renderTimeline(stays) {
-    // Split stays into upcoming/current and past
-    const upcomingStays = stays.filter(s => s.status === 'upcoming' || s.status === 'current')
+    // Split stays into upcoming/current, past, and dream destinations (wishlist)
+    const upcomingStays = stays.filter(s => (s.status === 'upcoming' || s.status === 'current') && !s.wishlist)
     const previousStays = stays.filter(s => s.status === 'past')
+    const dreamDestinations = stays.filter(s => s.wishlist)
 
     // Sort upcoming by check_in date (ascending - soonest first)
     const sortedUpcoming = [...upcomingStays].sort((a, b) => new Date(a.check_in) - new Date(b.check_in))
     // Sort previous by check_in date (descending - most recent first)
     const sortedPrevious = [...previousStays].sort((a, b) => new Date(b.check_in) - new Date(a.check_in))
+    // Sort dream destinations alphabetically by title
+    const sortedDreams = [...dreamDestinations].sort((a, b) => a.title.localeCompare(b.title))
 
     // Render upcoming stays
     if (this.hasUpcomingStaysListTarget) {
@@ -298,6 +329,16 @@ export default class extends Controller {
       }
     }
 
+    // Render dream destinations
+    if (this.hasDreamDestinationsListTarget) {
+      this.dreamDestinationsListTarget.innerHTML = sortedDreams.map(stay => this.renderStayCard(stay, false, true)).join('')
+    }
+
+    // Update dream destinations count
+    if (this.hasDreamDestinationsCountTarget) {
+      this.dreamDestinationsCountTarget.textContent = `${dreamDestinations.length}`
+    }
+
     // Render previous stays
     if (this.hasPreviousStaysListTarget) {
       this.previousStaysListTarget.innerHTML = sortedPrevious.map(stay => this.renderStayCard(stay, true)).join('')
@@ -309,34 +350,58 @@ export default class extends Controller {
     }
   }
 
-  renderStayCard(stay, isPrevious = false) {
-    const checkIn = new Date(stay.check_in).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-    const checkOut = new Date(stay.check_out).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  renderStayCard(stay, isPrevious = false, isDream = false) {
     const location = [stay.city, stay.country].filter(Boolean).join(', ')
 
-    const imageHtml = stay.image_url
-      ? `<img src="${stay.image_url}" alt="${stay.title}" class="w-20 h-full absolute left-0 top-0 bottom-0 object-cover ${isPrevious ? 'grayscale opacity-70' : ''}">`
-      : `<div class="w-20 h-full absolute left-0 top-0 bottom-0 ${isPrevious ? 'bg-gray-200' : 'bg-taupe-light'} flex items-center justify-center">
-           <svg class="w-8 h-8 ${isPrevious ? 'text-gray-400' : 'text-taupe'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-           </svg>
-         </div>`
+    // Only format dates if not a dream destination
+    let datesHtml = ''
+    if (!isDream && stay.check_in && stay.check_out) {
+      const checkIn = new Date(stay.check_in).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      const checkOut = new Date(stay.check_out).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      datesHtml = `<div class="text-xs text-brown-lighter mt-0.5">${checkIn} - ${checkOut}</div>`
+    } else if (isDream) {
+      datesHtml = `<div class="text-xs text-lavender mt-0.5 italic">Someday...</div>`
+    }
 
-    const cardClasses = isPrevious
-      ? 'w-full text-left rounded-xl border border-gray-200 overflow-hidden relative transition-all duration-200 hover:shadow-md hover:border-taupe hover:-translate-y-0.5 cursor-pointer'
-      : 'w-full text-left rounded-xl border border-taupe-light overflow-hidden relative transition-all duration-200 hover:shadow-md hover:border-sage hover:-translate-y-0.5 cursor-pointer'
+    let imageHtml
+    if (isDream) {
+      imageHtml = stay.image_url
+        ? `<img src="${stay.image_url}" alt="${stay.title}" class="w-20 h-full absolute left-0 top-0 bottom-0 object-cover">`
+        : `<div class="w-20 h-full absolute left-0 top-0 bottom-0 bg-lavender-light flex items-center justify-center">
+             <svg class="w-8 h-8 text-lavender-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+             </svg>
+           </div>`
+    } else {
+      imageHtml = stay.image_url
+        ? `<img src="${stay.image_url}" alt="${stay.title}" class="w-20 h-full absolute left-0 top-0 bottom-0 object-cover ${isPrevious ? 'grayscale opacity-70' : ''}">`
+        : `<div class="w-20 h-full absolute left-0 top-0 bottom-0 ${isPrevious ? 'bg-gray-200' : 'bg-taupe-light'} flex items-center justify-center">
+             <svg class="w-8 h-8 ${isPrevious ? 'text-gray-400' : 'text-taupe'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+             </svg>
+           </div>`
+    }
 
-    const textClasses = isPrevious ? 'text-brown-light' : 'text-brown'
+    let cardClasses
+    if (isDream) {
+      cardClasses = 'w-full text-left rounded-xl border border-lavender-light overflow-hidden relative transition-all duration-200 hover:shadow-md hover:border-lavender hover:-translate-y-0.5 cursor-pointer'
+    } else if (isPrevious) {
+      cardClasses = 'w-full text-left rounded-xl border border-gray-200 overflow-hidden relative transition-all duration-200 hover:shadow-md hover:border-taupe hover:-translate-y-0.5 cursor-pointer'
+    } else {
+      cardClasses = 'w-full text-left rounded-xl border border-taupe-light overflow-hidden relative transition-all duration-200 hover:shadow-md hover:border-sage hover:-translate-y-0.5 cursor-pointer'
+    }
+
+    const textClasses = isPrevious ? 'text-brown-light' : (isDream ? 'text-lavender-dark' : 'text-brown')
 
     return `
-      <button data-action="click->map#zoomToStay" data-stay-id="${stay.id}"
+      <button data-action="click->map#zoomToStay" data-stay-id="${stay.id}" data-is-dream="${isDream}"
               class="${cardClasses}">
         ${imageHtml}
         <div class="ml-20 py-2 px-3 bg-white">
           <div class="font-medium ${textClasses} truncate">${stay.title}</div>
           <div class="text-sm text-brown-light">${location}</div>
-          <div class="text-xs text-brown-lighter mt-0.5">${checkIn} - ${checkOut}</div>
+          ${datesHtml}
         </div>
       </button>
     `
@@ -344,18 +409,23 @@ export default class extends Controller {
 
   zoomToStay(event) {
     const stayId = event.currentTarget.dataset.stayId
+    const isDream = event.currentTarget.dataset.isDream === 'true'
     const stay = this.stays.find(s => s.id == stayId)
     if (stay && stay.latitude && stay.longitude) {
       // If it's a previous stay and markers are hidden, show them first
       if (stay.status === 'past' && !this.previousStaysVisible) {
         this.togglePreviousStays()
       }
+      // If it's a dream destination and markers are hidden, show them first
+      if ((stay.wishlist || isDream) && !this.dreamDestinationsVisible) {
+        this.toggleDreamDestinations()
+      }
       this.map.setView([stay.latitude, stay.longitude], 14, { animate: true })
-      this.showFloatingCard(stay)
+      this.showFloatingCard(stay, isDream)
     }
   }
 
-  showFloatingCard(stay) {
+  showFloatingCard(stay, isDream = false) {
     this.selectedStay = stay
     this.floatingCardTitleTarget.textContent = stay.title
     const location = [stay.city, stay.country].filter(Boolean).join(', ')
@@ -363,9 +433,15 @@ export default class extends Controller {
       this.floatingCardLocationTarget.textContent = location
     }
     if (this.hasFloatingCardDatesTarget) {
-      const checkIn = new Date(stay.check_in).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-      const checkOut = new Date(stay.check_out).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-      this.floatingCardDatesTarget.textContent = `${checkIn} - ${checkOut}`
+      if (stay.wishlist || isDream) {
+        this.floatingCardDatesTarget.textContent = 'Someday...'
+        this.floatingCardDatesTarget.classList.add('italic', 'text-lavender')
+      } else if (stay.check_in && stay.check_out) {
+        const checkIn = new Date(stay.check_in).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        const checkOut = new Date(stay.check_out).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        this.floatingCardDatesTarget.textContent = `${checkIn} - ${checkOut}`
+        this.floatingCardDatesTarget.classList.remove('italic', 'text-lavender')
+      }
     }
     this.floatingCardTarget.classList.remove('hidden')
   }
@@ -415,6 +491,29 @@ export default class extends Controller {
     // Toggle markers on the map
     this.previousStayMarkers.forEach(({ marker }) => {
       if (this.previousStaysVisible) {
+        marker.addTo(this.map)
+      } else {
+        this.map.removeLayer(marker)
+      }
+    })
+  }
+
+  toggleDreamDestinations() {
+    this.dreamDestinationsVisible = !this.dreamDestinationsVisible
+
+    // Toggle the list visibility
+    if (this.hasDreamDestinationsListTarget) {
+      this.dreamDestinationsListTarget.classList.toggle('hidden', !this.dreamDestinationsVisible)
+    }
+
+    // Rotate the chevron
+    if (this.hasDreamDestinationsChevronTarget) {
+      this.dreamDestinationsChevronTarget.classList.toggle('rotate-180', this.dreamDestinationsVisible)
+    }
+
+    // Toggle markers on the map
+    this.dreamDestinationMarkers.forEach(({ marker }) => {
+      if (this.dreamDestinationsVisible) {
         marker.addTo(this.map)
       } else {
         this.map.removeLayer(marker)
