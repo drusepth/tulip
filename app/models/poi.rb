@@ -1,6 +1,6 @@
 class Poi < ApplicationRecord
   CATEGORIES = %w[bus_stops stations coffee grocery gym food coworking library parks].freeze
-  BROWSABLE_CATEGORIES = %w[coffee grocery food gym coworking library parks stations].freeze
+  BROWSABLE_CATEGORIES = %w[coffee grocery food gym coworking library parks].freeze
   SOURCES = %w[osm foursquare].freeze
 
   belongs_to :stay

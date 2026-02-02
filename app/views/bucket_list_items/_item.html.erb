@@ -21,7 +21,7 @@
       <span class="<%= bucket_list_item.completed? ? 'text-brown-light' : 'text-brown font-medium' %>">
         <%= bucket_list_item.title %>
       </span>
-      <% if bucket_list_item.user.present? && stay.collaborators.any? %>
+      <% if bucket_list_item.user.present? && stay.collaborators.any? && !bucket_list_item.completed? %>
         <p class="text-xs text-taupe mt-1 flex items-center gap-1.5">
           <%= avatar_tag(bucket_list_item.user, size: 16, html_options: {
             class: "w-4 h-4 ring-1 ring-taupe-light",
@@ -30,7 +30,7 @@
           <span>Added by <%= bucket_list_item.user.name %></span>
         </p>
       <% end %>
-      <% if bucket_list_item.address.present? %>
+      <% if bucket_list_item.address.present? && !bucket_list_item.completed? %>
         <p class="text-xs text-brown-light mt-1 flex items-center gap-1.5">
           <svg class="w-3.5 h-3.5 text-taupe" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
