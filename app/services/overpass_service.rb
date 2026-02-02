@@ -29,6 +29,10 @@ class OverpassService
     ],
     'library' => [
       '["amenity"="library"]'
+    ],
+    'parks' => [
+      '["leisure"="park"]',
+      '["leisure"="garden"]'
     ]
   }.freeze
 

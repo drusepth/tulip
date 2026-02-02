@@ -6,13 +6,27 @@ export default class extends Controller {
     stayId: Number
   }
 
+  connect() {
+    this.currentCategory = null
+  }
+
   async loadCategory(event) {
     const category = event.params.category
     const button = event.currentTarget
 
+    // If clicking the same category, toggle it off
+    if (this.currentCategory === category) {
+      this.element.querySelectorAll('.category-pill').forEach(b => b.classList.remove('active'))
+      this.resultsTarget.classList.add('hidden')
+      this.resultsTarget.innerHTML = ''
+      this.currentCategory = null
+      return
+    }
+
     // Toggle active state on buttons
     this.element.querySelectorAll('.category-pill').forEach(b => b.classList.remove('active'))
     button.classList.add('active')
+    this.currentCategory = category
 
     // Show loading state
     this.resultsTarget.innerHTML = '<p class="text-sm text-brown-light py-2">Loading nearby places...</p>'
