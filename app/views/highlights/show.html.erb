@@ -1,0 +1,57 @@
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8" data-controller="highlights-filter">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-coral-light to-coral flex items-center justify-center">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-brown">Trip Highlights</h1>
+            <p class="text-brown-light"><%= @stay.city.present? ? @stay.city : @stay.title %><%= ", #{@stay.country}" if @stay.country.present? %></p>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <%= link_to stay_path(@stay), class: "btn-outline" do %>
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          Back to Stay
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <% if @completed_items.any? %>
+    <!-- Stats Section -->
+    <%= render partial: "highlights/stats_section" %>
+
+    <!-- Category Filters -->
+    <% if @categories.size > 1 %>
+      <%= render partial: "highlights/category_filters" %>
+    <% end %>
+
+    <!-- Completed Items by Category -->
+    <div class="space-y-8">
+      <% @categories.each do |category| %>
+        <%= render partial: "highlights/category_section", locals: { category: category, items: @items_by_category[category] } %>
+      <% end %>
+    </div>
+  <% else %>
+    <%= render partial: "highlights/empty_state" %>
+  <% end %>
+
+  <!-- Back Link -->
+  <div class="mt-8 pt-8 border-t border-taupe-light">
+    <%= link_to stay_path(@stay), class: "text-sage-dark hover:text-sage inline-flex items-center" do %>
+      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Back to <%= @stay.title %>
+    <% end %>
+  </div>
+</div>

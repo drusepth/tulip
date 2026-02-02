@@ -1,0 +1,70 @@
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+  <!-- City Overall Average -->
+  <div class="cozy-card p-5 bg-cream">
+    <div class="flex items-center gap-3 mb-3">
+      <div class="w-10 h-10 rounded-full bg-taupe-light flex items-center justify-center">
+        <svg class="w-5 h-5 text-brown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+      </div>
+      <div>
+        <p class="text-xs text-brown-light uppercase tracking-wide font-medium">Trip Average</p>
+        <p class="text-lg font-semibold text-brown">
+          <% if @city_average %>
+            <%= @city_average %> / 5
+          <% else %>
+            No ratings yet
+          <% end %>
+        </p>
+      </div>
+    </div>
+    <% if @city_average %>
+      <%= star_rating_display(@city_average, size: "w-5 h-5") %>
+    <% end %>
+  </div>
+
+  <!-- Current User's Average -->
+  <div class="cozy-card p-5 bg-sage-light">
+    <div class="flex items-center gap-3 mb-3">
+      <%= avatar_tag(current_user, size: 40, html_options: { class: "w-10 h-10 ring-2 ring-sage" }) %>
+      <div>
+        <p class="text-xs text-sage-dark uppercase tracking-wide font-medium">Your Average</p>
+        <p class="text-lg font-semibold text-brown">
+          <% if @user_stats %>
+            <%= @user_stats[:average] %> / 5
+            <span class="text-sm font-normal text-brown-light">(<%= @user_stats[:count] %> rated)</span>
+          <% else %>
+            No ratings yet
+          <% end %>
+        </p>
+      </div>
+    </div>
+    <% if @user_stats %>
+      <%= star_rating_display(@user_stats[:average], size: "w-5 h-5") %>
+    <% end %>
+  </div>
+
+  <!-- Collaborator Averages -->
+  <% @collaborator_stats.each do |collab| %>
+    <div class="cozy-card p-5 bg-lavender-light">
+      <div class="flex items-center gap-3 mb-3">
+        <%= avatar_tag(collab[:user], size: 40, html_options: { class: "w-10 h-10 ring-2 ring-lavender" }) %>
+        <div>
+          <p class="text-xs text-lavender-dark uppercase tracking-wide font-medium"><%= collab[:user].name %></p>
+          <p class="text-lg font-semibold text-brown">
+            <% if collab[:stats] %>
+              <%= collab[:stats][:average] %> / 5
+              <span class="text-sm font-normal text-brown-light">(<%= collab[:stats][:count] %> rated)</span>
+            <% else %>
+              No ratings yet
+            <% end %>
+          </p>
+        </div>
+      </div>
+      <% if collab[:stats] %>
+        <%= star_rating_display(collab[:stats][:average], size: "w-5 h-5") %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

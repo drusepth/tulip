@@ -1,0 +1,18 @@
+<div class="cozy-card p-12 text-center">
+  <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-coral-light flex items-center justify-center">
+    <svg class="w-10 h-10 text-coral-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+    </svg>
+  </div>
+  <h2 class="text-xl font-semibold text-brown mb-2">No Highlights Yet</h2>
+  <p class="text-brown-light mb-6 max-w-md mx-auto">
+    Complete some bucket list items during your stay to see them showcased here.
+    You can rate each experience and see how your ratings compare with travel companions.
+  </p>
+  <%= link_to stay_path(@stay, anchor: "bucket-list"), class: "btn-primary inline-flex items-center" do %>
+    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+    </svg>
+    View Bucket List
+  <% end %>
+</div>

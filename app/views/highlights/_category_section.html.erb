@@ -1,0 +1,19 @@
+<div class="category-group" data-highlights-filter-target="group" data-category="<%= category %>">
+  <!-- Category Header -->
+  <div class="flex items-center gap-3 mb-4">
+    <div class="w-8 h-8 rounded-full bg-coral-light flex items-center justify-center">
+      <%= bucket_list_category_icon(category, size: "w-4 h-4 text-coral-dark") %>
+    </div>
+    <h2 class="text-xl font-semibold text-brown"><%= category.titleize %></h2>
+    <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-taupe-light text-brown-light">
+      <%= items.size %> <%= "item".pluralize(items.size) %>
+    </span>
+  </div>
+
+  <!-- Items Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <% items.each do |item| %>
+      <%= render partial: "highlights/item_card", locals: { item: item } %>
+    <% end %>
+  </div>
+</div>

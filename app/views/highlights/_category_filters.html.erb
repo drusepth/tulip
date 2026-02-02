@@ -1,0 +1,29 @@
+<div class="cozy-card p-4 mb-6 relative overflow-hidden">
+  <div class="flex flex-wrap items-center gap-3">
+    <p class="text-xs text-brown-light font-medium uppercase tracking-wide">Filter by</p>
+    <div class="flex flex-wrap gap-2" role="navigation" aria-label="Category filters">
+      <button type="button"
+              data-highlights-filter-target="pill"
+              data-category="all"
+              data-action="click->highlights-filter#filter"
+              class="category-pill active">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+        </svg>
+        <span>All</span>
+      </button>
+      <% @categories.each do |category| %>
+        <button type="button"
+                data-highlights-filter-target="pill"
+                data-category="<%= category %>"
+                data-action="click->highlights-filter#filter"
+                class="category-pill">
+          <%= bucket_list_category_icon(category, size: "w-4 h-4") %>
+          <span><%= category.titleize %></span>
+          <span class="text-xs text-brown-light">(<%= @items_by_category[category].size %>)</span>
+        </button>
+      <% end %>
+    </div>
+    <span data-highlights-filter-target="count" class="ml-auto text-xs text-brown-light"><%= @completed_items.count %> completed</span>
+  </div>
+</div>
