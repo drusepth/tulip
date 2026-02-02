@@ -46,17 +46,20 @@
   </div>
 
   <!-- Pending Invites -->
-  <% if @pending_invites.any? %>
-    <div class="cozy-card p-6 mb-8">
-      <h2 class="text-lg font-semibold text-brown mb-4">Pending Invites</h2>
-      <p class="text-sm text-brown-light mb-4">These links are waiting to be accepted. Share them with the people you want to invite.</p>
+  <%= turbo_frame_tag "pending-invites-section" do %>
+    <% pending = @pending_invites || @stay.stay_collaborations.pending %>
+    <% if pending.any? %>
+      <div class="cozy-card p-6 mb-8">
+        <h2 class="text-lg font-semibold text-brown mb-4">Pending Invites</h2>
+        <p class="text-sm text-brown-light mb-4">These links are waiting to be accepted. Share them with the people you want to invite.</p>
 
-      <div id="pending-invites" class="space-y-4">
-        <% @pending_invites.each do |invite| %>
-          <%= render "invite_row", invite: invite %>
-        <% end %>
+        <div id="pending-invites" class="space-y-4">
+          <% pending.each do |invite| %>
+            <%= render "invite_row", invite: invite %>
+          <% end %>
+        </div>
       </div>
-    </div>
+    <% end %>
   <% end %>
 
   <!-- Current Collaborators -->

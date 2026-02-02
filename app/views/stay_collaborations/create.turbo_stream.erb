@@ -1,5 +1,16 @@
-<%= turbo_stream.prepend "pending-invites" do %>
-  <%= render "invite_row", invite: @collaboration %>
+<%= turbo_stream.replace "pending-invites-section" do %>
+  <%= turbo_frame_tag "pending-invites-section" do %>
+    <div class="cozy-card p-6 mb-8">
+      <h2 class="text-lg font-semibold text-brown mb-4">Pending Invites</h2>
+      <p class="text-sm text-brown-light mb-4">These links are waiting to be accepted. Share them with the people you want to invite.</p>
+
+      <div id="pending-invites" class="space-y-4">
+        <% @stay.stay_collaborations.pending.order(created_at: :desc).each do |invite| %>
+          <%= render "invite_row", invite: invite %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
 <% end %>
 
 <%= turbo_stream.replace "flash" do %>

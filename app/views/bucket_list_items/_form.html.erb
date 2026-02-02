@@ -53,3 +53,25 @@
     </div>
   </div>
 <% end %>
+
+<!-- Category quick-add picker -->
+<% if stay.latitude.present? && stay.longitude.present? %>
+  <div class="mt-4 pt-3 border-t border-taupe-light"
+       data-controller="poi-category-picker"
+       data-poi-category-picker-stay-id-value="<%= stay.id %>">
+    <p class="text-xs text-brown-light mb-2">Or browse nearby places:</p>
+    <div class="flex flex-wrap gap-2">
+      <% Poi::BROWSABLE_CATEGORIES.each do |category| %>
+        <button type="button"
+                class="category-pill"
+                data-action="click->poi-category-picker#loadCategory"
+                data-poi-category-picker-category-param="<%= category %>">
+          <%= category_icon(category) %>
+          <span><%= category.titleize %></span>
+        </button>
+      <% end %>
+    </div>
+
+    <div data-poi-category-picker-target="results" class="hidden mt-3"></div>
+  </div>
+<% end %>
