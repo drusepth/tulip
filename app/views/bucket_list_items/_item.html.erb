@@ -25,9 +25,9 @@
         <p class="text-xs text-taupe mt-1 flex items-center gap-1.5">
           <%= avatar_tag(bucket_list_item.user, size: 16, html_options: {
             class: "w-4 h-4 ring-1 ring-taupe-light",
-            title: bucket_list_item.user.email
+            title: bucket_list_item.user.name
           }) %>
-          <span>Added by <%= bucket_list_item.user.email.split('@').first %></span>
+          <span>Added by <%= bucket_list_item.user.name %></span>
         </p>
       <% end %>
       <% if bucket_list_item.address.present? %>

@@ -5,6 +5,11 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   has_many :stays, dependent: :destroy # Stays this user owns
+
+  # Returns display_name if set, otherwise falls back to email username
+  def name
+    display_name.presence || email.split("@").first
+  end
   has_many :stay_collaborations, dependent: :destroy
   has_many :collaborated_stays, through: :stay_collaborations, source: :stay
   has_many :comments, dependent: :destroy

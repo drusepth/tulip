@@ -2,10 +2,10 @@
   <div class="flex items-center justify-between py-3 border-b border-taupe-light last:border-0">
     <div class="flex items-center gap-3">
       <div class="w-10 h-10 rounded-full bg-lavender-light flex items-center justify-center">
-        <span class="text-lavender-dark font-medium"><%= collaboration.user.email[0].upcase %></span>
+        <span class="text-lavender-dark font-medium"><%= collaboration.user.name[0].upcase %></span>
       </div>
       <div>
-        <p class="text-brown font-medium"><%= collaboration.user.email %></p>
+        <p class="text-brown font-medium"><%= collaboration.user.name %></p>
         <p class="text-xs text-brown-light">Joined <%= time_ago_in_words(collaboration.invite_accepted_at) %> ago</p>
       </div>
     </div>

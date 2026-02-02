@@ -1,0 +1,75 @@
+<%= turbo_frame_tag dom_id(comment) do %>
+  <% is_reply = comment.parent_id.present? %>
+  <% top_level_comment = is_reply ? parent_comment : comment %>
+
+  <div class="comment <%= 'pt-5' unless is_reply %>" data-controller="comment-reply" data-comment-reply-parent-id-value="<%= dom_id(top_level_comment) %>">
+    <div class="flex gap-3">
+      <!-- Avatar -->
+      <%= avatar_tag(comment.user, size: is_reply ? 28 : 36, html_options: {
+        class: "#{is_reply ? 'w-7 h-7' : 'w-9 h-9'} ring-2 ring-lavender-light flex-shrink-0"
+      }) %>
+
+      <!-- Content -->
+      <div class="flex-1 min-w-0">
+        <!-- Header -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="font-medium text-brown text-sm"><%= comment.user.name %></span>
+          <span class="text-xs text-taupe">·</span>
+          <span class="text-xs text-taupe"><%= time_ago_in_words(comment.created_at) %> ago</span>
+          <% if comment.edited? %>
+            <span class="text-xs text-taupe italic">(edited)</span>
+          <% end %>
+        </div>
+
+        <!-- Body -->
+        <div class="mt-1.5 text-brown text-sm whitespace-pre-wrap break-words leading-relaxed"><%= comment.body %></div>
+
+        <!-- Actions - always visible with dot separators -->
+        <div class="mt-2.5 flex items-center text-xs text-taupe">
+          <button type="button"
+                  class="hover:text-lavender-dark font-medium transition-colors"
+                  data-action="click->comment-reply#showForm">
+            Reply
+          </button>
+
+          <% if comment.editable_by?(current_user) %>
+            <span class="mx-2">·</span>
+            <%= link_to edit_stay_comment_path(stay, comment),
+                        class: "hover:text-sage-dark transition-colors",
+                        data: { turbo_stream: true } do %>
+              Edit
+            <% end %>
+            <span class="mx-2">·</span>
+            <%= button_to stay_comment_path(stay, comment),
+                          method: :delete,
+                          class: "hover:text-rose-dark transition-colors",
+                          data: { turbo_confirm: "Delete this comment?", turbo_stream: true } do %>
+              Delete
+            <% end %>
+          <% end %>
+        </div>
+
+        <!-- Inline Reply Form (hidden by default, only on top-level comments) -->
+        <% unless is_reply %>
+          <div data-comment-reply-target="form" class="hidden mt-3">
+            <%= render "comments/reply_form", stay: stay, parent: comment %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Replies - gentle indentation -->
+    <% unless is_reply %>
+      <% if comment.replies.any? %>
+        <div class="mt-4 ml-12 space-y-4" id="<%= dom_id(comment, :replies) %>">
+          <% comment.replies.ordered.each do |reply| %>
+            <%= render "comments/comment", comment: reply, stay: stay, parent_comment: comment %>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="hidden mt-4 ml-12 space-y-4" id="<%= dom_id(comment, :replies) %>">
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

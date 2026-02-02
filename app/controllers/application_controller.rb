@@ -1,11 +1,16 @@
 class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :process_pending_invite, if: :user_signed_in?
+  before_action :configure_permitted_parameters, if: :devise_controller?
 
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
   private
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:account_update, keys: [ :display_name ])
+  end
 
   # Process any pending invite stored in session after user signs in
   def process_pending_invite
