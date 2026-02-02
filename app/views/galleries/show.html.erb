@@ -33,15 +33,15 @@
     </div>
   </div>
 
-  <% if @venues.any? %>
+  <% if @pois.any? %>
     <!-- Venue Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      <% venue_titles = @venues.map { |v| v['name'] }.compact %>
-      <% added_titles = @stay.bucket_list_items.where(title: venue_titles).pluck(:title).to_set %>
-      <% @venues.each do |venue| %>
-        <% next if venue['name'].blank? %>
-        <% added = added_titles.include?(venue['name']) %>
-        <%= render partial: "galleries/venue_card", locals: { venue: venue, added: added } %>
+      <% poi_titles = @pois.map(&:name).compact %>
+      <% added_titles = @stay.bucket_list_items.where(title: poi_titles).pluck(:title).to_set %>
+      <% @pois.each do |poi| %>
+        <% next if poi.name.blank? %>
+        <% added = added_titles.include?(poi.name) %>
+        <%= render partial: "galleries/venue_card", locals: { poi: poi, added: added } %>
       <% end %>
     </div>
 
@@ -60,7 +60,7 @@
       </div>
     </div>
   <% else %>
-    <!-- Empty State -->
+    <!-- Empty State (no POIs with photos) -->
     <div class="cozy-card p-12 text-center">
       <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-lavender-light flex items-center justify-center">
         <svg class="w-10 h-10 text-lavender-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">

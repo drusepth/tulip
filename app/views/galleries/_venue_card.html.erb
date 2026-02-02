@@ -1,11 +1,11 @@
-<%= turbo_frame_tag "venue-card-#{venue['fsq_id']}" do %>
+<%= turbo_frame_tag "venue-card-#{poi.foursquare_id}" do %>
   <div class="group relative rounded-2xl overflow-hidden shadow-cozy hover:shadow-cozy-lg transition-all duration-300 hover:-translate-y-1 bg-cream">
     <!-- Image Container - links to Foursquare page for attribution -->
-    <a href="https://foursquare.com/v/<%= venue['fsq_id'] %>" target="_blank" rel="noopener" class="block aspect-square overflow-hidden">
-      <% if venue['thumb_url'].present? %>
+    <a href="https://foursquare.com/v/<%= poi.foursquare_id %>" target="_blank" rel="noopener" class="block aspect-square overflow-hidden">
+      <% if poi.foursquare_photo_url.present? %>
         <img
-          src="<%= venue['thumb_url'] %>"
-          alt="<%= venue['name'] %>"
+          src="<%= poi.foursquare_photo_url %>"
+          alt="<%= poi.name %>"
           class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
         >
@@ -22,15 +22,15 @@
     <!-- Category Badge -->
     <div class="absolute top-2 left-2">
       <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white shadow-sm text-brown">
-        <%= venue['category'] %>
+        <%= poi.category.titleize %>
       </span>
     </div>
 
     <!-- Rating and Price -->
     <div class="absolute top-2 right-2 flex items-center gap-1.5">
-      <% if venue['rating'].present? && venue['rating'].to_f > 0 %>
+      <% if poi.foursquare_rating.present? && poi.foursquare_rating > 0 %>
         <%
-          rating_value = venue['rating'].to_f
+          rating_value = poi.foursquare_rating.to_f
           rating_color = if rating_value >= 8
             'bg-sage text-white'
           else
@@ -42,18 +42,18 @@
         </span>
       <% end %>
 
-      <% if venue['price'].present? && venue['price'].to_i > 0 %>
+      <% if poi.foursquare_price.present? && poi.foursquare_price > 0 %>
         <span class="inline-flex items-center px-1.5 py-0.5 rounded-md text-xs font-medium bg-white shadow-sm text-brown">
-          <%= '$' * venue['price'].to_i %>
+          <%= '$' * poi.foursquare_price %>
         </span>
       <% end %>
     </div>
 
     <!-- Venue Info Overlay -->
     <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black to-transparent p-3 pt-10">
-      <h3 class="text-sm font-semibold truncate mb-1" style="color: #ffffff;"><%= venue['name'] %></h3>
-      <% if venue['address'].present? %>
-        <p class="text-xs truncate" style="color: rgba(255, 255, 255, 0.8);"><%= venue['address'] %></p>
+      <h3 class="text-sm font-semibold truncate mb-1" style="color: #ffffff;"><%= poi.name %></h3>
+      <% if poi.address.present? %>
+        <p class="text-xs truncate" style="color: rgba(255, 255, 255, 0.8);"><%= poi.address %></p>
       <% end %>
     </div>
 
@@ -67,7 +67,7 @@
           Added to Bucket List
         </div>
       <% else %>
-        <%= button_to add_to_bucket_list_stay_gallery_path(@stay, fsq_id: venue['fsq_id']), method: :post, class: "w-full px-3 py-2 rounded-lg bg-rose hover:bg-rose-dark text-white text-sm font-medium text-center flex items-center justify-center gap-1 transition-colors" do %>
+        <%= button_to add_to_bucket_list_stay_gallery_path(@stay, fsq_id: poi.foursquare_id), method: :post, class: "w-full px-3 py-2 rounded-lg bg-rose hover:bg-rose-dark text-white text-sm font-medium text-center flex items-center justify-center gap-1 transition-colors" do %>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
           </svg>

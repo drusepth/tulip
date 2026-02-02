@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_02_024125) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_02_030844) do
   create_table "bucket_list_items", force: :cascade do |t|
     t.integer "stay_id", null: false
     t.string "title", null: false
@@ -29,6 +29,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_024125) do
     t.index ["stay_id", "completed"], name: "index_bucket_list_items_on_stay_id_and_completed"
     t.index ["stay_id"], name: "index_bucket_list_items_on_stay_id"
     t.index ["user_id"], name: "index_bucket_list_items_on_user_id"
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.integer "stay_id", null: false
+    t.integer "user_id", null: false
+    t.integer "parent_id"
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["parent_id"], name: "index_comments_on_parent_id"
+    t.index ["stay_id", "created_at"], name: "index_comments_on_stay_id_and_created_at"
+    t.index ["stay_id"], name: "index_comments_on_stay_id"
+    t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
   create_table "pois", force: :cascade do |t|
@@ -59,9 +72,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_024125) do
     t.string "foursquare_photo_url"
     t.text "foursquare_tip"
     t.datetime "foursquare_fetched_at"
+    t.string "source", default: "osm"
     t.index ["foursquare_id"], name: "index_pois_on_foursquare_id"
     t.index ["osm_id"], name: "index_pois_on_osm_id", unique: true
     t.index ["stay_id", "category"], name: "index_pois_on_stay_id_and_category"
+    t.index ["stay_id", "foursquare_id"], name: "index_pois_on_stay_id_and_foursquare_id", unique: true, where: "foursquare_id IS NOT NULL"
     t.index ["stay_id"], name: "index_pois_on_stay_id"
   end
 
@@ -170,6 +185,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_024125) do
 
   add_foreign_key "bucket_list_items", "stays"
   add_foreign_key "bucket_list_items", "users"
+  add_foreign_key "comments", "comments", column: "parent_id"
+  add_foreign_key "comments", "stays"
+  add_foreign_key "comments", "users"
   add_foreign_key "pois", "stays"
   add_foreign_key "stay_collaborations", "stays"
   add_foreign_key "stay_collaborations", "users"
