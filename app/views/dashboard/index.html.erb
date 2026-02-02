@@ -59,23 +59,14 @@
   <% end %>
 
   <!-- Hero Section: Current & Next Stay -->
-  <!-- Section Headers for Hero Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-3">
-    <h2 class="text-lg font-semibold text-brown" style="font-family: var(--font-heading);">
-      Right Now
-    </h2>
-    <h2 class="text-lg font-semibold text-brown" style="font-family: var(--font-heading);">
-      <% if @next_stay %>
-        Next Up
-      <% else %>
-        Plan a Trip
-      <% end %>
-    </h2>
-  </div>
-
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-    <!-- Current Stay -->
-    <% if @current_stay %>
+    <!-- Column 1: Right Now -->
+    <div>
+      <h2 class="text-lg font-semibold text-brown mb-3" style="font-family: var(--font-heading);">
+        Right Now
+      </h2>
+      <!-- Current Stay -->
+      <% if @current_stay %>
       <%= link_to stay_path(@current_stay), class: "block group" do %>
         <div class="hero-card h-72 <%= 'ring-2 ring-dashed ring-lavender' unless @current_stay.booked? %>">
           <% if @current_stay.image_url.present? %>
@@ -153,9 +144,19 @@
         </div>
       <% end %>
     <% end %>
+    </div>
 
-    <!-- Next Stay -->
-    <% if @next_stay %>
+    <!-- Column 2: Next Up / Plan a Trip -->
+    <div>
+      <h2 class="text-lg font-semibold text-brown mb-3" style="font-family: var(--font-heading);">
+        <% if @next_stay %>
+          Next Up
+        <% else %>
+          Plan a Trip
+        <% end %>
+      </h2>
+      <!-- Next Stay -->
+      <% if @next_stay %>
       <%= link_to stay_path(@next_stay), class: "block group" do %>
         <div class="hero-card h-72 <%= 'ring-2 ring-dashed ring-lavender' unless @next_stay.booked? %>">
           <% if @next_stay.image_url.present? %>
@@ -209,6 +210,7 @@
         </div>
       <% end %>
     <% end %>
+    </div>
   </div>
 
   <!-- Botanical Divider -->
