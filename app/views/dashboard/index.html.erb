@@ -59,7 +59,21 @@
   <% end %>
 
   <!-- Hero Section: Current & Next Stay -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+  <!-- Section Headers for Hero Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-3">
+    <h2 class="text-lg font-semibold text-brown" style="font-family: var(--font-heading);">
+      Right Now
+    </h2>
+    <h2 class="text-lg font-semibold text-brown" style="font-family: var(--font-heading);">
+      <% if @next_stay %>
+        Next Up
+      <% else %>
+        Plan a Trip
+      <% end %>
+    </h2>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
     <!-- Current Stay -->
     <% if @current_stay %>
       <%= link_to stay_path(@current_stay), class: "block group" do %>
