@@ -1,0 +1,13 @@
+<% pending_count = stay.bucket_list_items.pending.count %>
+<% completed_count = stay.bucket_list_items.completed.count %>
+<% total_count = pending_count + completed_count %>
+<% progress_percent = total_count > 0 ? (completed_count.to_f / total_count * 100).round : 0 %>
+
+<% if total_count > 0 %>
+  <div class="flex items-center gap-2 ml-12 sm:ml-0">
+    <div class="w-20 sm:w-16 h-2 bg-taupe-light rounded-full overflow-hidden">
+      <div class="h-full bg-gradient-to-r from-sage to-sage-dark rounded-full transition-all duration-500" style="width: <%= progress_percent %>%"></div>
+    </div>
+    <span class="text-sm font-medium text-sage-dark"><%= completed_count %>/<%= total_count %></span>
+  </div>
+<% end %>

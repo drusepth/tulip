@@ -4,37 +4,30 @@
   <% total_count = pending_count + completed_count %>
   <% progress_percent = total_count > 0 ? (completed_count.to_f / total_count * 100).round : 0 %>
 
-  <div class="relative overflow-hidden cozy-card p-6" data-controller="collapsible">
-    <!-- Decorative corner flourish -->
-    <div class="absolute top-0 right-0 w-20 h-20 opacity-5">
+  <div class="relative overflow-hidden cozy-card p-4 sm:p-6" data-controller="collapsible">
+    <!-- Decorative corner flourish (hidden on mobile) -->
+    <div class="absolute top-0 right-0 w-20 h-20 opacity-5 hidden sm:block">
       <svg viewBox="0 0 100 100" fill="currentColor" class="text-sage-dark">
         <path d="M100 0 Q60 10, 50 50 Q40 90, 0 100 L100 100 Z"/>
       </svg>
     </div>
 
     <!-- Header with progress -->
-    <div class="relative flex items-start justify-between mb-5">
+    <div class="relative flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4 sm:mb-5">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-sage-light to-sage flex items-center justify-center">
-          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-sage-light to-sage flex items-center justify-center flex-shrink-0">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
           </svg>
         </div>
         <div>
-          <h2 class="text-lg font-semibold text-brown">Bucket List</h2>
-          <p class="text-xs text-brown-light">Things to do on this trip</p>
+          <h2 class="text-base sm:text-lg font-semibold text-brown">Bucket List</h2>
+          <p class="text-xs text-brown-light hidden sm:block">Things to do on this trip</p>
         </div>
       </div>
-      <% if total_count > 0 %>
-        <div class="text-right">
-          <div class="flex items-center gap-2">
-            <div class="w-16 h-2 bg-taupe-light rounded-full overflow-hidden">
-              <div class="h-full bg-gradient-to-r from-sage to-sage-dark rounded-full transition-all duration-500" style="width: <%= progress_percent %>%"></div>
-            </div>
-            <span class="text-sm font-medium text-sage-dark"><%= completed_count %>/<%= total_count %></span>
-          </div>
-        </div>
-      <% end %>
+      <div id="bucket_list_progress">
+        <%= render "bucket_list_items/progress", stay: stay %>
+      </div>
     </div>
 
     <!-- Add Form -->
@@ -48,9 +41,9 @@
         <% end %>
       </div>
     <% else %>
-      <div id="bucket_list_pending_items" class="mt-5">
+      <div id="bucket_list_pending_items" class="mt-5 space-y-1">
         <% if total_count == 0 %>
-          <div class="text-center py-6">
+          <div id="bucket_list_empty_state" class="text-center py-6">
             <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-taupe-light flex items-center justify-center">
               <svg class="w-6 h-6 text-taupe" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
