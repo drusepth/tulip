@@ -3,6 +3,7 @@ class BucketListItem < ApplicationRecord
 
   belongs_to :stay
   belongs_to :user, optional: true
+  has_many :ratings, class_name: 'BucketListItemRating', dependent: :destroy
 
   before_validation :set_title_from_address
 
@@ -32,6 +33,10 @@ class BucketListItem < ApplicationRecord
 
   def has_location?
     latitude.present? && longitude.present?
+  end
+
+  def rating_for(user)
+    ratings.find_by(user: user)
   end
 
   private

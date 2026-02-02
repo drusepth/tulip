@@ -1,7 +1,7 @@
 <%= turbo_stream.remove "bucket_list_empty_state" %>
 
 <%= turbo_stream.append "bucket_list_pending_items" do %>
-  <%= render "bucket_list_items/item", bucket_list_item: @bucket_list_item %>
+  <%= render "bucket_list_items/item", bucket_list_item: @bucket_list_item, stay: @stay %>
 <% end %>
 
 <%= turbo_stream.update "bucket_list_progress" do %>

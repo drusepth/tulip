@@ -41,7 +41,7 @@
       <% if pending_count > 0 %>
         <div id="bucket_list_pending_items" class="mt-5 space-y-1">
           <% stay.bucket_list_items.pending.ordered.each do |item| %>
-            <%= render "bucket_list_items/item", bucket_list_item: item %>
+            <%= render "bucket_list_items/item", bucket_list_item: item, stay: stay %>
           <% end %>
         </div>
       <% else %>
@@ -72,7 +72,7 @@
           </div>
           <div class="space-y-1" id="bucket_list_completed_items">
             <% completed_items.each do |item| %>
-              <%= render "bucket_list_items/item", bucket_list_item: item %>
+              <%= render "bucket_list_items/item", bucket_list_item: item, stay: stay %>
             <% end %>
           </div>
         </div>

@@ -18,6 +18,7 @@ Rails.application.routes.draw do
       member do
         patch :toggle
       end
+      resource :rating, only: [:create, :destroy], controller: 'bucket_list_item_ratings'
     end
     resources :comments, only: [:create, :edit, :update, :destroy]
     resources :collaborations, only: [:index, :create, :destroy], controller: 'stay_collaborations' do

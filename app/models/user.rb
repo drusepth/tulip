@@ -14,6 +14,7 @@ class User < ApplicationRecord
   has_many :collaborated_stays, through: :stay_collaborations, source: :stay
   has_many :comments, dependent: :destroy
   has_many :bucket_list_items, through: :stays
+  has_many :bucket_list_item_ratings, dependent: :destroy
 
   # All stays this user can access (owned + collaborated)
   # Returns an ActiveRecord::Relation for chainability

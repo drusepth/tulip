@@ -1,5 +1,5 @@
 <%= turbo_stream.replace dom_id(@bucket_list_item) do %>
-  <%= render "bucket_list_items/item", bucket_list_item: @bucket_list_item %>
+  <%= render "bucket_list_items/item", bucket_list_item: @bucket_list_item, stay: @stay %>
 <% end %>
 
 <%= turbo_stream.replace "bucket_list_section" do %>
