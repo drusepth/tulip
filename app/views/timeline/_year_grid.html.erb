@@ -1,0 +1,92 @@
+<!-- Year-at-a-Glance Grid View (GitHub contribution graph style) -->
+<div class="cozy-card p-6 year-grid-container" data-controller="year-grid">
+  <% if @years_in_range.present? %>
+    <% @years_in_range.each do |year| %>
+      <div class="year-grid-year mb-6 last:mb-0">
+        <h4 class="year-grid-year-label"><%= year %></h4>
+        <div class="year-grid-months">
+          <% (1..12).each do |month| %>
+            <% begin_date = Date.new(year, month, 1) %>
+            <% end_date = begin_date.end_of_month %>
+            <div class="year-grid-month">
+              <span class="year-grid-month-label"><%= Date::ABBR_MONTHNAMES[month] %></span>
+              <div class="year-grid-days">
+                <% begin_date.upto(end_date) do |date| %>
+                  <% stay = @stays_by_date[date] %>
+                  <% is_gap = @gaps_by_date[date].present? %>
+                  <% is_today = date == @today %>
+                  <%
+                    day_class = if stay
+                      case stay.status
+                      when 'upcoming' then 'year-grid-day-upcoming'
+                      when 'current' then 'year-grid-day-current'
+                      when 'past' then 'year-grid-day-past'
+                      else stay.booked? ? 'year-grid-day-upcoming' : 'year-grid-day-planned'
+                      end
+                    elsif is_gap
+                      'year-grid-day-gap'
+                    else
+                      ''
+                    end
+                  %>
+                  <div class="year-grid-day <%= day_class %> <%= 'year-grid-day-today' if is_today %>"
+                       data-date="<%= date.to_s %>"
+                       data-action="mouseenter->year-grid#showTooltip mouseleave->year-grid#hideTooltip"
+                       <% if stay %>
+                         data-stay-title="<%= stay.title %>"
+                         data-stay-city="<%= stay.city %>"
+                         data-stay-status="<%= stay.status %>"
+                         data-stay-path="<%= stay_path(stay) %>"
+                       <% elsif is_gap %>
+                         data-is-gap="true"
+                         data-gap-days="<%= @gaps_by_date[date][:days] %>"
+                       <% end %>>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Year Grid Legend -->
+    <div class="year-grid-legend mt-6 pt-4 border-t border-taupe-light">
+      <div class="flex flex-wrap items-center justify-center gap-4 text-xs">
+        <div class="flex items-center gap-1.5">
+          <div class="year-grid-day-sample year-grid-day-upcoming"></div>
+          <span class="text-brown-light">Upcoming</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <div class="year-grid-day-sample year-grid-day-current"></div>
+          <span class="text-brown-light">Current</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <div class="year-grid-day-sample year-grid-day-past"></div>
+          <span class="text-brown-light">Past</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <div class="year-grid-day-sample year-grid-day-planned"></div>
+          <span class="text-brown-light">Planned</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <div class="year-grid-day-sample year-grid-day-gap"></div>
+          <span class="text-brown-light">Gap</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <div class="year-grid-day-sample year-grid-day-today"></div>
+          <span class="text-brown-light">Today</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tooltip (positioned by JS) -->
+    <div class="year-grid-tooltip hidden" data-year-grid-target="tooltip">
+      <div class="year-grid-tooltip-content" data-year-grid-target="tooltipContent"></div>
+    </div>
+  <% else %>
+    <div class="text-center py-8">
+      <p class="text-brown-light">No stay data available for year grid view.</p>
+    </div>
+  <% end %>
+</div>

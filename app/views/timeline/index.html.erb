@@ -1,49 +1,162 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <!-- Header -->
+  <!-- Header with botanical flourish -->
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-brown decorative-heading">Timeline</h1>
     <p class="mt-2 text-brown-light">Your travel schedule at a glance</p>
   </div>
 
   <% if @stays.any? %>
-    <!-- Zoom Controls -->
-    <div class="mb-4 flex items-center gap-4">
-      <span class="text-sm text-brown-light">View:</span>
-      <div class="flex gap-2">
-        <%= link_to timeline_path(zoom: "3m"),
-            class: "timeline-zoom-btn #{@zoom == '3m' ? 'active' : ''}",
-            data: { turbo_action: "replace" } do %>
-          3 Months
-        <% end %>
-        <%= link_to timeline_path(zoom: "year"),
-            class: "timeline-zoom-btn #{@zoom == 'year' ? 'active' : ''}",
-            data: { turbo_action: "replace" } do %>
-          This Year
-        <% end %>
-        <%= link_to timeline_path(zoom: "all"),
-            class: "timeline-zoom-btn #{@zoom == 'all' ? 'active' : ''}",
-            data: { turbo_action: "replace" } do %>
-          All Time
-        <% end %>
+    <!-- View Toggle & Zoom Controls -->
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-4">
+      <!-- View Mode Toggle -->
+      <div class="flex items-center gap-2">
+        <span class="text-sm text-brown-light">View:</span>
+        <div class="flex gap-1 bg-taupe-light rounded-full p-1">
+          <%= link_to timeline_path(zoom: @zoom, view: "timeline"),
+              class: "view-toggle-btn #{@view_mode == 'timeline' ? 'active' : ''}",
+              data: { turbo_action: "replace" } do %>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+            </svg>
+            <span class="hidden sm:inline">Timeline</span>
+          <% end %>
+          <%= link_to timeline_path(zoom: @zoom, view: "year_grid"),
+              class: "view-toggle-btn #{@view_mode == 'year_grid' ? 'active' : ''}",
+              data: { turbo_action: "replace" } do %>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
+            </svg>
+            <span class="hidden sm:inline">Year Grid</span>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Zoom Controls -->
+      <div class="flex items-center gap-2">
+        <span class="text-sm text-brown-light hidden sm:inline">Zoom:</span>
+        <div class="flex gap-2">
+          <%= link_to timeline_path(zoom: "3m", view: @view_mode),
+              class: "timeline-zoom-btn #{@zoom == '3m' ? 'active' : ''}",
+              data: { turbo_action: "replace" } do %>
+            3M
+          <% end %>
+          <%= link_to timeline_path(zoom: "6m", view: @view_mode),
+              class: "timeline-zoom-btn #{@zoom == '6m' ? 'active' : ''}",
+              data: { turbo_action: "replace" } do %>
+            6M
+          <% end %>
+          <%= link_to timeline_path(zoom: "year", view: @view_mode),
+              class: "timeline-zoom-btn #{@zoom == 'year' ? 'active' : ''}",
+              data: { turbo_action: "replace" } do %>
+            Year
+          <% end %>
+          <%= link_to timeline_path(zoom: "all", view: @view_mode),
+              class: "timeline-zoom-btn #{@zoom == 'all' ? 'active' : ''}",
+              data: { turbo_action: "replace" } do %>
+            All
+          <% end %>
+        </div>
       </div>
     </div>
 
+    <!-- Statistics Panel (Collapsible) -->
+    <% if @statistics.present? && @statistics[:stay_count].to_i > 0 %>
+      <div class="cozy-card p-4 mb-6 stats-panel" data-controller="collapsible">
+        <button class="flex justify-between items-center w-full text-left" data-action="click->collapsible#toggle">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            <h3 class="font-semibold text-brown">Trip Summary</h3>
+            <span class="text-xs text-brown-lighter">(<%= @zoom == 'all' ? 'All Time' : @zoom.upcase %> view)</span>
+          </div>
+          <svg class="w-5 h-5 text-taupe transition-transform duration-200" data-collapsible-target="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+
+        <div data-collapsible-target="content" class="mt-4">
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <!-- Total Nights -->
+            <div class="stat-card">
+              <div class="stat-icon text-lavender"><%= raw stat_icon(:nights) %></div>
+              <div class="stat-value"><%= @statistics[:total_nights] %></div>
+              <div class="stat-label">Nights Booked</div>
+            </div>
+
+            <!-- Gap Days -->
+            <div class="stat-card">
+              <div class="stat-icon text-coral"><%= raw stat_icon(:gaps) %></div>
+              <div class="stat-value"><%= @statistics[:total_gap_days] %></div>
+              <div class="stat-label">Gap Days (<%= @statistics[:gap_percentage] %>%)</div>
+            </div>
+
+            <!-- Countries -->
+            <div class="stat-card">
+              <div class="stat-icon text-sage"><%= raw stat_icon(:countries) %></div>
+              <div class="stat-value"><%= @statistics[:country_count] %></div>
+              <div class="stat-label">Countries</div>
+            </div>
+
+            <!-- Cities -->
+            <div class="stat-card">
+              <div class="stat-icon text-rose"><%= raw stat_icon(:cities) %></div>
+              <div class="stat-value"><%= @statistics[:city_count] %></div>
+              <div class="stat-label">Cities</div>
+            </div>
+
+            <!-- Avg Stay Length -->
+            <div class="stat-card">
+              <div class="stat-icon text-taupe"><%= raw stat_icon(:avg_stay) %></div>
+              <div class="stat-value"><%= @statistics[:avg_stay_length] %></div>
+              <div class="stat-label">Avg. Nights/Stay</div>
+            </div>
+
+            <!-- Total Cost (if price data exists) -->
+            <% if @statistics[:has_price_data] %>
+              <div class="stat-card">
+                <div class="stat-icon text-sage-dark"><%= raw stat_icon(:cost) %></div>
+                <div class="stat-value text-lg"><%= format_currency(@statistics[:total_cost_cents], @statistics[:primary_currency]) %></div>
+                <div class="stat-label">Total Spent</div>
+              </div>
+            <% else %>
+              <div class="stat-card">
+                <div class="stat-icon text-taupe-light"><%= raw stat_icon(:cost) %></div>
+                <div class="stat-value text-brown-lighter">-</div>
+                <div class="stat-label">No Price Data</div>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Price Details (if available) -->
+          <% if @statistics[:has_price_data] && @statistics[:avg_per_night_cents] > 0 %>
+            <div class="mt-3 flex flex-wrap gap-4 text-sm text-brown-light">
+              <span>Avg/night: <strong class="text-brown"><%= format_currency(@statistics[:avg_per_night_cents], @statistics[:primary_currency]) %></strong></span>
+              <% if @statistics[:min_price_cents] != @statistics[:max_price_cents] %>
+                <span>Range: <strong class="text-brown"><%= format_currency(@statistics[:min_price_cents], @statistics[:primary_currency]) %></strong> - <strong class="text-brown"><%= format_currency(@statistics[:max_price_cents], @statistics[:primary_currency]) %></strong>/night</span>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
     <!-- Legend -->
-    <div class="mb-6 flex flex-wrap items-center gap-6 text-sm">
+    <div class="mb-6 flex flex-wrap items-center gap-4 sm:gap-6 text-sm">
       <div class="flex items-center gap-2">
-        <div class="w-4 h-4 rounded-full bg-sage"></div>
+        <div class="w-4 h-4 rounded-full timeline-legend-upcoming"></div>
         <span class="text-brown-light">Upcoming</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="w-4 h-4 rounded-full bg-rose"></div>
+        <div class="w-4 h-4 rounded-full timeline-legend-current"></div>
         <span class="text-brown-light">Current</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="w-4 h-4 rounded-full bg-taupe"></div>
+        <div class="w-4 h-4 rounded-full timeline-legend-past"></div>
         <span class="text-brown-light">Past</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="w-4 h-4 rounded-full bg-lavender border-2 border-dashed border-lavender-dark"></div>
+        <div class="w-4 h-4 rounded-full timeline-legend-planned"></div>
         <span class="text-brown-light">Planned</span>
       </div>
       <div class="flex items-center gap-2">
@@ -56,154 +169,219 @@
       </div>
     </div>
 
-    <!-- Timeline Container -->
-    <div class="cozy-card p-6 overflow-hidden"
-         data-controller="timeline"
-         data-timeline-start-value="<%= @start_date.to_s %>"
-         data-timeline-end-value="<%= @end_date.to_s %>"
-         data-timeline-today-value="<%= @today.to_s %>">
+    <% if @view_mode == "year_grid" %>
+      <!-- Year-at-a-Glance Grid View -->
+      <%= render "timeline/year_grid" %>
+    <% else %>
+      <!-- Timeline Container -->
+      <div class="cozy-card p-6 overflow-hidden timeline-container"
+           data-controller="timeline"
+           data-timeline-start-value="<%= @start_date.to_s %>"
+           data-timeline-end-value="<%= @end_date.to_s %>"
+           data-timeline-today-value="<%= @today.to_s %>">
 
-      <!-- Month Headers -->
-      <div class="relative mb-4 border-b border-taupe-light pb-2 overflow-x-auto timeline-scroll-container" data-timeline-target="header">
-        <div class="flex" style="min-width: <%= [@total_days * 4, 800].max %>px;">
-          <% current_month = @start_date.beginning_of_month %>
-          <% while current_month <= @end_date %>
-            <% month_start = [current_month, @start_date].max %>
-            <% month_end = [current_month.end_of_month, @end_date].min %>
-            <% month_days = (month_end - month_start).to_i + 1 %>
-            <% width_percent = (month_days.to_f / @total_days * 100).round(2) %>
-            <% # Abbreviate month name for narrow widths %>
-            <% month_label = width_percent < 8 ? current_month.strftime('%b') : current_month.strftime('%B %Y') %>
-            <% month_label = "" if width_percent < 3 %>
-            <div style="width: <%= width_percent %>%; min-width: 0;" class="text-center text-sm font-medium text-brown truncate px-1">
-              <%= month_label %>
-            </div>
-            <% current_month = current_month.next_month.beginning_of_month %>
-          <% end %>
-        </div>
-      </div>
-
-      <!-- Timeline Track (scrollable) -->
-      <div class="relative overflow-x-auto timeline-scroll-container cursor-grab active:cursor-grabbing"
-           data-timeline-target="track"
-           data-action="mousedown->timeline#startDrag mousemove->timeline#drag mouseup->timeline#stopDrag mouseleave->timeline#stopDrag"
-           tabindex="0">
-        <div class="relative" style="height: <%= 20 + (@row_count * 66) %>px; min-width: <%= [@total_days * 4, 800].max %>px;">
-
-          <!-- Year Dividers -->
-          <% years_in_range = (@start_date.year..@end_date.year).to_a %>
-          <% years_in_range.each do |year| %>
-            <% year_start = Date.new(year, 1, 1) %>
-            <% next if year_start < @start_date || year_start > @end_date %>
-            <% year_offset = ((year_start - @start_date).to_f / @total_days * 100).round(2) %>
-            <div class="timeline-year-divider" style="left: <%= year_offset %>%;">
-              <span class="timeline-year-label"><%= year %></span>
-            </div>
-          <% end %>
-
-          <!-- Today Marker -->
-          <% if @today >= @start_date && @today <= @end_date %>
-            <% today_offset = ((@today - @start_date).to_f / @total_days * 100).round(2) %>
-            <div class="absolute top-0 bottom-0 w-0.5 bg-rose-dark z-20"
-                 style="left: <%= today_offset %>%;"
-                 data-timeline-target="todayMarker">
-              <div class="absolute -top-6 -translate-x-1/2 text-xs font-medium text-rose-dark whitespace-nowrap">
-                Today
+        <!-- Month Headers -->
+        <div class="relative mb-4 border-b border-taupe-light pb-2 overflow-x-auto timeline-scroll-container" data-timeline-target="header">
+          <div class="flex" style="min-width: <%= [@total_days * 4, 800].max %>px;">
+            <% current_month = @start_date.beginning_of_month %>
+            <% while current_month <= @end_date %>
+              <% month_start = [current_month, @start_date].max %>
+              <% month_end = [current_month.end_of_month, @end_date].min %>
+              <% month_days = (month_end - month_start).to_i + 1 %>
+              <% width_percent = (month_days.to_f / @total_days * 100).round(2) %>
+              <% # Abbreviate month name for narrow widths %>
+              <% month_label = width_percent < 8 ? current_month.strftime('%b') : current_month.strftime('%B %Y') %>
+              <% month_label = "" if width_percent < 3 %>
+              <div style="width: <%= width_percent %>%; min-width: 0;" class="text-center text-sm font-medium text-brown truncate px-1">
+                <%= month_label %>
               </div>
-            </div>
-          <% end %>
+              <% current_month = current_month.next_month.beginning_of_month %>
+            <% end %>
+          </div>
+        </div>
 
-          <!-- Timeline Items (Stays and Gaps interleaved on single row) -->
-          <% @timeline_items.each_with_index do |item, index| %>
-            <% # Skip items outside visible range %>
-            <% next if item[:end_date] < @start_date || item[:start_date] > @end_date %>
+        <!-- Timeline Track (scrollable) -->
+        <div class="relative overflow-x-auto timeline-scroll-container cursor-grab active:cursor-grabbing"
+             data-timeline-target="track"
+             data-action="mousedown->timeline#startDrag mousemove->timeline#drag mouseup->timeline#stopDrag mouseleave->timeline#stopDrag"
+             tabindex="0">
+          <div class="relative" style="height: <%= 20 + (@row_count * 66) %>px; min-width: <%= [@total_days * 4, 800].max %>px;">
 
-            <% # Clamp dates to visible range %>
-            <% visible_start = [item[:start_date], @start_date].max %>
-            <% visible_end = [item[:end_date], @end_date].min %>
-            <% left_offset = ((visible_start - @start_date).to_f / @total_days * 100).round(2) %>
-            <% width = ((visible_end - visible_start).to_f / @total_days * 100).round(2) %>
+            <!-- Year Dividers -->
+            <% years_in_range = (@start_date.year..@end_date.year).to_a %>
+            <% years_in_range.each do |year| %>
+              <% year_start = Date.new(year, 1, 1) %>
+              <% next if year_start < @start_date || year_start > @end_date %>
+              <% year_offset = ((year_start - @start_date).to_f / @total_days * 100).round(2) %>
+              <div class="timeline-year-divider" style="left: <%= year_offset %>%;">
+                <span class="timeline-year-label"><%= year %></span>
+              </div>
+            <% end %>
 
-            <% if item[:type] == :stay %>
-              <% stay = item[:object] %>
-              <% if stay.booked? %>
-                <% bar_class = case stay.status
-                              when 'upcoming' then 'timeline-bar-upcoming'
-                              when 'current' then 'timeline-bar-current'
-                              when 'past' then 'timeline-bar-past'
-                              end %>
+            <!-- Season Dividers -->
+            <% @season_boundaries.each do |boundary| %>
+              <% season_offset = ((boundary[:date] - @start_date).to_f / @total_days * 100).round(2) %>
+              <div class="timeline-season-divider" style="left: <%= season_offset %>%;">
+                <div class="timeline-season-icon"><%= raw season_icon(boundary[:season]) %></div>
+              </div>
+            <% end %>
+
+            <!-- Today Marker -->
+            <% if @today >= @start_date && @today <= @end_date %>
+              <% today_offset = ((@today - @start_date).to_f / @total_days * 100).round(2) %>
+              <div class="absolute top-0 bottom-0 w-0.5 bg-rose-dark z-20"
+                   style="left: <%= today_offset %>%;"
+                   data-timeline-target="todayMarker">
+                <div class="absolute -top-6 -translate-x-1/2 text-xs font-medium text-rose-dark whitespace-nowrap">
+                  Today
+                </div>
+              </div>
+            <% end %>
+
+            <!-- Timeline Items (Stays and Gaps interleaved on single row) -->
+            <% @timeline_items.each_with_index do |item, index| %>
+              <% # Skip items outside visible range %>
+              <% next if item[:end_date] < @start_date || item[:start_date] > @end_date %>
+
+              <% # Clamp dates to visible range %>
+              <% visible_start = [item[:start_date], @start_date].max %>
+              <% visible_end = [item[:end_date], @end_date].min %>
+              <% left_offset = ((visible_start - @start_date).to_f / @total_days * 100).round(2) %>
+              <% width = ((visible_end - visible_start).to_f / @total_days * 100).round(2) %>
+
+              <% if item[:type] == :stay %>
+                <% stay = item[:object] %>
+                <% if stay.booked? %>
+                  <% bar_class = case stay.status
+                                when 'upcoming' then 'timeline-bar-upcoming'
+                                when 'current' then 'timeline-bar-current'
+                                when 'past' then 'timeline-bar-past'
+                                end %>
+                <% else %>
+                  <% bar_class = 'timeline-bar-planned' %>
+                <% end %>
+
+                <!-- Connecting line to next stay -->
+                <% next_stay_item = @timeline_items[index + 1..].find { |i| i[:type] == :stay } %>
+                <% if next_stay_item %>
+                  <% next_visible_start = [next_stay_item[:start_date], @start_date].max %>
+                  <% if next_visible_start > visible_end && next_visible_start <= @end_date %>
+                    <% line_start = ((visible_end - @start_date).to_f / @total_days * 100).round(2) %>
+                    <% line_end = ((next_visible_start - @start_date).to_f / @total_days * 100).round(2) %>
+                    <div class="timeline-connector" style="left: <%= line_start %>%; width: <%= line_end - line_start %>%;"></div>
+                  <% end %>
+                <% end %>
+
+                <%= link_to stay_path(stay),
+                    class: "timeline-bar #{bar_class} group",
+                    style: "left: #{left_offset}%; width: #{width}%; top: #{20 + (item[:row] * 66)}px;",
+                    data: {
+                      controller: "tooltip",
+                      tooltip_content_value: tooltip_content_for(stay),
+                      action: "mouseenter->tooltip#show mouseleave->tooltip#hide"
+                    } do %>
+                  <div class="timeline-bar-content">
+                    <div class="flex items-center gap-1.5">
+                      <span class="timeline-bar-type-icon"><%= raw stay_type_icon(stay.stay_type) %></span>
+                      <span class="truncate font-medium text-sm">
+                        <%= stay.title %>
+                        <% unless stay.booked? %>
+                          <span class="text-xs opacity-80">(Planned)</span>
+                        <% end %>
+                      </span>
+                    </div>
+                    <div class="truncate text-xs opacity-80">
+                      <%= stay.city %>
+                    </div>
+                  </div>
+                  <div class="timeline-bar-meta">
+                    <% if stay.collaborator_count > 0 %>
+                      <span class="timeline-collab-badge" title="<%= stay.collaborator_count %> collaborator(s)">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg>
+                        <%= stay.collaborator_count %>
+                      </span>
+                    <% end %>
+                    <% if stay.weather_data.present? %>
+                      <span class="timeline-weather-badge"><%= raw weather_icon_for(stay.expected_weather&.dig(:condition)) %></span>
+                    <% end %>
+                    <span class="timeline-bar-duration"><%= stay.duration_days %>n</span>
+                  </div>
+                <% end %>
+
               <% else %>
-                <% bar_class = 'timeline-bar-planned' %>
-              <% end %>
-
-              <!-- Connecting line to next stay -->
-              <% next_stay_item = @timeline_items[index + 1..].find { |i| i[:type] == :stay } %>
-              <% if next_stay_item %>
-                <% next_visible_start = [next_stay_item[:start_date], @start_date].max %>
-                <% if next_visible_start > visible_end && next_visible_start <= @end_date %>
-                  <% line_start = ((visible_end - @start_date).to_f / @total_days * 100).round(2) %>
-                  <% line_end = ((next_visible_start - @start_date).to_f / @total_days * 100).round(2) %>
-                  <div class="timeline-connector" style="left: <%= line_start %>%; width: <%= line_end - line_start %>%;"></div>
+                <!-- Gap -->
+                <% gap = item %>
+                <%= link_to new_stay_path(check_in: gap[:start_date], check_out: gap[:end_date]),
+                    class: "timeline-bar timeline-gap-bar group",
+                    style: "left: #{left_offset}%; width: #{width}%; top: #{20 + (item[:row] * 66)}px;",
+                    data: {
+                      controller: "tooltip",
+                      tooltip_content_value: gap_tooltip_content(gap),
+                      action: "mouseenter->tooltip#show mouseleave->tooltip#hide"
+                    } do %>
+                  <div class="timeline-bar-content">
+                    <div class="flex items-center gap-1 truncate font-medium text-sm text-coral-dark">
+                      <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                      </svg>
+                      <span><%= gap[:days] %>d gap</span>
+                      <% if gap[:days] >= 7 %>
+                        <span class="text-xs opacity-70">(~<%= (gap[:days] / 7.0).round(1) %> weeks)</span>
+                      <% end %>
+                    </div>
+                  </div>
                 <% end %>
               <% end %>
+            <% end %>
+          </div>
+        </div>
 
-              <%= link_to stay_path(stay),
-                  class: "timeline-bar #{bar_class} group",
-                  style: "left: #{left_offset}%; width: #{width}%; top: #{20 + (item[:row] * 66)}px;",
-                  data: {
-                    controller: "tooltip",
-                    tooltip_content_value: tooltip_content_for(stay),
-                    action: "mouseenter->tooltip#show mouseleave->tooltip#hide"
-                  } do %>
-                <div class="timeline-bar-content">
-                  <div class="truncate font-medium text-sm">
-                    <%= stay.title %>
-                    <% unless stay.booked? %>
-                      <span class="text-xs opacity-80">(Planned)</span>
-                    <% end %>
-                  </div>
-                  <div class="truncate text-xs opacity-80">
-                    <%= stay.city %>
-                  </div>
-                </div>
-                <div class="timeline-bar-duration">
-                  <%= stay.duration_days %>n
-                </div>
-              <% end %>
-
-            <% else %>
-              <!-- Gap -->
-              <% gap = item %>
-              <%= link_to new_stay_path(check_in: gap[:start_date], check_out: gap[:end_date]),
-                  class: "timeline-bar timeline-gap-bar group",
-                  style: "left: #{left_offset}%; width: #{width}%; top: #{20 + (item[:row] * 66)}px;",
-                  data: {
-                    controller: "tooltip",
-                    tooltip_content_value: gap_tooltip_content(gap),
-                    action: "mouseenter->tooltip#show mouseleave->tooltip#hide"
-                  } do %>
-                <div class="timeline-bar-content">
-                  <div class="truncate font-medium text-sm text-coral-dark"><%= gap[:days] %>d gap</div>
-                </div>
+        <!-- Mini-Map Navigator -->
+        <div class="timeline-minimap mt-4 pt-3 border-t border-taupe-light" data-timeline-target="minimap">
+          <div class="timeline-minimap-track" data-timeline-target="minimapTrack" data-action="click->timeline#jumpToPosition">
+            <!-- Mini representations of stays -->
+            <% @timeline_items.each do |item| %>
+              <% next if item[:end_date] < @start_date || item[:start_date] > @end_date %>
+              <% visible_start = [item[:start_date], @start_date].max %>
+              <% visible_end = [item[:end_date], @end_date].min %>
+              <% left = ((visible_start - @start_date).to_f / @total_days * 100).round(2) %>
+              <% width = ((visible_end - visible_start).to_f / @total_days * 100).round(2) %>
+              <% if item[:type] == :stay %>
+                <% stay = item[:object] %>
+                <% color_class = case stay.status
+                                 when 'upcoming' then 'bg-sage'
+                                 when 'current' then 'bg-rose'
+                                 when 'past' then 'bg-taupe'
+                                 else 'bg-lavender'
+                                 end %>
+                <div class="timeline-minimap-stay <%= color_class %>" style="left: <%= left %>%; width: <%= [width, 0.5].max %>%;"></div>
+              <% else %>
+                <div class="timeline-minimap-gap" style="left: <%= left %>%; width: <%= [width, 0.5].max %>%;"></div>
               <% end %>
             <% end %>
-          <% end %>
+            <!-- Today marker on minimap -->
+            <% if @today >= @start_date && @today <= @end_date %>
+              <% today_pos = ((@today - @start_date).to_f / @total_days * 100).round(2) %>
+              <div class="timeline-minimap-today" style="left: <%= today_pos %>%;"></div>
+            <% end %>
+            <!-- Viewport indicator -->
+            <div class="timeline-minimap-viewport" data-timeline-target="minimapViewport"></div>
+          </div>
+          <div class="flex justify-between text-xs text-brown-lighter mt-1">
+            <span><%= @start_date.strftime('%b %Y') %></span>
+            <span><%= @end_date.strftime('%b %Y') %></span>
+          </div>
+        </div>
+
+        <!-- Keyboard hint -->
+        <div class="mt-3 text-xs text-brown-lighter text-center">
+          <span class="hidden sm:inline">Drag to scroll | Arrow keys to navigate | </span>
+          <kbd class="px-1.5 py-0.5 bg-taupe-light rounded text-brown-light">T</kbd> Today
+          <kbd class="px-1.5 py-0.5 bg-taupe-light rounded text-brown-light ml-2">N</kbd> Next stay
+          <kbd class="px-1.5 py-0.5 bg-taupe-light rounded text-brown-light ml-2">G</kbd> Next gap
         </div>
       </div>
-
-      <!-- Date Labels -->
-      <div class="relative mt-4 pt-2 border-t border-taupe-light">
-        <div class="flex justify-between text-xs text-brown-light">
-          <span><%= @start_date.strftime('%b %d, %Y') %></span>
-          <span><%= @end_date.strftime('%b %d, %Y') %></span>
-        </div>
-      </div>
-
-      <!-- Keyboard hint -->
-      <div class="mt-2 text-xs text-brown-lighter text-center">
-        Drag to scroll or use arrow keys
-      </div>
-    </div>
+    <% end %>
 
     <!-- Botanical Divider -->
     <div class="botanical-divider">
@@ -228,7 +406,16 @@
             <% @stays.each do |stay| %>
               <tr class="hover:bg-cream transition-colors">
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <%= link_to stay.title, stay_path(stay), class: "text-sage-dark hover:text-sage font-medium" %>
+                  <div class="flex items-center gap-2">
+                    <span class="text-brown-light"><%= raw stay_type_icon(stay.stay_type) %></span>
+                    <%= link_to stay.title, stay_path(stay), class: "text-sage-dark hover:text-sage font-medium" %>
+                    <% if stay.collaborator_count > 0 %>
+                      <span class="inline-flex items-center gap-0.5 text-xs text-lavender-dark">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg>
+                        <%= stay.collaborator_count %>
+                      </span>
+                    <% end %>
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-brown-light">
                   <%= [stay.city, stay.country].compact.join(', ') %>

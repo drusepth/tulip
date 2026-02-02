@@ -1819,3 +1819,459 @@ input[type="checkbox"]:focus {
   background-color: var(--color-sage-light);
   border-left-color: var(--color-sage);
 }
+
+/* ========================================
+   Timeline Page Enhancements
+   ======================================== */
+
+/* View Toggle Button */
+.view-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-brown-light);
+  background: transparent;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.view-toggle-btn:hover {
+  background-color: rgba(255, 255, 255, 0.6);
+  color: var(--color-brown);
+}
+
+.view-toggle-btn.active {
+  background-color: white;
+  color: var(--color-brown);
+  box-shadow: 0 1px 3px rgba(93, 78, 78, 0.1);
+}
+
+/* Statistics Panel */
+.stats-panel {
+  background: linear-gradient(135deg, white 0%, var(--color-cream) 100%);
+}
+
+.stat-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1rem;
+  text-align: center;
+  border: 1px solid var(--color-taupe-light);
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  border-color: var(--color-sage);
+  box-shadow: 0 2px 8px rgba(184, 201, 184, 0.2);
+}
+
+.stat-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-brown);
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.6875rem;
+  color: var(--color-brown-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.25rem;
+}
+
+/* Timeline Bar Gradients */
+.timeline-bar-upcoming {
+  background: linear-gradient(135deg, var(--color-sage) 0%, var(--color-sage-dark) 100%);
+}
+
+.timeline-bar-upcoming:hover {
+  background: linear-gradient(135deg, var(--color-sage-dark) 0%, #7a917a 100%);
+}
+
+.timeline-bar-current {
+  background: linear-gradient(135deg, var(--color-rose) 0%, var(--color-rose-dark) 100%);
+}
+
+.timeline-bar-current:hover {
+  background: linear-gradient(135deg, var(--color-rose-dark) 0%, #a67070 100%);
+}
+
+.timeline-bar-past {
+  background: linear-gradient(135deg, var(--color-taupe) 0%, var(--color-taupe-dark) 100%);
+}
+
+.timeline-bar-past:hover {
+  background: linear-gradient(135deg, var(--color-taupe-dark) 0%, #8f8070 100%);
+}
+
+.timeline-bar-planned {
+  background: linear-gradient(135deg, var(--color-lavender) 0%, var(--color-lavender-dark) 100%);
+  border: 2px dashed rgba(255, 255, 255, 0.5);
+}
+
+.timeline-bar-planned:hover {
+  background: linear-gradient(135deg, var(--color-lavender-dark) 0%, #8a7ea0 100%);
+}
+
+/* Timeline Legend Dots with Gradients */
+.timeline-legend-upcoming {
+  background: linear-gradient(135deg, var(--color-sage) 0%, var(--color-sage-dark) 100%);
+}
+
+.timeline-legend-current {
+  background: linear-gradient(135deg, var(--color-rose) 0%, var(--color-rose-dark) 100%);
+}
+
+.timeline-legend-past {
+  background: linear-gradient(135deg, var(--color-taupe) 0%, var(--color-taupe-dark) 100%);
+}
+
+.timeline-legend-planned {
+  background: linear-gradient(135deg, var(--color-lavender) 0%, var(--color-lavender-dark) 100%);
+  border: 2px dashed var(--color-lavender-dark);
+}
+
+/* Timeline Bar Type Icon */
+.timeline-bar-type-icon {
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+/* Timeline Bar Meta Area */
+.timeline-bar-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-shrink: 0;
+}
+
+/* Collaborator Badge on Timeline Bar */
+.timeline-collab-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.25);
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.5rem;
+}
+
+/* Weather Badge on Timeline Bar */
+.timeline-weather-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.375rem;
+}
+
+/* Season Dividers */
+.timeline-season-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--color-taupe-light) 20%, var(--color-taupe-light) 80%, transparent);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.timeline-season-icon {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 0.125rem;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(93, 78, 78, 0.1);
+}
+
+/* Mini-Map Navigator */
+.timeline-minimap {
+  position: relative;
+}
+
+.timeline-minimap-track {
+  position: relative;
+  height: 20px;
+  background: var(--color-taupe-light);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.timeline-minimap-stay {
+  position: absolute;
+  top: 4px;
+  height: 12px;
+  border-radius: 2px;
+  min-width: 2px;
+}
+
+.timeline-minimap-gap {
+  position: absolute;
+  top: 6px;
+  height: 8px;
+  background: var(--color-coral-light);
+  border-radius: 1px;
+  min-width: 2px;
+}
+
+.timeline-minimap-today {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-rose-dark);
+  z-index: 5;
+}
+
+.timeline-minimap-viewport {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: rgba(93, 78, 78, 0.15);
+  border: 2px solid var(--color-brown-light);
+  border-radius: 0.375rem;
+  pointer-events: none;
+  min-width: 20px;
+}
+
+/* ========================================
+   Year Grid View (GitHub Contribution Style)
+   ======================================== */
+
+.year-grid-container {
+  position: relative;
+}
+
+.year-grid-year {
+  margin-bottom: 1.5rem;
+}
+
+.year-grid-year:last-child {
+  margin-bottom: 0;
+}
+
+.year-grid-year-label {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-brown);
+  margin-bottom: 0.75rem;
+}
+
+.year-grid-months {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.year-grid-month {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.year-grid-month-label {
+  font-size: 0.625rem;
+  font-weight: 500;
+  color: var(--color-brown-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+
+.year-grid-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.year-grid-day {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  background: var(--color-cream);
+  border: 1px solid var(--color-taupe-light);
+  cursor: default;
+  transition: all 0.15s ease;
+}
+
+.year-grid-day:hover {
+  transform: scale(1.3);
+  z-index: 10;
+  position: relative;
+}
+
+.year-grid-day[data-stay-path]:hover {
+  cursor: pointer;
+}
+
+/* Year Grid Day Status Colors */
+.year-grid-day-upcoming {
+  background: var(--color-sage);
+  border-color: var(--color-sage-dark);
+}
+
+.year-grid-day-current {
+  background: var(--color-rose);
+  border-color: var(--color-rose-dark);
+}
+
+.year-grid-day-past {
+  background: var(--color-taupe);
+  border-color: var(--color-taupe-dark);
+}
+
+.year-grid-day-planned {
+  background: var(--color-lavender);
+  border-color: var(--color-lavender-dark);
+}
+
+.year-grid-day-gap {
+  background: var(--color-coral-light);
+  border-color: var(--color-coral);
+}
+
+.year-grid-day-today {
+  box-shadow: 0 0 0 2px var(--color-rose-dark);
+  z-index: 5;
+  position: relative;
+}
+
+/* Year Grid Legend Sample */
+.year-grid-day-sample {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--color-cream);
+  border: 1px solid var(--color-taupe-light);
+}
+
+.year-grid-day-sample.year-grid-day-upcoming {
+  background: var(--color-sage);
+  border-color: var(--color-sage-dark);
+}
+
+.year-grid-day-sample.year-grid-day-current {
+  background: var(--color-rose);
+  border-color: var(--color-rose-dark);
+}
+
+.year-grid-day-sample.year-grid-day-past {
+  background: var(--color-taupe);
+  border-color: var(--color-taupe-dark);
+}
+
+.year-grid-day-sample.year-grid-day-planned {
+  background: var(--color-lavender);
+  border-color: var(--color-lavender-dark);
+}
+
+.year-grid-day-sample.year-grid-day-gap {
+  background: var(--color-coral-light);
+  border-color: var(--color-coral);
+}
+
+.year-grid-day-sample.year-grid-day-today {
+  box-shadow: 0 0 0 2px var(--color-rose-dark);
+}
+
+/* Year Grid Tooltip */
+.year-grid-tooltip {
+  position: absolute;
+  z-index: 100;
+  background: linear-gradient(135deg, #FDF8F3 0%, #F5EDE5 100%);
+  border: 1px solid var(--color-taupe-light);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  box-shadow: 0 8px 24px rgba(93, 78, 78, 0.15);
+  min-width: 160px;
+  max-width: 220px;
+  pointer-events: none;
+}
+
+.year-grid-tooltip.hidden {
+  display: none;
+}
+
+/* ========================================
+   Timeline Visual Polish
+   ======================================== */
+
+/* Subtle botanical flourish for timeline container */
+.timeline-container {
+  position: relative;
+}
+
+.timeline-container::before {
+  content: '';
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 40px;
+  height: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none'%3E%3Cpath d='M20 5c-2 4-4 8-4 12 0 3 2 5 4 6 2-1 4-3 4-6 0-4-2-8-4-12z' fill='%23B8C9B8' opacity='0.3'/%3E%3Cpath d='M10 15c3 2 6 5 8 8-2 1-4 1-6 0-3-2-5-5-5-8 1 0 2 0 3 0z' fill='%23D4A5A5' opacity='0.25'/%3E%3Cpath d='M30 15c-3 2-6 5-8 8 2 1 4 1 6 0 3-2 5-5 5-8-1 0-2 0-3 0z' fill='%23C8BFD4' opacity='0.25'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Keyboard shortcut kbd styling */
+kbd {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+}
+
+/* Responsive adjustments for timeline */
+@media (max-width: 640px) {
+  .stat-card {
+    padding: 0.75rem;
+  }
+
+  .stat-value {
+    font-size: 1.25rem;
+  }
+
+  .stat-label {
+    font-size: 0.625rem;
+  }
+
+  .year-grid-day {
+    width: 9px;
+    height: 9px;
+  }
+
+  .year-grid-days {
+    gap: 1px;
+  }
+
+  .timeline-minimap-track {
+    height: 16px;
+  }
+
+  .timeline-minimap-stay {
+    top: 3px;
+    height: 10px;
+  }
+
+  .timeline-minimap-gap {
+    top: 4px;
+    height: 8px;
+  }
+}
