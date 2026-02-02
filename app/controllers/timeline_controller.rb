@@ -1,6 +1,7 @@
 class TimelineController < ApplicationController
   def index
-    @stays = current_user.accessible_stays.chronological
+    # Only include stays with dates on the timeline (exclude wishlist items)
+    @stays = current_user.accessible_stays.with_dates.chronological
     @gaps = @stays.find_gaps
     @today = Date.current
 

@@ -24,16 +24,17 @@
 
   <!-- Title Field -->
   <div>
-    <%= form.label :title, class: "cozy-label" %>
-    <%= form.text_field :title, class: "cozy-input", placeholder: "Cozy apartment in Barcelona" %>
-    <p class="mt-1 text-sm text-brown-light">Use property name if booked, or destination name (e.g., "Austin, TX") if planning</p>
+    <%= form.label :title, "Trip Name (optional)", class: "cozy-label" %>
+    <%= form.text_field :title, class: "cozy-input", placeholder: stay.city.present? ? "#{stay.city} Adventure" : "Summer in Barcelona" %>
+    <p class="mt-1 text-sm text-brown-light">Leave blank to use your destination as the name</p>
   </div>
 
   <!-- Location Fields Group -->
   <div class="cozy-field-group">
+    <p class="text-sm text-brown-light mb-3">Where do you want to go?</p>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div>
-        <%= form.label :city, class: "cozy-label" %>
+        <%= form.label :city, "Destination", class: "cozy-label" %>
         <%= form.text_field :city, class: "cozy-input", placeholder: "Barcelona", required: true %>
       </div>
 
@@ -103,14 +104,15 @@
 
   <!-- Date Fields Group -->
   <div class="cozy-field-group">
+    <p class="text-sm text-brown-light mb-3">When are you thinking of going? (optional - add dates later)</p>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <%= form.label :check_in, "Check-in Date", class: "cozy-label" %>
+        <%= form.label :check_in, "Arrive", class: "cozy-label" %>
         <%= form.date_field :check_in, class: "cozy-input" %>
       </div>
 
       <div>
-        <%= form.label :check_out, "Check-out Date", class: "cozy-label" %>
+        <%= form.label :check_out, "Depart", class: "cozy-label" %>
         <%= form.date_field :check_out, class: "cozy-input" %>
       </div>
     </div>
@@ -195,6 +197,6 @@
 
   <div class="flex justify-end gap-3 pt-4">
     <%= link_to "Cancel", stays_path, class: "btn-outline" %>
-    <%= form.submit class: "btn-primary cursor-pointer" %>
+    <%= form.submit stay.persisted? ? "Save Changes" : "Start Planning", class: "btn-primary cursor-pointer" %>
   </div>
 <% end %>

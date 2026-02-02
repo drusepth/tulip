@@ -1,0 +1,52 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Header -->
+  <div class="text-center mb-10">
+    <h1 class="text-3xl font-bold text-brown mb-2" style="font-family: var(--font-heading);">
+      Discover Your Next Adventure
+    </h1>
+    <p class="text-brown-light max-w-2xl mx-auto">
+      Explore inspiring destinations around the world. Click any destination to start planning your stay.
+    </p>
+  </div>
+
+  <!-- Destinations Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <% @destinations.each do |destination| %>
+      <%= link_to new_stay_path(city: destination.city, country: destination.country), class: "block group" do %>
+        <div class="hero-card h-64 relative">
+          <!-- Background Image -->
+          <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+               style="background-image: url('<%= destination.image_url %>');">
+          </div>
+          <div class="hero-card-overlay"></div>
+
+          <!-- Content -->
+          <div class="absolute inset-0 p-5 flex flex-col justify-end text-white">
+            <h2 class="text-xl font-bold group-hover:underline"><%= destination.city %></h2>
+            <p class="text-white opacity-90 text-sm"><%= destination.country %></p>
+            <p class="text-white opacity-75 text-xs mt-1"><%= destination.tagline %></p>
+          </div>
+
+          <!-- Hover indicator -->
+          <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div class="bg-white rounded-full p-2 shadow-md">
+              <svg class="w-4 h-4 text-sage-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <!-- Back to Dashboard -->
+  <div class="mt-10 text-center">
+    <%= link_to root_path, class: "btn-outline" do %>
+      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Back to Dashboard
+    <% end %>
+  </div>
+</div>

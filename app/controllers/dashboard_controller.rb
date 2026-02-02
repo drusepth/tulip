@@ -5,8 +5,8 @@ class DashboardController < ApplicationController
 
     user_stays = current_user.accessible_stays
 
-    # Update statuses for the user's stays
-    update_statuses!(user_stays)
+    # Update statuses for the user's stays (only those with dates)
+    update_statuses!(user_stays.with_dates)
 
     # Alerts (only shown when action needed)
     @gaps = user_stays.find_gaps
@@ -19,9 +19,12 @@ class DashboardController < ApplicationController
     # Upcoming stays timeline (all upcoming, with images)
     @upcoming_stays = user_stays.upcoming
 
+    # Wishlist: stays without dates (dream destinations)
+    @wishlist_stays = user_stays.wishlist
+
     # Secondary: Stats & Recent
     @total_stays = user_stays.count
-    @states_visited = user_stays.distinct.pluck(:state).compact.count
+    @states_visited = user_stays.with_dates.distinct.pluck(:state).compact.count
     @recent_stays = user_stays.past.limit(5)
   end
 
@@ -36,7 +39,7 @@ class DashboardController < ApplicationController
 
   def current_stay(stays)
     today = Date.current
-    stays.find_by('check_in <= ? AND check_out >= ?', today, today)
+    stays.with_dates.find_by('check_in <= ? AND check_out >= ?', today, today)
   end
 
   def booking_alert(stays)

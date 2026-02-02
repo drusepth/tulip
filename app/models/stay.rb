@@ -42,24 +42,30 @@ class Stay < ApplicationRecord
   end
 
   validates :title, presence: true
-  validates :check_in, presence: true
-  validates :check_out, presence: true
   validates :city, presence: true
   validates :stay_type, inclusion: { in: STAY_TYPES }, if: :booked?
   validates :status, inclusion: { in: STATUSES }
   validates :currency, inclusion: { in: CURRENCIES }
+  # Dates are optional for "wishlist" trips, but required when booked
+  validates :check_in, presence: true, if: :booked?
+  validates :check_out, presence: true, if: :booked?
   validate :check_out_after_check_in
   validate :no_overlapping_stays, on: :create
+
+  # Auto-fill title from destination if not provided
+  before_validation :set_default_title
 
   geocoded_by :full_address
   after_validation :geocode, if: :should_geocode?
 
   before_save :update_status
 
-  scope :upcoming, -> { where(status: 'upcoming').order(:check_in) }
-  scope :current, -> { where(status: 'current') }
-  scope :past, -> { where(status: 'past').order(check_out: :desc) }
-  scope :chronological, -> { order(:check_in) }
+  scope :with_dates, -> { where.not(check_in: nil).where.not(check_out: nil) }
+  scope :wishlist, -> { where(check_in: nil).or(where(check_out: nil)) }
+  scope :upcoming, -> { with_dates.where(status: 'upcoming').order(:check_in) }
+  scope :current, -> { with_dates.where(status: 'current') }
+  scope :past, -> { with_dates.where(status: 'past').order(check_out: :desc) }
+  scope :chronological, -> { with_dates.order(:check_in) }
   scope :booked, -> { where(booked: true) }
   scope :planned, -> { where(booked: false) }
 
@@ -122,9 +128,10 @@ class Stay < ApplicationRecord
   end
 
   # Find gaps between stays. Works on any relation (e.g., current_user.stays.find_gaps)
+  # Only considers stays with dates (excludes wishlist items)
   def self.find_gaps
     gaps = []
-    ordered_stays = chronological.to_a
+    ordered_stays = with_dates.chronological.to_a
     return gaps if ordered_stays.empty?
 
     # Track the furthest coverage date to handle overlapping stays
@@ -211,7 +218,24 @@ class Stay < ApplicationRecord
     nil
   end
 
+  # Check if this stay has dates set (not a wishlist item)
+  def has_dates?
+    check_in.present? && check_out.present?
+  end
+
+  # Wishlist stays without dates
+  def wishlist?
+    !has_dates?
+  end
+
   private
+
+  def set_default_title
+    return if title.present?
+    return unless city.present?
+
+    self.title = [city, state.presence || country].compact.join(", ")
+  end
 
   def check_out_after_check_in
     return unless check_in && check_out
@@ -233,6 +257,12 @@ class Stay < ApplicationRecord
   end
 
   def update_status
+    # Wishlist stays without dates are always "upcoming"
+    unless has_dates?
+      self.status = 'upcoming'
+      return
+    end
+
     today = Date.current
     self.status = if check_out < today
                     'past'

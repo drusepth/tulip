@@ -37,7 +37,8 @@ class StaysController < ApplicationController
     @stay = current_user.stays.new(
       check_in: params[:check_in],
       check_out: params[:check_out],
-      country: "USA"
+      city: params[:city],
+      country: params[:country].presence || "USA"
     )
     @overlapping_stays = []
   end
@@ -100,6 +101,7 @@ class StaysController < ApplicationController
         longitude: stay.longitude,
         status: stay.status,
         booked: stay.booked,
+        wishlist: stay.wishlist?,
         check_in: stay.check_in,
         check_out: stay.check_out,
         city: stay.city,
