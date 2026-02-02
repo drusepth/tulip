@@ -48,15 +48,16 @@ class StayCollaborationsController < ApplicationController
 
   # Allow a collaborator to remove themselves from a stay
   def leave
+    # Check owner first - owners don't have collaboration records
+    if @stay.owner?(current_user)
+      redirect_to @stay, alert: "Owners cannot leave their own stays. Transfer ownership or delete the stay instead."
+      return
+    end
+
     @collaboration = @stay.stay_collaborations.find_by(user: current_user)
 
     if @collaboration.nil?
       redirect_to @stay, alert: "You are not a collaborator on this stay"
-      return
-    end
-
-    if @stay.owner?(current_user)
-      redirect_to @stay, alert: "Owners cannot leave their own stays. Transfer ownership or delete the stay instead."
       return
     end
 
