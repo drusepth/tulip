@@ -864,7 +864,7 @@ input[type="checkbox"]:focus {
 }
 
 .cozy-popup .leaflet-popup-close-button {
-  color: white;
+  color: var(--color-brown-light);
   font-size: 18px;
   font-weight: bold;
   top: 8px;
@@ -874,16 +874,17 @@ input[type="checkbox"]:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--color-taupe-light);
   border-radius: 50%;
   z-index: 10;
   text-shadow: none;
   line-height: 1;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .cozy-popup .leaflet-popup-close-button:hover {
-  color: white;
-  background: rgba(0, 0, 0, 0.6);
+  color: var(--color-brown);
+  background: var(--color-taupe);
 }
 
 /* Popup content structure */

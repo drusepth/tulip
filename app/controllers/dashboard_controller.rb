@@ -24,7 +24,7 @@ class DashboardController < ApplicationController
 
     # Secondary: Stats & Recent
     @total_stays = user_stays.count
-    @states_visited = user_stays.with_dates.distinct.pluck(:state).compact.count
+    @states_visited = user_stays.past.distinct.pluck(:state).compact.count
     @recent_stays = user_stays.past.limit(5)
   end
 

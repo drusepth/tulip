@@ -82,8 +82,7 @@
           <span class="capitalize"><%= @stay.stay_type %></span>
         <% end %>
       </p>
-      <% all_people = [@stay.user] + @stay.collaborators.to_a %>
-      <% if all_people.size > 1 || @is_owner %>
+      <% if @stay.collaborators.any? %>
         <div class="mt-2">
           <div class="relative inline-block" data-controller="collaborators-popover">
             <!-- Clickable avatar stack -->
