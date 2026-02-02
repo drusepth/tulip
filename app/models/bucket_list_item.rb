@@ -2,6 +2,7 @@ class BucketListItem < ApplicationRecord
   CATEGORIES = %w[activity landmark restaurant experience shopping nightlife nature other].freeze
 
   belongs_to :stay
+  belongs_to :user, optional: true
 
   before_validation :set_title_from_address
 

@@ -18,9 +18,18 @@
 
     <!-- Content -->
     <div class="flex-1 min-w-0">
-      <span class="<%= bucket_list_item.completed? ? 'line-through text-brown-light' : 'text-brown font-medium' %>">
+      <span class="<%= bucket_list_item.completed? ? 'text-brown-light' : 'text-brown font-medium' %>">
         <%= bucket_list_item.title %>
       </span>
+      <% if bucket_list_item.user.present? %>
+        <p class="text-xs text-taupe mt-1 flex items-center gap-1.5">
+          <%= avatar_tag(bucket_list_item.user, size: 16, html_options: {
+            class: "w-4 h-4 ring-1 ring-taupe-light",
+            title: bucket_list_item.user.email
+          }) %>
+          <span>Added by <%= bucket_list_item.user.email.split('@').first %></span>
+        </p>
+      <% end %>
       <% if bucket_list_item.address.present? %>
         <p class="text-xs text-brown-light mt-1 flex items-center gap-1.5">
           <svg class="w-3.5 h-3.5 text-taupe" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_02_012938) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_02_024125) do
   create_table "bucket_list_items", force: :cascade do |t|
     t.integer "stay_id", null: false
     t.string "title", null: false
@@ -24,9 +24,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_012938) do
     t.integer "position"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id"
     t.index ["stay_id", "category"], name: "index_bucket_list_items_on_stay_id_and_category"
     t.index ["stay_id", "completed"], name: "index_bucket_list_items_on_stay_id_and_completed"
     t.index ["stay_id"], name: "index_bucket_list_items_on_stay_id"
+    t.index ["user_id"], name: "index_bucket_list_items_on_user_id"
   end
 
   create_table "pois", force: :cascade do |t|
@@ -167,6 +169,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_012938) do
   end
 
   add_foreign_key "bucket_list_items", "stays"
+  add_foreign_key "bucket_list_items", "users"
   add_foreign_key "pois", "stays"
   add_foreign_key "stay_collaborations", "stays"
   add_foreign_key "stay_collaborations", "users"
