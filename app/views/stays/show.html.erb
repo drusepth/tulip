@@ -33,8 +33,8 @@
 
     <% if @stay.image_url.present? %>
       <!-- Hero image with enhanced styling -->
-      <div class="relative rounded-3xl overflow-hidden shadow-cozy-lg">
-        <img src="<%= @stay.image_url %>" alt="<%= @stay.title %>" class="w-full h-72 sm:h-80 object-cover">
+      <div class="relative rounded-3xl overflow-hidden shadow-cozy-lg group">
+        <img src="<%= @stay.image_url %>" alt="<%= @stay.title %>" class="w-full h-72 sm:h-80 object-cover transition-transform duration-500 ease-out group-hover:scale-105">
         <!-- Gradient overlay for depth -->
         <div class="absolute inset-0 bg-gradient-to-t from-brown via-transparent to-transparent" style="opacity: 0.3;"></div>
         <!-- Subtle warm overlay -->
@@ -130,7 +130,7 @@
               </div>
               <% if @is_owner %>
                 <%= link_to stay_collaborations_path(@stay), class: "block mt-3 pt-2 border-t border-taupe-light text-xs text-center text-sage-dark hover:text-sage font-medium" do %>
-                  Manage collaborators
+                  Manage travelers
                 <% end %>
               <% end %>
             </div>
