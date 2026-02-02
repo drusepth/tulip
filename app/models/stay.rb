@@ -4,6 +4,8 @@ class Stay < ApplicationRecord
   CURRENCIES = %w[USD EUR GBP JPY AUD CAD CHF CNY INR MXN].freeze
   BOOKING_ALERT_MONTHS_THRESHOLD = 4
 
+  serialize :pois_cached_categories, coder: YAML, type: Array, default: []
+
   belongs_to :user # The owner of the stay
 
   has_many :pois, dependent: :destroy

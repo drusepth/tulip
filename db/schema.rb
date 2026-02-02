@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_02_051613) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_02_054616) do
   create_table "bucket_list_item_ratings", force: :cascade do |t|
     t.integer "bucket_list_item_id", null: false
     t.integer "user_id", null: false
@@ -149,6 +149,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_051613) do
     t.integer "user_id"
     t.json "destination_images", default: []
     t.datetime "images_fetched_at"
+    t.text "pois_cached_categories", default: "--- []\n"
     t.index ["check_in", "check_out"], name: "index_stays_on_check_in_and_check_out"
     t.index ["user_id"], name: "index_stays_on_user_id"
   end

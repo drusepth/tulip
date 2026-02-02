@@ -12,21 +12,6 @@ class GalleriesController < ApplicationController
     @categories = GALLERY_CATEGORIES
   end
 
-  def refresh
-    # Clear existing Foursquare data from POIs and refetch
-    @stay.pois.with_photos.update_all(
-      foursquare_id: nil,
-      foursquare_rating: nil,
-      foursquare_price: nil,
-      foursquare_photo_url: nil,
-      foursquare_fetched_at: nil
-    )
-    @stay.pois.from_foursquare.destroy_all
-    @stay.update(images_fetched_at: nil)
-    fetch_pois_if_needed
-    redirect_to stay_gallery_path(@stay), notice: "Gallery refreshed with new venues."
-  end
-
   def add_to_bucket_list
     # Support both poi_id (OSM/all POIs) and fsq_id (legacy Foursquare)
     poi = if params[:poi_id].present?
@@ -78,9 +63,12 @@ class GalleriesController < ApplicationController
   def ensure_browsable_pois_cached
     return unless @stay.latitude.present? && @stay.longitude.present?
 
-    GALLERY_CATEGORIES.each do |category|
-      next if @stay.pois.by_category(category).exists?
+    cached = @stay.pois_cached_categories || []
+    missing_categories = GALLERY_CATEGORIES - cached
 
+    return if missing_categories.empty?
+
+    missing_categories.each do |category|
       pois_data = OverpassService.fetch_pois(
         lat: @stay.latitude.to_f,
         lng: @stay.longitude.to_f,
@@ -110,6 +98,9 @@ class GalleriesController < ApplicationController
         end
       end
     end
+
+    # Mark all categories as cached (even if they returned 0 results)
+    @stay.update(pois_cached_categories: cached | missing_categories)
   end
 
   def map_poi_category_to_bucket_list(poi_category)
