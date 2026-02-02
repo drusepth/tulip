@@ -1,0 +1,124 @@
+class NotificationService
+  class << self
+    def comment_created(comment)
+      return if comment.rating_comment?
+
+      stay = comment.stay
+      actor = comment.user
+
+      # Notify the stay owner and collaborators (except the commenter)
+      recipients = recipients_for_stay(stay, exclude: actor)
+
+      recipients.each do |recipient|
+        Notification.create!(
+          user: recipient,
+          notification_type: "comment_on_stay",
+          notifiable: comment,
+          data: {
+            actor_name: actor.name,
+            stay_id: stay.id,
+            stay_title: stay.title,
+            comment_preview: comment.body&.truncate(100)
+          }
+        )
+      end
+    end
+
+    def reply_created(reply)
+      return if reply.rating_comment?
+      return unless reply.parent.present?
+
+      parent_author = reply.parent.user
+      actor = reply.user
+
+      # Don't notify if replying to own comment
+      return if parent_author == actor
+
+      Notification.create!(
+        user: parent_author,
+        notification_type: "reply_to_comment",
+        notifiable: reply,
+        data: {
+          actor_name: actor.name,
+          stay_id: reply.stay.id,
+          stay_title: reply.stay.title,
+          reply_preview: reply.body&.truncate(100)
+        }
+      )
+    end
+
+    def bucket_list_item_completed(item, completed_by:)
+      stay = item.stay
+      actor = completed_by
+
+      # Notify the stay owner and collaborators (except who completed it)
+      recipients = recipients_for_stay(stay, exclude: actor)
+
+      recipients.each do |recipient|
+        Notification.create!(
+          user: recipient,
+          notification_type: "bucket_list_completed",
+          notifiable: item,
+          data: {
+            actor_name: actor.name,
+            stay_id: stay.id,
+            stay_title: stay.title,
+            item_title: item.title
+          }
+        )
+      end
+    end
+
+    def bucket_list_item_rated(rating)
+      item = rating.bucket_list_item
+      stay = item.stay
+      actor = rating.user
+
+      # Notify the stay owner and collaborators (except who rated it)
+      recipients = recipients_for_stay(stay, exclude: actor)
+
+      recipients.each do |recipient|
+        Notification.create!(
+          user: recipient,
+          notification_type: "bucket_list_rated",
+          notifiable: rating,
+          data: {
+            actor_name: actor.name,
+            stay_id: stay.id,
+            stay_title: stay.title,
+            item_title: item.title,
+            rating: rating.rating
+          }
+        )
+      end
+    end
+
+    def collaboration_accepted(collaboration)
+      stay = collaboration.stay
+      actor = collaboration.user
+
+      # Notify the stay owner
+      owner = stay.owner
+      return if owner == actor
+
+      Notification.create!(
+        user: owner,
+        notification_type: "collaboration_accepted",
+        notifiable: collaboration,
+        data: {
+          actor_name: actor.name,
+          stay_id: stay.id,
+          stay_title: stay.title
+        }
+      )
+    end
+
+    private
+
+    def recipients_for_stay(stay, exclude:)
+      recipients = [stay.owner]
+      recipients += stay.collaborators.to_a
+      recipients.uniq.reject { |u| u == exclude }
+    end
+  end
+end

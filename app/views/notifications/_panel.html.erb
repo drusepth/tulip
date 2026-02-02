@@ -1,0 +1,22 @@
+<%# Notification panel - slides up from bottom on mobile, dropdown on desktop %>
+<div data-notifications-target="panel"
+     class="hidden fixed sm:absolute bottom-16 sm:bottom-auto sm:top-full sm:right-0 left-0 sm:left-auto right-0 sm:mt-2 z-50">
+  <div class="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl border border-taupe-light max-h-96 sm:max-h-80 w-full sm:w-96 flex flex-col overflow-hidden">
+    <%# Header %>
+    <div class="flex items-center justify-between px-4 py-3 border-b border-taupe-light bg-cream">
+      <h3 class="font-semibold text-brown" style="font-family: var(--font-heading);">Notifications</h3>
+      <button type="button"
+              class="text-sm text-sage-dark hover:text-sage transition-colors"
+              data-action="click->notifications#markAllRead">
+        Mark all read
+      </button>
+    </div>
+
+    <%# Notification list container %>
+    <div id="notifications_list" data-notifications-target="list" class="overflow-y-auto flex-1">
+      <div class="p-4 text-center text-taupe">
+        <span class="text-sm">Loading...</span>
+      </div>
+    </div>
+  </div>
+</div>

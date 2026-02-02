@@ -5,6 +5,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   has_many :stays, dependent: :destroy # Stays this user owns
+  has_many :notifications, dependent: :destroy
 
   # Returns display_name if set, otherwise falls back to email username
   def name
@@ -22,6 +23,14 @@ class User < ApplicationRecord
     Stay.left_joins(:stay_collaborations)
         .where('stays.user_id = :user_id OR (stay_collaborations.user_id = :user_id AND stay_collaborations.invite_accepted_at IS NOT NULL)', user_id: id)
         .distinct
+  end
+
+  def unread_notifications_count
+    notifications.unread.count
+  end
+
+  def mark_all_notifications_read!
+    notifications.unread.update_all(read_at: Time.current)
   end
 
   # Stays where user has edit permissions (owned or editor role)

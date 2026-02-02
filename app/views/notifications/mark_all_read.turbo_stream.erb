@@ -1,0 +1,9 @@
+<%# Reload the notification list %>
+<%= turbo_stream.update "notifications_list" do %>
+  <%= render "notifications/list", notifications: current_user.notifications.recent.by_date %>
+<% end %>
+
+<%# Update the badge count to 0 %>
+<%= turbo_stream.update "notification_badge" do %>
+  <%= render "notifications/badge", count: 0 %>
+<% end %>

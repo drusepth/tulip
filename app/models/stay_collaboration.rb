@@ -8,6 +8,7 @@ class StayCollaboration < ApplicationRecord
   validates :user_id, uniqueness: { scope: :stay_id, message: "is already a collaborator on this stay" }, if: :user_id?
 
   before_create :generate_invite_token, unless: :invite_accepted?
+  after_update_commit :notify_on_acceptance, if: :saved_change_to_invite_accepted_at?
 
   scope :pending, -> { where(invite_accepted_at: nil) }
   scope :accepted, -> { where.not(invite_accepted_at: nil) }
@@ -42,6 +43,11 @@ class StayCollaboration < ApplicationRecord
   end
 
   private
+
+  def notify_on_acceptance
+    return unless invite_accepted_at.present?
+    NotificationService.collaboration_accepted(self)
+  end
 
   def generate_invite_token
     self.invite_token = SecureRandom.urlsafe_base64(32)

@@ -1,0 +1,6 @@
+<%# Unread notification count badge - hidden when count is 0 %>
+<% if count > 0 %>
+  <span class="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-rose text-white text-xs font-semibold px-1">
+    <%= count > 99 ? "99+" : count %>
+  </span>
+<% end %>

@@ -1,0 +1,52 @@
+<%# Single notification item %>
+<%
+  ring_color_class = case notification.ring_color
+    when "lavender" then "bg-lavender-light text-lavender-dark"
+    when "sage" then "bg-sage-light text-sage-dark"
+    when "coral" then "bg-coral-light text-coral-dark"
+    when "rose" then "bg-rose-light text-rose-dark"
+    else "bg-taupe-light text-taupe-dark"
+  end
+  unread_class = notification.unread? ? "bg-sage-light bg-opacity-30" : ""
+%>
+
+<div id="notification_<%= notification.id %>"
+     class="relative group"
+     data-notification-id="<%= notification.id %>"
+     data-notification-path="<%= notification.target_path %>">
+  <% if notification.target_path.present? %>
+    <a href="<%= notification.target_path %>"
+       class="block px-4 py-3 hover:bg-cream transition-colors <%= unread_class %>"
+       data-action="click->notifications#navigate">
+  <% else %>
+    <div class="block px-4 py-3 <%= unread_class %>">
+  <% end %>
+
+    <div class="flex items-start gap-3">
+      <%# Icon with colored ring %>
+      <div class="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center <%= ring_color_class %>">
+        <%= render "notifications/icons/#{notification.icon_name}" %>
+      </div>
+
+      <%# Content %>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm text-brown leading-snug">
+          <%= notification.message %>
+        </p>
+        <p class="text-xs text-taupe mt-1">
+          <%= time_ago_in_words(notification.created_at) %> ago
+        </p>
+      </div>
+
+      <%# Unread indicator %>
+      <% if notification.unread? %>
+        <div class="flex-shrink-0 w-2 h-2 rounded-full bg-rose mt-2"></div>
+      <% end %>
+    </div>
+
+  <% if notification.target_path.present? %>
+    </a>
+  <% else %>
+    </div>
+  <% end %>
+</div>

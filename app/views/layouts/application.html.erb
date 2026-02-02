@@ -97,6 +97,23 @@
                 </svg>
                 <span class="hidden md:inline text-sm">New Trip</span>
               <% end %>
+
+              <%# Notification Bell %>
+              <div data-controller="notifications" class="relative">
+                <button type="button"
+                        class="p-2.5 text-brown-light hover:text-brown hover:bg-sage-light rounded-xl transition-colors relative"
+                        data-action="click->notifications#toggle"
+                        title="Notifications">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                  </svg>
+                  <span id="notification_badge" data-notifications-target="badge">
+                    <%= render "notifications/badge", count: current_user.unread_notifications_count %>
+                  </span>
+                </button>
+                <%= render "notifications/panel" %>
+              </div>
+
               <%= link_to edit_user_registration_path, class: "p-1 hover:opacity-80 transition-opacity", title: "Account" do %>
                 <%= avatar_tag(current_user, size: 32, html_options: { class: "w-8 h-8 sm:w-9 sm:h-9 border-2 border-taupe-light" }) %>
               <% end %>

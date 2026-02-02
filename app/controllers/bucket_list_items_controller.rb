@@ -73,6 +73,10 @@ class BucketListItemsController < ApplicationController
   def toggle
     @bucket_list_item.toggle_completed!
 
+    if @bucket_list_item.completed?
+      NotificationService.bucket_list_item_completed(@bucket_list_item, completed_by: current_user)
+    end
+
     respond_to do |format|
       format.turbo_stream
       format.html { redirect_to @stay }

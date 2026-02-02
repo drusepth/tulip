@@ -13,6 +13,8 @@ class Comment < ApplicationRecord
   scope :ordered, -> { order(created_at: :asc) }
   scope :rating_comments, -> { where.not(bucket_list_item_rating_id: nil) }
 
+  after_create_commit :notify_on_create, unless: :rating_comment?
+
   delegate :bucket_list_item, to: :bucket_list_item_rating, allow_nil: true
 
   def rating_comment?
@@ -29,6 +31,14 @@ class Comment < ApplicationRecord
   end
 
   private
+
+  def notify_on_create
+    if parent_id?
+      NotificationService.reply_created(self)
+    else
+      NotificationService.comment_created(self)
+    end
+  end
 
   def parent_must_be_top_level
     return unless parent.present?

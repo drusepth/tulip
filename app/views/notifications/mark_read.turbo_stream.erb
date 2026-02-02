@@ -1,0 +1,9 @@
+<%# Update the notification to show as read %>
+<%= turbo_stream.replace "notification_#{@notification.id}" do %>
+  <%= render "notifications/notification", notification: @notification %>
+<% end %>
+
+<%# Update the badge count %>
+<%= turbo_stream.update "notification_badge" do %>
+  <%= render "notifications/badge", count: current_user.unread_notifications_count %>
+<% end %>

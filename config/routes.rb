@@ -2,6 +2,15 @@ Rails.application.routes.draw do
   devise_for :users
   root "dashboard#index"
 
+  resources :notifications, only: [:index] do
+    member do
+      post :mark_read
+    end
+    collection do
+      post :mark_all_read
+    end
+  end
+
   resources :stays do
     member do
       get :weather
@@ -30,6 +39,7 @@ Rails.application.routes.draw do
       post :refresh
       post :add_to_bucket_list
     end
+    resource :highlights, only: [:show]
   end
 
   # Magic link for accepting collaboration invites

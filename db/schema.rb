@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_02_041109) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_02_050000) do
   create_table "bucket_list_item_ratings", force: :cascade do |t|
     t.integer "bucket_list_item_id", null: false
     t.integer "user_id", null: false
@@ -55,6 +55,21 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_041109) do
     t.index ["stay_id", "created_at"], name: "index_comments_on_stay_id_and_created_at"
     t.index ["stay_id"], name: "index_comments_on_stay_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "notification_type", null: false
+    t.json "data", default: {}
+    t.datetime "read_at"
+    t.string "notifiable_type"
+    t.integer "notifiable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["notifiable_type", "notifiable_id"], name: "index_notifications_on_notifiable"
+    t.index ["user_id", "created_at"], name: "index_notifications_on_user_id_and_created_at"
+    t.index ["user_id", "read_at"], name: "index_notifications_on_user_id_and_read_at"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
   create_table "pois", force: :cascade do |t|
@@ -205,6 +220,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_041109) do
   add_foreign_key "comments", "comments", column: "parent_id"
   add_foreign_key "comments", "stays"
   add_foreign_key "comments", "users"
+  add_foreign_key "notifications", "users"
   add_foreign_key "pois", "stays"
   add_foreign_key "stay_collaborations", "stays"
   add_foreign_key "stay_collaborations", "users"

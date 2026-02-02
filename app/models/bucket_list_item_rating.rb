@@ -8,6 +8,7 @@ class BucketListItemRating < ApplicationRecord
   validate :item_must_be_completed
 
   after_create :create_rating_comment
+  after_create_commit :notify_on_rating
 
   private
 
@@ -25,5 +26,9 @@ class BucketListItemRating < ApplicationRecord
       user: user,
       bucket_list_item_rating: self
     )
+  end
+
+  def notify_on_rating
+    NotificationService.bucket_list_item_rated(self)
   end
 end
