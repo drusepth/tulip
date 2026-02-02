@@ -83,6 +83,7 @@ Uses Hotwire (Turbo + Stimulus) with Leaflet maps:
 - Custom CSS properties for colors: `--color-sage`, `--color-rose`, `--color-taupe`, `--color-lavender`, `--color-cream`
 - Custom component classes: `.cozy-card`, `.btn-primary`, `.badge-*`, `.cozy-popup`
 - **IMPORTANT**: Do NOT use Tailwind opacity shorthand like `bg-white/30` or `text-black/50` - this syntax is not supported. Use `opacity-30` on the element instead, or define custom colors with opacity in the CSS file.
+- **NOTE**: `app/assets/builds/tailwind.css` is committed to the repo (not gitignored). Include it in commits when CSS changes.
 
 ### API Endpoints
 
