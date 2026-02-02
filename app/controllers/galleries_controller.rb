@@ -21,11 +21,11 @@ class GalleriesController < ApplicationController
 
   def fetch_images_if_needed
     return if @stay.images_fetched_at.present? && @stay.images_fetched_at > 30.days.ago
-    return unless @stay.latitude.present? && @stay.longitude.present?
+    return unless @stay.city.present? || @stay.country.present?
 
-    images = WikimediaCommonsService.fetch_images(
-      lat: @stay.latitude,
-      lng: @stay.longitude
+    images = UnsplashService.fetch_images(
+      city: @stay.city.presence || @stay.title,
+      country: @stay.country
     )
     @stay.update(destination_images: images, images_fetched_at: Time.current)
   end
