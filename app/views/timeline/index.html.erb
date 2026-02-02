@@ -1,25 +1,14 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <!-- Header with botanical flourish -->
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-brown decorative-heading">Timeline</h1>
-    <p class="mt-2 text-brown-light">Your travel schedule at a glance</p>
-  </div>
-
-  <% if @stays.any? %>
-    <!-- View Toggle & Zoom Controls -->
-    <div class="mb-4 flex flex-wrap items-center justify-between gap-4">
-      <!-- View Mode Toggle -->
-      <div class="flex items-center gap-2">
-        <span class="text-sm text-brown-light">View:</span>
+  <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-brown decorative-heading">Timeline</h1>
+      <p class="mt-2 text-brown-light">Your travel schedule at a glance</p>
+    </div>
+    <% if @stays.any? %>
+      <!-- View Mode Toggle & Zoom Controls -->
+      <div class="flex flex-col items-end gap-2">
         <div class="flex gap-1 bg-taupe-light rounded-full p-1">
-          <%= link_to timeline_path(zoom: @zoom, view: "timeline"),
-              class: "view-toggle-btn #{@view_mode == 'timeline' ? 'active' : ''}",
-              data: { turbo_action: "replace" } do %>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
-            </svg>
-            <span class="hidden sm:inline">Timeline</span>
-          <% end %>
           <%= link_to timeline_path(zoom: @zoom, view: "year_grid"),
               class: "view-toggle-btn #{@view_mode == 'year_grid' ? 'active' : ''}",
               data: { turbo_action: "replace" } do %>
@@ -28,36 +17,47 @@
             </svg>
             <span class="hidden sm:inline">Year Grid</span>
           <% end %>
+          <%= link_to timeline_path(zoom: @zoom, view: "timeline"),
+              class: "view-toggle-btn #{@view_mode == 'timeline' ? 'active' : ''}",
+              data: { turbo_action: "replace" } do %>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+            </svg>
+            <span class="hidden sm:inline">Timeline</span>
+          <% end %>
         </div>
+        <% if @view_mode == "timeline" %>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-brown-light hidden sm:inline">Zoom:</span>
+            <div class="flex gap-1">
+              <%= link_to timeline_path(zoom: "3m", view: @view_mode),
+                  class: "timeline-zoom-btn #{@zoom == '3m' ? 'active' : ''}",
+                  data: { turbo_action: "replace" } do %>
+                3M
+              <% end %>
+              <%= link_to timeline_path(zoom: "6m", view: @view_mode),
+                  class: "timeline-zoom-btn #{@zoom == '6m' ? 'active' : ''}",
+                  data: { turbo_action: "replace" } do %>
+                6M
+              <% end %>
+              <%= link_to timeline_path(zoom: "year", view: @view_mode),
+                  class: "timeline-zoom-btn #{@zoom == 'year' ? 'active' : ''}",
+                  data: { turbo_action: "replace" } do %>
+                Year
+              <% end %>
+              <%= link_to timeline_path(zoom: "all", view: @view_mode),
+                  class: "timeline-zoom-btn #{@zoom == 'all' ? 'active' : ''}",
+                  data: { turbo_action: "replace" } do %>
+                All
+              <% end %>
+            </div>
+          </div>
+        <% end %>
       </div>
+    <% end %>
+  </div>
 
-      <!-- Zoom Controls -->
-      <div class="flex items-center gap-2">
-        <span class="text-sm text-brown-light hidden sm:inline">Zoom:</span>
-        <div class="flex gap-2">
-          <%= link_to timeline_path(zoom: "3m", view: @view_mode),
-              class: "timeline-zoom-btn #{@zoom == '3m' ? 'active' : ''}",
-              data: { turbo_action: "replace" } do %>
-            3M
-          <% end %>
-          <%= link_to timeline_path(zoom: "6m", view: @view_mode),
-              class: "timeline-zoom-btn #{@zoom == '6m' ? 'active' : ''}",
-              data: { turbo_action: "replace" } do %>
-            6M
-          <% end %>
-          <%= link_to timeline_path(zoom: "year", view: @view_mode),
-              class: "timeline-zoom-btn #{@zoom == 'year' ? 'active' : ''}",
-              data: { turbo_action: "replace" } do %>
-            Year
-          <% end %>
-          <%= link_to timeline_path(zoom: "all", view: @view_mode),
-              class: "timeline-zoom-btn #{@zoom == 'all' ? 'active' : ''}",
-              data: { turbo_action: "replace" } do %>
-            All
-          <% end %>
-        </div>
-      </div>
-    </div>
+  <% if @stays.any? %>
 
     <!-- Statistics Panel (Collapsible) -->
     <% if @statistics.present? && @statistics[:stay_count].to_i > 0 %>
@@ -144,7 +144,10 @@
     <!-- Legend -->
     <div class="mb-6 flex flex-wrap items-center gap-4 sm:gap-6 text-sm">
       <div class="flex items-center gap-2">
-        <div class="w-4 h-4 rounded-full timeline-legend-upcoming"></div>
+        <div class="flex gap-0.5">
+          <div class="w-3 h-3 rounded-full timeline-legend-upcoming"></div>
+          <div class="w-3 h-3 rounded-full bg-sage-dark"></div>
+        </div>
         <span class="text-brown-light">Upcoming</span>
       </div>
       <div class="flex items-center gap-2">
@@ -152,11 +155,17 @@
         <span class="text-brown-light">Current</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="w-4 h-4 rounded-full timeline-legend-past"></div>
+        <div class="flex gap-0.5">
+          <div class="w-3 h-3 rounded-full timeline-legend-past"></div>
+          <div class="w-3 h-3 rounded-full bg-taupe-dark"></div>
+        </div>
         <span class="text-brown-light">Past</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="w-4 h-4 rounded-full timeline-legend-planned"></div>
+        <div class="flex gap-0.5">
+          <div class="w-3 h-3 rounded-full timeline-legend-planned"></div>
+          <div class="w-3 h-3 rounded-full bg-lavender-dark"></div>
+        </div>
         <span class="text-brown-light">Planned</span>
       </div>
       <div class="flex items-center gap-2">

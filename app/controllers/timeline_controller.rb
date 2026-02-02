@@ -44,8 +44,8 @@ class TimelineController < ApplicationController
     # Calculate season boundaries for visual dividers
     @season_boundaries = calculate_season_boundaries(@start_date, @end_date)
 
-    # Prepare data for year grid view (if toggled)
-    @view_mode = params[:view] || "timeline"
+    # Prepare data for year grid view (default) or timeline view
+    @view_mode = params[:view] || "year_grid"
     if @view_mode == "year_grid"
       prepare_year_grid_data
     end
@@ -157,11 +157,11 @@ class TimelineController < ApplicationController
     max_year = @stays.maximum(:check_out).year
     @years_in_range = (min_year..max_year).to_a
 
-    # Build lookup hash for stays by date
+    # Build lookup hash for stays by date, with stay index for alternating colors
     @stays_by_date = {}
-    @stays.each do |stay|
+    @stays.each_with_index do |stay, index|
       (stay.check_in...stay.check_out).each do |date|
-        @stays_by_date[date] = stay
+        @stays_by_date[date] = { stay: stay, index: index }
       end
     end
 

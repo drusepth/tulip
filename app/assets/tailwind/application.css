@@ -2142,6 +2142,22 @@ input[type="checkbox"]:focus {
   border-color: var(--color-lavender-dark);
 }
 
+/* Alternating shades for trip differentiation */
+.year-grid-day-upcoming-alt {
+  background: var(--color-sage-dark);
+  border-color: var(--color-sage);
+}
+
+.year-grid-day-past-alt {
+  background: var(--color-taupe-dark);
+  border-color: var(--color-taupe);
+}
+
+.year-grid-day-planned-alt {
+  background: var(--color-lavender-dark);
+  border-color: var(--color-lavender);
+}
+
 .year-grid-day-gap {
   background: var(--color-coral-light);
   border-color: var(--color-coral);
