@@ -94,36 +94,78 @@
     <div class="lg:col-span-2 space-y-8">
       <!-- Dates Card -->
       <div class="cozy-card p-6">
-        <h2 class="text-lg font-semibold text-brown mb-4">Dates</h2>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <p class="text-sm text-brown-light">Check-in</p>
-            <p class="text-lg font-medium text-brown"><%= @stay.check_in.strftime('%B %d, %Y') %></p>
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-sage-light to-rose-light flex items-center justify-center">
+            <svg class="w-5 h-5 text-brown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
           </div>
-          <div>
-            <p class="text-sm text-brown-light">Check-out</p>
-            <p class="text-lg font-medium text-brown"><%= @stay.check_out.strftime('%B %d, %Y') %></p>
-          </div>
+          <h2 class="text-lg font-semibold text-brown">Dates</h2>
         </div>
-        <div class="mt-4 pt-4 border-t border-taupe-light">
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <p class="text-2xl font-bold text-brown"><%= @stay.duration_days %> nights</p>
-              <p class="text-sm text-brown-light">Duration</p>
+
+        <!-- Visual Timeline -->
+        <div class="relative flex items-center justify-between px-2 py-4">
+          <!-- Check-in -->
+          <div class="flex flex-col items-center z-10">
+            <div class="w-14 h-14 rounded-full bg-sage-light border-2 border-sage flex items-center justify-center mb-2">
+              <svg class="w-6 h-6 text-sage-dark" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C10.34 2 9 3.34 9 5c0 .96.45 1.81 1.15 2.36-.13.11-.23.24-.35.36-1.41 1.41-2.3 3.36-2.3 5.28 0 2.21 1.79 4 4 4h1c2.21 0 4-1.79 4-4 0-1.92-.89-3.87-2.3-5.28-.12-.12-.22-.25-.35-.36C14.55 6.81 15 5.96 15 5c0-1.66-1.34-3-3-3zm0 2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1z"/>
+                <path d="M8 22c-.55 0-1-.45-1-1s.45-1 1-1h8c.55 0 1 .45 1 1s-.45 1-1 1H8z" opacity="0.5"/>
+              </svg>
             </div>
-            <% if @stay.status == 'upcoming' && @stay.days_until_check_in.present? %>
-              <div class="text-right">
-                <p class="text-2xl font-bold text-sage-dark"><%= @stay.days_until_check_in %> days</p>
-                <p class="text-sm text-sage-dark">until check-in</p>
-              </div>
-            <% elsif @stay.status == 'current' && @stay.days_until_check_out.present? %>
-              <div class="text-right">
-                <p class="text-2xl font-bold text-rose-dark"><%= @stay.days_until_check_out %> days</p>
-                <p class="text-sm text-rose-dark">until check-out</p>
-              </div>
-            <% end %>
+            <p class="text-xs font-medium text-sage-dark uppercase tracking-wide">Check-in</p>
+            <p class="text-sm font-semibold text-brown"><%= @stay.check_in.strftime('%b %d') %></p>
+            <p class="text-xs text-brown-light"><%= @stay.check_in.strftime('%Y') %></p>
+          </div>
+
+          <!-- Connecting Line with Duration Badge -->
+          <div class="absolute left-16 right-16 top-1/2 -translate-y-1/2 flex items-center">
+            <div class="flex-1 border-t-2 border-dashed border-taupe"></div>
+            <div class="mx-2 px-3 py-1 bg-cream rounded-full border border-taupe shadow-sm">
+              <span class="text-sm font-semibold text-brown"><%= @stay.duration_days %></span>
+              <span class="text-xs text-brown-light ml-1">nights</span>
+            </div>
+            <div class="flex-1 border-t-2 border-dashed border-taupe"></div>
+          </div>
+
+          <!-- Decorative Leaves on the Line -->
+          <div class="absolute left-1/4 top-1/2 -translate-y-1/2 -translate-x-1/2">
+            <svg class="w-4 h-4 text-sage" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/>
+            </svg>
+          </div>
+          <div class="absolute right-1/4 top-1/2 -translate-y-1/2 translate-x-1/2">
+            <svg class="w-4 h-4 text-rose" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8z"/>
+            </svg>
+          </div>
+
+          <!-- Check-out -->
+          <div class="flex flex-col items-center z-10">
+            <div class="w-14 h-14 rounded-full bg-rose-light border-2 border-rose flex items-center justify-center mb-2">
+              <svg class="w-6 h-6 text-rose-dark" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+              </svg>
+            </div>
+            <p class="text-xs font-medium text-rose-dark uppercase tracking-wide">Check-out</p>
+            <p class="text-sm font-semibold text-brown"><%= @stay.check_out.strftime('%b %d') %></p>
+            <p class="text-xs text-brown-light"><%= @stay.check_out.strftime('%Y') %></p>
           </div>
         </div>
+
+        <!-- Countdown Section -->
+        <% if @stay.status == 'upcoming' && @stay.days_until_check_in.present? %>
+          <div class="mt-4 pt-4 border-t border-taupe-light text-center">
+            <p class="text-2xl font-bold text-sage-dark"><%= @stay.days_until_check_in %> days</p>
+            <p class="text-sm text-sage-dark">until check-in</p>
+          </div>
+        <% elsif @stay.status == 'current' && @stay.days_until_check_out.present? %>
+          <div class="mt-4 pt-4 border-t border-taupe-light text-center">
+            <p class="text-2xl font-bold text-rose-dark"><%= @stay.days_until_check_out %> days</p>
+            <p class="text-sm text-rose-dark">until check-out</p>
+          </div>
+        <% end %>
       </div>
 
       <!-- Notes -->
@@ -190,8 +232,8 @@
         </div>
       <% end %>
 
-      <!-- Address & Mini Map -->
-      <% if @stay.address.present? || @stay.latitude.present? %>
+      <!-- Address & Mini Map (only shown for booked stays with address) -->
+      <% if @stay.booked? && @stay.address.present? %>
         <div class="relative overflow-hidden cozy-card p-6">
           <!-- Decorative corner flourish -->
           <div class="absolute top-0 right-0 w-20 h-20 opacity-5">
@@ -222,9 +264,7 @@
             <% end %>
           </div>
 
-          <% if @stay.address.present? %>
-            <p class="relative text-brown mb-4"><%= @stay.full_address %></p>
-          <% end %>
+          <p class="relative text-brown mb-4"><%= @stay.full_address %></p>
           <% if @stay.latitude.present? && @stay.longitude.present? %>
             <div id="mini-map" class="relative h-48 rounded-2xl"
                  data-controller="mini-map"
@@ -437,16 +477,9 @@
       <% end %>
 
       <!-- Quick Actions -->
-      <div class="relative overflow-hidden cozy-card p-6">
-        <!-- Decorative corner flourish -->
-        <div class="absolute top-0 right-0 w-20 h-20 opacity-5">
-          <svg viewBox="0 0 100 100" fill="currentColor" class="text-taupe">
-            <path d="M100 0 Q60 10, 50 50 Q40 90, 0 100 L100 100 Z"/>
-          </svg>
-        </div>
-
-        <!-- Header -->
-        <div class="relative flex items-center gap-3 mb-5">
+      <div class="relative">
+        <!-- Header (outside card) -->
+        <div class="flex items-center gap-3 mb-4">
           <div class="w-10 h-10 rounded-full bg-gradient-to-br from-taupe-light to-taupe flex items-center justify-center">
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
@@ -458,37 +491,20 @@
           </div>
         </div>
 
-        <div class="relative space-y-3">
-          <%= link_to map_path, class: "group flex items-center gap-3 p-3 rounded-2xl border-2 border-taupe-light hover:border-sage hover:bg-sage-light transition-all duration-200" do %>
-            <div class="w-10 h-10 rounded-full bg-sage-light group-hover:bg-sage flex items-center justify-center transition-colors">
-              <svg class="w-5 h-5 text-sage-dark group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
-              </svg>
-            </div>
-            <div class="flex-1">
-              <p class="font-medium text-brown group-hover:text-sage-dark transition-colors">View on Map</p>
-              <p class="text-xs text-brown-light">See all your stays</p>
-            </div>
-            <svg class="w-5 h-5 text-taupe group-hover:text-sage-dark group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        <%= link_to map_path, class: "group flex items-center gap-3 p-4 rounded-2xl bg-white shadow-cozy hover:shadow-cozy-lg hover:bg-sage-light border border-taupe-light hover:border-sage transition-all duration-200" do %>
+          <div class="w-10 h-10 rounded-full bg-sage-light group-hover:bg-sage flex items-center justify-center transition-colors">
+            <svg class="w-5 h-5 text-sage-dark group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
             </svg>
-          <% end %>
-
-          <%= link_to timeline_path, class: "group flex items-center gap-3 p-3 rounded-2xl border-2 border-taupe-light hover:border-lavender hover:bg-lavender-light transition-all duration-200" do %>
-            <div class="w-10 h-10 rounded-full bg-lavender-light group-hover:bg-lavender flex items-center justify-center transition-colors">
-              <svg class="w-5 h-5 text-lavender-dark group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-              </svg>
-            </div>
-            <div class="flex-1">
-              <p class="font-medium text-brown group-hover:text-lavender-dark transition-colors">View Timeline</p>
-              <p class="text-xs text-brown-light">Your travel schedule</p>
-            </div>
-            <svg class="w-5 h-5 text-taupe group-hover:text-lavender-dark group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          <% end %>
-        </div>
+          </div>
+          <div class="flex-1">
+            <p class="font-medium text-brown group-hover:text-sage-dark transition-colors">View on Map</p>
+            <p class="text-xs text-brown-light">See all your stays</p>
+          </div>
+          <svg class="w-5 h-5 text-taupe group-hover:text-sage-dark group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        <% end %>
       </div>
     </div>
   </div>
