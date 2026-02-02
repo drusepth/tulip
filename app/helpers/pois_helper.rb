@@ -90,6 +90,30 @@ module PoisHelper
     badges
   end
 
+  # Returns a CSS class for category-specific background color (used for POI placeholders)
+  def category_background_class(category)
+    case category
+    when 'coffee'
+      'bg-taupe'
+    when 'grocery'
+      'bg-sage'
+    when 'food'
+      'bg-rose'
+    when 'gym'
+      'bg-lavender'
+    when 'coworking'
+      'bg-taupe-dark'
+    when 'library'
+      'bg-lavender-light'
+    when 'parks'
+      'bg-sage-light'
+    when 'stations'
+      'bg-coral'
+    else
+      'bg-taupe-light'
+    end
+  end
+
   def category_icon(category, size: nil)
     # The SVG class handles sizing - uses CSS class .category-pill svg for small context
     # or w-5 h-5 as default for larger contexts

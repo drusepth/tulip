@@ -1,7 +1,7 @@
-<%= turbo_frame_tag "venue-card-#{poi.foursquare_id}", data: { gallery_filter_target: "card", category: poi.category } do %>
+<%= turbo_frame_tag "venue-card-#{poi.id}", data: { gallery_filter_target: "card", category: poi.category } do %>
   <div class="group relative rounded-2xl overflow-hidden shadow-cozy hover:shadow-cozy-lg transition-all duration-300 hover:-translate-y-1 bg-cream">
-    <!-- Image Container - links to Foursquare page for attribution -->
-    <a href="https://foursquare.com/v/<%= poi.foursquare_id %>" target="_blank" rel="noopener" class="block aspect-square overflow-hidden">
+    <!-- Image Container -->
+    <div class="block aspect-square overflow-hidden">
       <% if poi.foursquare_photo_url.present? %>
         <img
           src="<%= poi.foursquare_photo_url %>"
@@ -10,14 +10,11 @@
           loading="lazy"
         >
       <% else %>
-        <div class="w-full h-full bg-taupe-light flex items-center justify-center">
-          <svg class="w-12 h-12 text-taupe" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-          </svg>
+        <div class="w-full h-full flex items-center justify-center <%= category_background_class(poi.category) %>">
+          <%= category_icon(poi.category, size: "w-16 h-16 text-white opacity-80") %>
         </div>
       <% end %>
-    </a>
+    </div>
 
     <!-- Category Badge -->
     <div class="absolute top-2 left-2">
@@ -51,10 +48,22 @@
 
     <!-- Venue Info Overlay -->
     <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black to-transparent p-3 pt-10">
-      <h3 class="text-sm font-semibold truncate mb-1" style="color: #ffffff;"><%= poi.name %></h3>
-      <% if poi.address.present? %>
-        <p class="text-xs truncate" style="color: rgba(255, 255, 255, 0.8);"><%= poi.address %></p>
-      <% end %>
+      <div class="flex items-start justify-between gap-2">
+        <div class="min-w-0 flex-1">
+          <h3 class="text-sm font-semibold truncate mb-1" style="color: #ffffff;"><%= poi.name %></h3>
+          <% if poi.address.present? %>
+            <p class="text-xs truncate" style="color: rgba(255, 255, 255, 0.8);"><%= poi.address %></p>
+          <% end %>
+        </div>
+        <% if poi.distance_meters.present? %>
+          <span class="flex-shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-cream text-brown-light shadow-sm">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+            </svg>
+            <%= format_distance(poi.distance_meters) %>
+          </span>
+        <% end %>
+      </div>
     </div>
 
     <!-- Add to Bucket List Button -->
@@ -67,7 +76,7 @@
           Added to Bucket List
         </div>
       <% else %>
-        <%= button_to add_to_bucket_list_stay_gallery_path(@stay, fsq_id: poi.foursquare_id), method: :post, class: "w-full px-3 py-2 rounded-lg bg-rose hover:bg-rose-dark text-white text-sm font-medium text-center flex items-center justify-center gap-1 transition-colors" do %>
+        <%= button_to add_to_bucket_list_stay_gallery_path(@stay, poi_id: poi.id), method: :post, class: "w-full px-3 py-2 rounded-lg bg-rose hover:bg-rose-dark text-white text-sm font-medium text-center flex items-center justify-center gap-1 transition-colors" do %>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
           </svg>
