@@ -65,33 +65,36 @@
     <% if user_signed_in? %>
       <nav class="navbar-grass bg-white backdrop-blur-sm border-t border-taupe-light fixed bottom-0 left-0 right-0 z-50">
         <div class="px-3 sm:px-6">
-          <div class="flex justify-between items-center h-14">
-            <!-- Logo -->
-            <%= link_to root_path, class: "flex items-center gap-2 text-brown hover:text-sage-dark transition-colors", title: "Home" do %>
-              <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <!-- Stem -->
-                <path d="M12 22V12" stroke="#7d8c6e" stroke-width="2" stroke-linecap="round"/>
-                <!-- Leaves -->
-                <path d="M12 18c-2-1-4 0-5 2 2 0 4-1 5-2z" fill="#a8b5a0"/>
-                <path d="M12 16c2-1 4 0 5 2-2 0-4-1-5-2z" fill="#a8b5a0"/>
-                <!-- Flower petals -->
-                <ellipse cx="12" cy="6" rx="4" ry="5" fill="#d4a5a5"/>
-                <ellipse cx="9" cy="7" rx="3" ry="4" fill="#c9918f"/>
-                <ellipse cx="15" cy="7" rx="3" ry="4" fill="#c9918f"/>
-                <ellipse cx="12" cy="8" rx="2.5" ry="3" fill="#e8c4c4"/>
-              </svg>
-              <span class="font-semibold text-lg" style="font-family: var(--font-heading);">Tulip<span class="hidden md:inline"> Trip Planner</span></span>
-            <% end %>
-
-            <!-- Right side -->
+          <div class="flex justify-between items-center h-14 relative">
+            <!-- Left side: Logo and Travel Map -->
             <div class="flex items-center gap-1 sm:gap-3">
+              <%= link_to root_path, class: "flex items-center gap-2 text-brown hover:text-sage-dark transition-colors", title: "Home" do %>
+                <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <!-- Stem -->
+                  <path d="M12 22V12" stroke="#7d8c6e" stroke-width="2" stroke-linecap="round"/>
+                  <!-- Leaves -->
+                  <path d="M12 18c-2-1-4 0-5 2 2 0 4-1 5-2z" fill="#a8b5a0"/>
+                  <path d="M12 16c2-1 4 0 5 2-2 0-4-1-5-2z" fill="#a8b5a0"/>
+                  <!-- Flower petals -->
+                  <ellipse cx="12" cy="6" rx="4" ry="5" fill="#d4a5a5"/>
+                  <ellipse cx="9" cy="7" rx="3" ry="4" fill="#c9918f"/>
+                  <ellipse cx="15" cy="7" rx="3" ry="4" fill="#c9918f"/>
+                  <ellipse cx="12" cy="8" rx="2.5" ry="3" fill="#e8c4c4"/>
+                </svg>
+                <span class="font-semibold text-lg" style="font-family: var(--font-heading);">Tulip<span class="hidden md:inline"> Trip Planner</span></span>
+              <% end %>
               <%= link_to map_path, class: "flex items-center gap-1 p-2.5 md:py-1.5 md:px-3 text-brown-light hover:text-brown hover:bg-sage-light rounded-xl transition-colors", title: "Travel Map" do %>
                 <svg class="w-6 h-6 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
                 </svg>
                 <span class="hidden md:inline text-sm">Travel Map</span>
               <% end %>
-              <%= link_to new_stay_path, class: "btn-primary flex items-center gap-1 p-2.5 md:py-1.5 md:px-3", title: "Plan a trip" do %>
+            </div>
+
+            <!-- Right side -->
+            <div class="flex items-center gap-1 sm:gap-3">
+              <%# + button: centered on mobile (absolute), inline on desktop %>
+              <%= link_to new_stay_path, class: "btn-primary flex items-center gap-1 absolute left-1/2 -translate-x-1/2 p-2.5 md:static md:translate-x-0 md:py-1.5 md:px-3", title: "Plan a trip" do %>
                 <svg class="w-6 h-6 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
