@@ -66,48 +66,41 @@
       <nav class="navbar-grass bg-white backdrop-blur-sm border-t border-taupe-light fixed bottom-0 left-0 right-0 z-50">
         <div class="px-3 sm:px-6">
           <div class="flex justify-between items-center h-14">
-            <!-- Logo - icon only on mobile -->
-            <%= link_to root_path, class: "tulip-logo-link flex items-center gap-2 text-brown hover:text-sage-dark transition-colors", title: "Home" do %>
-              <svg class="tulip-bloom" viewBox="0 0 24 60" aria-hidden="true">
-                <path class="tulip-stem" d="M12 58 Q12 40 12 22"/>
-                <path class="tulip-leaf" d="M12 45 Q6 42 4 48 Q8 46 12 45"/>
-                <path class="tulip-leaf" d="M12 40 Q18 37 20 43 Q16 41 12 40"/>
-                <path class="tulip-flower" d="M12 22 Q8 22 6 16 Q5 10 8 4 Q10 2 12 2 Q14 2 16 4 Q19 10 18 16 Q16 22 12 22 Z"/>
-                <path class="tulip-flower" d="M12 20 Q9 20 7 15 Q6 10 9 5 Q11 4 12 4 Q13 4 15 5 Q18 10 17 15 Q15 20 12 20 Z" style="opacity: 0.8"/>
-                <path class="tulip-flower" d="M12 18 Q10 18 8 14 Q7 10 10 6 Q11 5 12 5 Q13 5 14 6 Q17 10 16 14 Q14 18 12 18 Z" style="opacity: 0.6"/>
+            <!-- Logo -->
+            <%= link_to root_path, class: "flex items-center gap-2 text-brown hover:text-sage-dark transition-colors", title: "Home" do %>
+              <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <!-- Stem -->
+                <path d="M12 22V12" stroke="#7d8c6e" stroke-width="2" stroke-linecap="round"/>
+                <!-- Leaves -->
+                <path d="M12 18c-2-1-4 0-5 2 2 0 4-1 5-2z" fill="#a8b5a0"/>
+                <path d="M12 16c2-1 4 0 5 2-2 0-4-1-5-2z" fill="#a8b5a0"/>
+                <!-- Flower petals -->
+                <ellipse cx="12" cy="6" rx="4" ry="5" fill="#d4a5a5"/>
+                <ellipse cx="9" cy="7" rx="3" ry="4" fill="#c9918f"/>
+                <ellipse cx="15" cy="7" rx="3" ry="4" fill="#c9918f"/>
+                <ellipse cx="12" cy="8" rx="2.5" ry="3" fill="#e8c4c4"/>
               </svg>
-              <span class="hidden sm:inline font-semibold text-lg" style="font-family: var(--font-heading);">Tulip</span>
+              <span class="font-semibold text-lg" style="font-family: var(--font-heading);">Tulip<span class="hidden md:inline"> Trip Planner</span></span>
             <% end %>
-
-            <!-- Center nav - icon buttons -->
-            <div class="flex items-center gap-1 sm:gap-3">
-              <%= link_to map_path, class: "p-2.5 text-brown-light hover:text-brown hover:bg-sage-light/50 rounded-xl transition-colors", title: "Map" do %>
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
-                </svg>
-              <% end %>
-              <%= link_to timeline_path, class: "p-2.5 text-brown-light hover:text-brown hover:bg-sage-light/50 rounded-xl transition-colors", title: "Timeline" do %>
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-              <% end %>
-              <%= link_to new_stay_path, class: "btn-primary p-2.5 sm:py-1.5 sm:px-3", title: "Plan a trip" do %>
-                <svg class="w-6 h-6 sm:w-4 sm:h-4 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-                <span class="hidden sm:inline">New Trip</span>
-              <% end %>
-            </div>
 
             <!-- Right side -->
             <div class="flex items-center gap-1 sm:gap-3">
+              <%= link_to map_path, class: "flex items-center gap-1 p-2.5 md:py-1.5 md:px-3 text-brown-light hover:text-brown hover:bg-sage-light rounded-xl transition-colors", title: "Map" do %>
+                <svg class="w-6 h-6 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                </svg>
+                <span class="hidden md:inline text-sm">Map</span>
+              <% end %>
+              <%= link_to new_stay_path, class: "btn-primary flex items-center gap-1 p-2.5 md:py-1.5 md:px-3", title: "Plan a trip" do %>
+                <svg class="w-6 h-6 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                <span class="hidden md:inline text-sm">New Trip</span>
+              <% end %>
               <%= link_to edit_user_registration_path, class: "p-1 hover:opacity-80 transition-opacity", title: "Account" do %>
                 <%= avatar_tag(current_user, size: 32, html_options: { class: "w-8 h-8 sm:w-9 sm:h-9 border-2 border-taupe-light" }) %>
               <% end %>
-              <%= button_to destroy_user_session_path, method: :delete, class: "hidden sm:flex btn-outline text-sm py-1.5 px-3", title: "Log out" do %>
-                Log out
-              <% end %>
-              <%= button_to destroy_user_session_path, method: :delete, class: "sm:hidden p-2.5 text-brown-light hover:text-rose-dark hover:bg-rose-light/50 rounded-xl transition-colors", title: "Log out" do %>
+              <%= button_to destroy_user_session_path, method: :delete, class: "p-2.5 text-brown-light hover:text-rose-dark hover:bg-rose-light rounded-xl transition-colors", title: "Log out" do %>
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                 </svg>
