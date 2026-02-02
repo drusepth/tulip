@@ -1,16 +1,53 @@
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <!-- Hero Image -->
-  <% if @stay.image_url.present? %>
-    <div class="mb-8 rounded-3xl overflow-hidden shadow-cozy-lg warm-overlay">
-      <img src="<%= @stay.image_url %>" alt="<%= @stay.title %>" class="w-full h-64 object-cover">
+  <!-- Hero Section with Botanical Flourishes -->
+  <div class="relative mb-8">
+    <!-- Top-left botanical flourish -->
+    <div class="absolute -top-6 -left-6 w-44 h-44 z-10 pointer-events-none">
+      <svg viewBox="0 0 100 100" class="w-full h-full text-sage" style="opacity: 0.2;">
+        <!-- Main curved stem -->
+        <path d="M5 5 Q30 8, 45 25 Q60 42, 70 65" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/>
+        <!-- Leaves along stem -->
+        <path d="M15 8 Q25 2, 30 12 Q20 15, 15 8" fill="currentColor"/>
+        <path d="M32 18 Q45 10, 50 22 Q38 28, 32 18" fill="currentColor"/>
+        <path d="M48 35 Q62 28, 65 42 Q52 48, 48 35" fill="currentColor"/>
+        <!-- Small accent leaves -->
+        <path d="M8 15 Q15 20, 10 28 Q5 22, 8 15" fill="currentColor" style="opacity: 0.6;"/>
+        <path d="M25 30 Q32 38, 25 45 Q20 38, 25 30" fill="currentColor" style="opacity: 0.6;"/>
+      </svg>
     </div>
-  <% end %>
+
+    <!-- Top-right botanical flourish -->
+    <div class="absolute -top-6 -right-6 w-44 h-44 z-10 pointer-events-none">
+      <svg viewBox="0 0 100 100" class="w-full h-full text-rose" style="opacity: 0.2;">
+        <!-- Main curved stem (mirrored) -->
+        <path d="M95 5 Q70 8, 55 25 Q40 42, 30 65" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/>
+        <!-- Leaves along stem -->
+        <path d="M85 8 Q75 2, 70 12 Q80 15, 85 8" fill="currentColor"/>
+        <path d="M68 18 Q55 10, 50 22 Q62 28, 68 18" fill="currentColor"/>
+        <path d="M52 35 Q38 28, 35 42 Q48 48, 52 35" fill="currentColor"/>
+        <!-- Small accent leaves -->
+        <path d="M92 15 Q85 20, 90 28 Q95 22, 92 15" fill="currentColor" style="opacity: 0.6;"/>
+        <path d="M75 30 Q68 38, 75 45 Q80 38, 75 30" fill="currentColor" style="opacity: 0.6;"/>
+      </svg>
+    </div>
+
+    <% if @stay.image_url.present? %>
+      <!-- Hero image with enhanced styling -->
+      <div class="relative rounded-3xl overflow-hidden shadow-cozy-lg">
+        <img src="<%= @stay.image_url %>" alt="<%= @stay.title %>" class="w-full h-72 sm:h-80 object-cover">
+        <!-- Gradient overlay for depth -->
+        <div class="absolute inset-0 bg-gradient-to-t from-brown via-transparent to-transparent" style="opacity: 0.3;"></div>
+        <!-- Subtle warm overlay -->
+        <div class="absolute inset-0 bg-gradient-to-br from-rose via-transparent to-sage" style="opacity: 0.08;"></div>
+      </div>
+    <% end %>
+  </div>
 
   <!-- Header -->
   <div class="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
     <div>
       <div class="flex items-center gap-3 flex-wrap">
-        <h1 class="text-2xl sm:text-3xl font-bold text-brown"><%= @stay.title %></h1>
+        <h1 class="text-3xl sm:text-4xl font-bold text-brown"><%= @stay.title %></h1>
         <% if @stay.booked? %>
           <span class="badge <%= case @stay.status
               when 'upcoming' then 'badge-upcoming'
@@ -33,21 +70,21 @@
           </span>
         <% end %>
       </div>
-      <p class="mt-2 text-brown-light">
-        <span class="inline-flex items-center">
-          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-          </svg>
-          <%= [@stay.city, @stay.country].compact.join(', ') %>
-        </span>
+
+      <p class="text-brown-light mt-2 flex items-center">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        <span><%= [@stay.city, @stay.country].compact.join(', ') %></span>
         <% if @stay.booked? && @stay.stay_type.present? %>
-          <span class="mx-2 text-taupe">|</span>
+          <span class="mx-2 text-taupe">·</span>
           <span class="capitalize"><%= @stay.stay_type %></span>
         <% end %>
-        <% all_people = [@stay.user] + @stay.collaborators.to_a %>
-        <% if all_people.size > 1 || @is_owner %>
-          <span class="mx-2 text-taupe">|</span>
+      </p>
+      <% all_people = [@stay.user] + @stay.collaborators.to_a %>
+      <% if all_people.size > 1 || @is_owner %>
+        <div class="mt-2">
           <div class="relative inline-block" data-controller="collaborators-popover">
             <!-- Clickable avatar stack -->
             <button type="button" class="flex -space-x-2 cursor-pointer hover:opacity-80 transition-opacity" data-action="click->collaborators-popover#toggle">
@@ -99,8 +136,8 @@
               <% end %>
             </div>
           </div>
-        <% end %>
-      </p>
+        </div>
+      <% end %>
     </div>
     <div class="flex gap-2 flex-wrap sm:flex-nowrap">
       <% if @can_edit %>
@@ -220,6 +257,9 @@
 
       <!-- Bucket List -->
       <%= render "bucket_list_items/section", stay: @stay %>
+
+      <!-- Comments -->
+      <%= render "comments/section", stay: @stay %>
 
       <!-- Address & Mini Map (only shown for booked stays with address) -->
       <% if @stay.booked? && @stay.address.present? %>
