@@ -1766,3 +1766,56 @@ input[type="checkbox"]:focus {
     border-bottom: none;
   }
 }
+
+/* ========================================
+   Notifications Panel (Cottagecore)
+   ======================================== */
+
+/* Notification list container with custom scrollbar */
+.notification-list-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-taupe) transparent;
+}
+
+.notification-list-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.notification-list-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.notification-list-container::-webkit-scrollbar-thumb {
+  background-color: var(--color-taupe-light);
+  border-radius: 3px;
+}
+
+.notification-list-container::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-taupe);
+}
+
+/* Individual notification item */
+.notification-item {
+  transition: background-color 0.15s ease, border-left-color 0.15s ease;
+}
+
+/* Unread notification styling - simple and warm */
+.notification-item-unread {
+  background-color: var(--color-cream);
+  border-left: 2px solid var(--color-sage);
+}
+
+.notification-item-unread:hover {
+  background-color: var(--color-sage-light);
+  border-left-color: var(--color-sage-dark);
+}
+
+/* Read notification styling */
+.notification-item-read {
+  border-left: 2px solid transparent;
+}
+
+.notification-item-read:hover {
+  background-color: var(--color-sage-light);
+  border-left-color: var(--color-sage);
+}

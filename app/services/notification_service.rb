@@ -15,6 +15,7 @@ class NotificationService
           notification_type: "comment_on_stay",
           notifiable: comment,
           data: {
+            actor_id: actor.id,
             actor_name: actor.name,
             stay_id: stay.id,
             stay_title: stay.title,
@@ -39,6 +40,7 @@ class NotificationService
         notification_type: "reply_to_comment",
         notifiable: reply,
         data: {
+          actor_id: actor.id,
           actor_name: actor.name,
           stay_id: reply.stay.id,
           stay_title: reply.stay.title,
@@ -60,6 +62,7 @@ class NotificationService
           notification_type: "bucket_list_completed",
           notifiable: item,
           data: {
+            actor_id: actor.id,
             actor_name: actor.name,
             stay_id: stay.id,
             stay_title: stay.title,
@@ -83,6 +86,7 @@ class NotificationService
           notification_type: "bucket_list_rated",
           notifiable: rating,
           data: {
+            actor_id: actor.id,
             actor_name: actor.name,
             stay_id: stay.id,
             stay_title: stay.title,
@@ -106,6 +110,7 @@ class NotificationService
         notification_type: "collaboration_accepted",
         notifiable: collaboration,
         data: {
+          actor_id: actor.id,
           actor_name: actor.name,
           stay_id: stay.id,
           stay_title: stay.title
@@ -126,6 +131,7 @@ class NotificationService
         notification_type: "collaboration_invited",
         notifiable: collaboration,
         data: {
+          actor_id: inviter.id,
           inviter_name: inviter.name,
           stay_id: stay.id,
           stay_title: stay.title,

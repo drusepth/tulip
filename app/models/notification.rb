@@ -118,4 +118,10 @@ class Notification < ApplicationRecord
   def data
     super || {}
   end
+
+  # Returns the user who triggered this notification (if available)
+  def actor
+    return nil unless data["actor_id"].present?
+    @actor ||= User.find_by(id: data["actor_id"])
+  end
 end

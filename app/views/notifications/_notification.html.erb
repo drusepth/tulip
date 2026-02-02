@@ -1,31 +1,61 @@
 <%# Single notification item %>
 <%
-  ring_color_class = case notification.ring_color
-    when "lavender" then "bg-lavender-light text-lavender-dark"
-    when "sage" then "bg-sage-light text-sage-dark"
-    when "coral" then "bg-coral-light text-coral-dark"
-    when "rose" then "bg-rose-light text-rose-dark"
-    else "bg-taupe-light text-taupe-dark"
+  # Solid muted backgrounds for icon badge based on ring_color
+  badge_bg_class = case notification.ring_color
+    when "lavender" then "bg-lavender-light"
+    when "sage" then "bg-sage-light"
+    when "coral" then "bg-coral-light"
+    when "rose" then "bg-rose-light"
+    else "bg-taupe-light"
   end
-  unread_class = notification.unread? ? "bg-sage-light bg-opacity-30" : ""
+
+  badge_text_class = case notification.ring_color
+    when "lavender" then "text-lavender-dark"
+    when "sage" then "text-sage-dark"
+    when "coral" then "text-coral-dark"
+    when "rose" then "text-rose-dark"
+    else "text-taupe-dark"
+  end
+
+  # Check if we have an actor to show avatar
+  actor = notification.actor
+
+  # Unread: subtle cream background with thin sage border; Read: transparent
+  unread_class = notification.unread? ? "notification-item-unread" : "notification-item-read"
 %>
 
 <div id="notification_<%= notification.id %>"
-     class="relative group"
+     class="notification-item relative <%= unread_class %>"
      data-notification-id="<%= notification.id %>"
      data-notification-path="<%= notification.target_path %>">
   <% if notification.target_path.present? %>
     <a href="<%= notification.target_path %>"
-       class="block px-4 py-3 hover:bg-cream transition-colors <%= unread_class %>"
+       class="block px-5 py-3.5 transition-colors duration-150"
        data-action="click->notifications#navigate">
   <% else %>
-    <div class="block px-4 py-3 <%= unread_class %>">
+    <div class="block px-5 py-3.5">
   <% end %>
 
     <div class="flex items-start gap-3">
-      <%# Icon with colored ring %>
-      <div class="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center <%= ring_color_class %>">
-        <%= render "notifications/icons/#{notification.icon_name}" %>
+      <%# Avatar with icon badge, or just icon if no actor %>
+      <div class="flex-shrink-0 relative">
+        <% if actor %>
+          <%# User avatar %>
+          <%= avatar_tag(actor, size: 36, html_options: { class: "w-9 h-9 rounded-full" }) %>
+          <%# Small icon badge %>
+          <div class="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center <%= badge_bg_class %> border-2 border-white">
+            <span class="<%= badge_text_class %>" style="transform: scale(0.7);">
+              <%= render "notifications/icons/#{notification.icon_name}" %>
+            </span>
+          </div>
+        <% else %>
+          <%# Just icon circle when no actor %>
+          <div class="w-9 h-9 rounded-full flex items-center justify-center <%= badge_bg_class %>">
+            <span class="<%= badge_text_class %>">
+              <%= render "notifications/icons/#{notification.icon_name}" %>
+            </span>
+          </div>
+        <% end %>
       </div>
 
       <%# Content %>
@@ -33,14 +63,14 @@
         <p class="text-sm text-brown leading-snug">
           <%= notification.message %>
         </p>
-        <p class="text-xs text-taupe mt-1">
+        <p class="text-xs text-brown-lighter mt-1">
           <%= time_ago_in_words(notification.created_at) %> ago
         </p>
       </div>
 
-      <%# Unread indicator %>
+      <%# Unread indicator - simple dot %>
       <% if notification.unread? %>
-        <div class="flex-shrink-0 w-2 h-2 rounded-full bg-rose mt-2"></div>
+        <div class="flex-shrink-0 w-2 h-2 rounded-full bg-sage mt-2"></div>
       <% end %>
     </div>
 
