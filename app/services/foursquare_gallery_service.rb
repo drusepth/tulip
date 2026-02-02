@@ -47,12 +47,47 @@ class FoursquareGalleryService
       return [] if venues.blank?
 
       venues_with_photos = venues.select { |v| v['name'].present? && v['photos'].present? && v['photos'].any? }
+      return [] if venues_with_photos.empty?
 
-      pois = venues_with_photos.first(limit).map do |venue|
-        save_venue_as_poi(stay: stay, venue: venue)
-      end.compact
+      # Batch load existing data upfront (2 queries instead of N*2)
+      existing_fsq_ids = stay.pois.where.not(foursquare_id: nil).pluck(:foursquare_id).to_set
+      matchable_pois = stay.pois.where(foursquare_id: nil).to_a
 
-      pois
+      # Process venues and collect actions
+      new_records = []
+      enrichments = []
+
+      venues_with_photos.first(limit).each do |venue|
+        result = process_venue(
+          stay: stay,
+          venue: venue,
+          existing_fsq_ids: existing_fsq_ids,
+          matchable_pois: matchable_pois
+        )
+
+        next unless result
+
+        case result[:action]
+        when :create
+          new_records << result[:attributes]
+          # Add to existing set to prevent duplicates within the same batch
+          existing_fsq_ids.add(result[:attributes][:foursquare_id])
+        when :enrich
+          enrichments << result
+        end
+      end
+
+      # Bulk insert new POIs (1 query instead of N inserts with transactions)
+      if new_records.any?
+        Poi.insert_all(new_records)
+      end
+
+      # Batch update enrichments
+      enrichments.each do |e|
+        e[:poi].update_columns(e[:attributes])
+      end
+
+      stay.pois.where.not(foursquare_photo_url: [nil, '']).or(stay.pois.where.not(foursquare_id: nil))
     rescue StandardError => e
       Rails.logger.error("FoursquareGalleryService fetch_and_save_pois error: #{e.message}")
       []
@@ -60,7 +95,7 @@ class FoursquareGalleryService
 
     private
 
-    def save_venue_as_poi(stay:, venue:)
+    def process_venue(stay:, venue:, existing_fsq_ids:, matchable_pois:)
       venue_lat = venue['latitude']
       venue_lng = venue['longitude']
       venue_name = venue['name']
@@ -68,72 +103,63 @@ class FoursquareGalleryService
 
       return nil unless venue_lat && venue_lng && venue_name && fsq_id
 
-      # Check if we already have a POI with this Foursquare ID for this stay
-      existing_by_fsq = stay.pois.find_by(foursquare_id: fsq_id)
-      return existing_by_fsq if existing_by_fsq
+      # Skip if we already have this Foursquare ID (checked in memory)
+      return nil if existing_fsq_ids.include?(fsq_id)
 
-      # Search for existing OSM POIs within MATCH_RADIUS meters that might match
-      matching_poi = find_matching_poi(stay: stay, venue_name: venue_name, venue_lat: venue_lat, venue_lng: venue_lng)
+      # Find matching POI in memory instead of querying database
+      matching_poi = find_matching_poi_in_memory(
+        venue_name: venue_name,
+        venue_lat: venue_lat,
+        venue_lng: venue_lng,
+        matchable_pois: matchable_pois
+      )
 
       if matching_poi
-        # Enrich existing OSM POI with Foursquare data
-        enrich_poi_with_venue(poi: matching_poi, venue: venue)
-        matching_poi
+        { action: :enrich, poi: matching_poi, attributes: build_enrichment_attributes(venue) }
       else
-        # Create a new POI from Foursquare data
-        create_poi_from_venue(stay: stay, venue: venue)
+        { action: :create, attributes: build_create_attributes(stay, venue) }
       end
     end
 
-    def find_matching_poi(stay:, venue_name:, venue_lat:, venue_lng:)
-      # Find POIs within ~100m using simple coordinate distance
-      # 0.0009 degrees is roughly 100m at most latitudes
+    def find_matching_poi_in_memory(venue_name:, venue_lat:, venue_lng:, matchable_pois:)
       lat_delta = MATCH_RADIUS / 111_000.0
       lng_delta = MATCH_RADIUS / (111_000.0 * Math.cos(venue_lat * Math::PI / 180))
 
-      nearby_pois = stay.pois.where(
-        latitude: (venue_lat - lat_delta)..(venue_lat + lat_delta),
-        longitude: (venue_lng - lng_delta)..(venue_lng + lng_delta)
-      ).where(foursquare_id: nil) # Only match POIs not already enriched
-
-      return nil if nearby_pois.empty?
-
       venue_name_normalized = venue_name.downcase.strip
 
-      nearby_pois.find do |poi|
+      matchable_pois.find do |poi|
+        next false unless poi.latitude && poi.longitude
+        next false unless (poi.latitude.to_f - venue_lat).abs <= lat_delta
+        next false unless (poi.longitude.to_f - venue_lng).abs <= lng_delta
         next false if poi.name.blank?
-        poi_name_normalized = poi.name.downcase.strip
-        similarity(venue_name_normalized, poi_name_normalized) >= MATCH_THRESHOLD
+
+        similarity(venue_name_normalized, poi.name.downcase.strip) >= MATCH_THRESHOLD
       end
     end
 
-    def enrich_poi_with_venue(poi:, venue:)
+    def build_enrichment_attributes(venue)
       photo = venue['photos']&.first
-      category = venue.dig('categories', 0)
-
-      poi.update(
+      {
         foursquare_id: venue['fsq_place_id'],
         foursquare_rating: venue['rating'],
         foursquare_price: venue['price'],
         foursquare_photo_url: build_photo_url(photo, '600x400'),
         foursquare_fetched_at: Time.current
-      )
+      }
     end
 
-    def create_poi_from_venue(stay:, venue:)
+    def build_create_attributes(stay, venue)
       photo = venue['photos']&.first
       category = venue.dig('categories', 0)
       venue_lat = venue['latitude']
       venue_lng = venue['longitude']
-
-      # Calculate distance from stay
       distance = haversine_distance(stay.latitude, stay.longitude, venue_lat, venue_lng)
+      now = Time.current
 
-      poi_category = map_foursquare_to_poi_category(category&.dig('name'))
-
-      stay.pois.create(
+      {
+        stay_id: stay.id,
         name: venue['name'],
-        category: poi_category,
+        category: map_foursquare_to_poi_category(category&.dig('name')),
         latitude: venue_lat,
         longitude: venue_lng,
         address: venue.dig('location', 'formatted_address'),
@@ -143,8 +169,11 @@ class FoursquareGalleryService
         foursquare_rating: venue['rating'],
         foursquare_price: venue['price'],
         foursquare_photo_url: build_photo_url(photo, '600x400'),
-        foursquare_fetched_at: Time.current
-      )
+        foursquare_fetched_at: now,
+        created_at: now,
+        updated_at: now,
+        favorite: false
+      }
     end
 
     def map_foursquare_to_poi_category(foursquare_category_name)
