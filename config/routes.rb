@@ -35,8 +35,7 @@ Rails.application.routes.draw do
         delete :leave
       end
     end
-    resource :gallery, only: [:show] do
-      post :refresh
+    resource :gallery, only: [:show], path: 'explore' do
       post :add_to_bucket_list
     end
     resource :highlights, only: [:show]
