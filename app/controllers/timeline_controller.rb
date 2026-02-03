@@ -31,6 +31,9 @@ class TimelineController < ApplicationController
 
     # Build chronologically sorted timeline items (stays and gaps interleaved)
     @timeline_items = build_timeline_items(@stays, @gaps)
+
+    # Build year calendar data for year-at-a-glance view
+    @year_calendar = build_year_calendar(@stays, @gaps)
   end
 
   private
@@ -71,5 +74,61 @@ class TimelineController < ApplicationController
 
     # Sort by start date
     items.sort_by { |item| item[:start_date] }
+  end
+
+  def build_year_calendar(stays, gaps)
+    # Group years that have stays or are in our date range
+    years_to_show = (@start_date.year..@end_date.year).to_a
+
+    years_to_show.map do |year|
+      months = (1..12).map do |month|
+        month_start = Date.new(year, month, 1)
+        month_end = month_start.end_of_month
+        days_in_month = month_end.day
+
+        # Build array of days with their status
+        days = (1..days_in_month).map do |day|
+          date = Date.new(year, month, day)
+          status = day_status(date, stays, gaps)
+          { date: date, status: status }
+        end
+
+        {
+          month: month,
+          name: month_start.strftime("%b").upcase,
+          start_wday: month_start.wday,
+          days: days
+        }
+      end
+
+      { year: year, months: months }
+    end
+  end
+
+  def day_status(date, stays, gaps)
+    return nil if date < @start_date || date > @end_date
+
+    # Check if today
+    is_today = date == @today
+
+    # Check if in a stay
+    stay = stays.find { |s| date >= s.check_in && date < s.check_out }
+    if stay
+      status = if stay.booked?
+        stay.status # 'upcoming', 'current', 'past'
+      else
+        "planned"
+      end
+      return { type: status, today: is_today }
+    end
+
+    # Check if in a gap
+    gap = gaps.find { |g| date >= g[:start_date] && date <= g[:end_date] }
+    if gap
+      return { type: "gap", today: is_today }
+    end
+
+    # No stay or gap on this date
+    { type: nil, today: is_today }
   end
 end

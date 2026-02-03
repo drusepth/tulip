@@ -671,6 +671,17 @@ input[type="checkbox"]:focus {
   border: 1px dashed var(--color-coral);
 }
 
+/* Year Calendar Gap */
+.year-calendar-gap {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color-coral-light),
+    var(--color-coral-light) 1px,
+    rgba(232, 180, 160, 0.4) 1px,
+    rgba(232, 180, 160, 0.4) 2px
+  );
+}
+
 /* Year Dividers */
 .timeline-year-divider {
   position: absolute;

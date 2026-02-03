@@ -29,7 +29,7 @@
     </div>
 
     <!-- Legend -->
-    <div class="mb-6 flex flex-wrap items-center gap-6 text-sm">
+    <div class="mb-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
       <div class="flex items-center gap-2">
         <div class="w-4 h-4 rounded-full bg-sage"></div>
         <span class="text-brown-light">Upcoming</span>
@@ -55,6 +55,39 @@
         <span class="text-brown-light">Today</span>
       </div>
     </div>
+
+    <!-- Year Calendar Grid -->
+    <% @year_calendar.each do |year_data| %>
+      <div class="cozy-card p-4 sm:p-6 mb-6">
+        <h2 class="text-2xl font-bold text-brown mb-4"><%= year_data[:year] %></h2>
+        <div class="grid grid-cols-3 gap-3 sm:gap-4 mx-auto max-w-2xl">
+          <% year_data[:months].each do |month| %>
+            <div class="text-center">
+              <div class="text-xs font-medium text-brown-light mb-1"><%= month[:name] %></div>
+              <div class="grid grid-cols-7 gap-px">
+                <%# Add empty cells for days before the 1st %>
+                <% month[:start_wday].times do %>
+                  <div class="w-3 h-3 sm:w-4 sm:h-4"></div>
+                <% end %>
+                <%# Render each day %>
+                <% month[:days].each do |day| %>
+                  <% day_class = case day[:status]&.dig(:type)
+                                 when 'upcoming' then 'bg-sage'
+                                 when 'current' then 'bg-rose'
+                                 when 'past' then 'bg-taupe'
+                                 when 'planned' then 'bg-lavender'
+                                 when 'gap' then 'year-calendar-gap'
+                                 else 'bg-taupe-light'
+                                 end %>
+                  <% today_class = day[:status]&.dig(:today) ? 'ring-1 ring-rose-dark' : '' %>
+                  <div class="w-3 h-3 sm:w-4 sm:h-4 rounded-sm <%= day_class %> <%= today_class %>"></div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
 
     <!-- Timeline Container -->
     <div class="cozy-card p-6 overflow-hidden"
