@@ -60,14 +60,14 @@
     <% @year_calendar.each do |year_data| %>
       <div class="cozy-card p-4 sm:p-6 mb-6">
         <h2 class="text-2xl font-bold text-brown mb-4"><%= year_data[:year] %></h2>
-        <div class="grid grid-cols-3 gap-3 sm:gap-4 mx-auto max-w-2xl">
+        <div class="grid grid-cols-3 gap-3 sm:gap-5 mx-auto max-w-3xl">
           <% year_data[:months].each do |month| %>
             <div class="text-center">
               <div class="text-xs font-medium text-brown-light mb-1"><%= month[:name] %></div>
-              <div class="grid grid-cols-7 gap-px">
+              <div class="grid grid-cols-7 gap-0.5">
                 <%# Add empty cells for days before the 1st %>
                 <% month[:start_wday].times do %>
-                  <div class="w-3 h-3 sm:w-4 sm:h-4"></div>
+                  <div class="w-4 h-4 sm:w-5 sm:h-5"></div>
                 <% end %>
                 <%# Render each day %>
                 <% month[:days].each do |day| %>
@@ -80,7 +80,7 @@
                                  else 'bg-taupe-light'
                                  end %>
                   <% today_class = day[:status]&.dig(:today) ? 'ring-1 ring-rose-dark' : '' %>
-                  <div class="w-3 h-3 sm:w-4 sm:h-4 rounded-sm <%= day_class %> <%= today_class %>"></div>
+                  <div class="w-4 h-4 sm:w-5 sm:h-5 rounded-sm <%= day_class %> <%= today_class %>"></div>
                 <% end %>
               </div>
             </div>
