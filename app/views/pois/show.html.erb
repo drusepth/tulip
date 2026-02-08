@@ -1,12 +1,33 @@
+<% content_for(:title) { "#{@poi.name || 'Place'} - Tulip" } %>
+
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <!-- Back Link -->
-  <div class="mb-6">
+  <!-- Navigation: Back + Prev/Next -->
+  <div class="mb-6 flex items-center justify-between">
     <%= link_to browse_stay_pois_path(@stay, category: @poi.category), class: "text-sage-dark hover:text-sage inline-flex items-center" do %>
       <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
       </svg>
       Back to <%= @poi.category.titleize %>
     <% end %>
+
+    <div class="flex items-center gap-2">
+      <% if @prev_poi %>
+        <%= link_to stay_poi_path(@stay, @prev_poi), class: "inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm text-brown-light hover:text-brown bg-white border border-taupe-light hover:border-taupe transition-colors" do %>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Prev
+        <% end %>
+      <% end %>
+      <% if @next_poi %>
+        <%= link_to stay_poi_path(@stay, @next_poi), class: "inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm text-brown-light hover:text-brown bg-white border border-taupe-light hover:border-taupe transition-colors" do %>
+          Next
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        <% end %>
+      <% end %>
+    </div>
   </div>
 
   <!-- Hero Section -->
@@ -21,50 +42,31 @@
               <%= category_icon(@poi.category, size: "w-3.5 h-3.5") %>
               <span class="ml-1"><%= @poi.category.titleize %></span>
             </span>
-            <% if @poi.foursquare_price.present? %>
-              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white text-brown">
-                <%= foursquare_price_display(@poi.foursquare_price) %>
-              </span>
-            <% end %>
           </div>
           <h1 class="text-2xl sm:text-3xl font-bold text-white" style="text-shadow: 0 2px 8px rgba(0,0,0,0.4);"><%= @poi.name || 'Unnamed Place' %></h1>
         </div>
       </div>
     <% else %>
-      <div class="relative h-32 bg-gradient-to-br from-sage-light via-cream to-lavender-light">
+      <div class="relative h-44 sm:h-52 bg-gradient-to-br from-sage-light via-cream to-lavender-light">
         <div class="absolute inset-0 flex items-center justify-center">
-          <div class="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-cozy" style="opacity: 0.9;">
-            <%= category_icon(@poi.category, size: "w-8 h-8 text-sage-dark") %>
-          </div>
-        </div>
-        <div class="absolute bottom-0 left-0 right-0 p-6">
-          <div class="flex items-center gap-2 mb-2">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white text-brown">
-              <%= category_icon(@poi.category, size: "w-3.5 h-3.5") %>
-              <span class="ml-1"><%= @poi.category.titleize %></span>
-            </span>
-            <% if @poi.foursquare_price.present? %>
-              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white text-brown">
-                <%= foursquare_price_display(@poi.foursquare_price) %>
-              </span>
-            <% end %>
+          <div class="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-cozy" style="opacity: 0.9;">
+            <%= category_icon(@poi.category, size: "w-10 h-10 text-sage-dark") %>
           </div>
         </div>
       </div>
-      <div class="px-6 pt-4">
+      <div class="px-6 pt-5">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-sage-light text-sage-dark">
+            <%= category_icon(@poi.category, size: "w-3.5 h-3.5") %>
+            <span class="ml-1"><%= @poi.category.titleize %></span>
+          </span>
+        </div>
         <h1 class="text-2xl sm:text-3xl font-bold text-brown"><%= @poi.name || 'Unnamed Place' %></h1>
       </div>
     <% end %>
 
     <!-- Quick Info Bar -->
     <div class="px-6 py-4 flex flex-wrap items-center gap-4 border-b border-taupe-light">
-      <% if @poi.foursquare_rating.present? %>
-        <div class="flex items-center gap-1.5">
-          <span class="text-amber-500 text-lg">&#9733;</span>
-          <span class="text-brown font-semibold text-lg"><%= foursquare_rating_stars(@poi.foursquare_rating) %></span>
-          <span class="text-brown-light text-sm">on Foursquare</span>
-        </div>
-      <% end %>
       <% if @poi.distance_meters.present? %>
         <div class="flex items-center gap-1.5 text-brown-light">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,19 +84,13 @@
           <span><%= @poi.cuisine.gsub(';', ', ').titleize %></span>
         </div>
       <% end %>
+      <% badges = poi_amenity_badges(@poi) %>
+      <% badges.each do |badge| %>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-lavender-light text-lavender-dark font-medium">
+          <%= badge[:label] %>
+        </span>
+      <% end %>
     </div>
-
-    <!-- Amenity Badges -->
-    <% badges = poi_amenity_badges(@poi) %>
-    <% if badges.any? %>
-      <div class="px-6 py-3 flex flex-wrap gap-2 border-b border-taupe-light">
-        <% badges.each do |badge| %>
-          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-lavender-light text-lavender-dark font-medium">
-            <%= badge[:label] %>
-          </span>
-        <% end %>
-      </div>
-    <% end %>
 
     <!-- Foursquare Tip -->
     <% if @poi.foursquare_tip.present? %>
@@ -108,8 +104,10 @@
       </div>
     <% end %>
 
-    <!-- Add to Bucket List -->
-    <div class="px-6 py-4">
+    <!-- Actions: Favorite + Bucket List + Directions -->
+    <div class="px-6 py-4 flex flex-wrap items-center gap-3">
+      <%= render "pois/favorite_button", poi: @poi, stay: @stay %>
+
       <%= button_to stay_bucket_list_items_path(@stay),
                     method: :post,
                     params: { bucket_list_item: { title: @poi.name, address: @poi.address }, source_poi_id: @poi.id },
@@ -127,6 +125,17 @@
         </svg>
         Add to Bucket List
       <% end %>
+
+      <% if @poi.latitude.present? && @poi.longitude.present? %>
+        <a href="https://www.google.com/maps/dir/?api=1&destination=<%= @poi.latitude %>,<%= @poi.longitude %>"
+           target="_blank" rel="noopener noreferrer"
+           class="btn-outline gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+          </svg>
+          Get Directions
+        </a>
+      <% end %>
     </div>
   </div>
 
@@ -142,74 +151,82 @@
           Details
         </h2>
 
-        <dl class="space-y-4">
-          <% if @poi.address.present? %>
-            <div class="flex items-start gap-3">
-              <dt class="flex-shrink-0 w-24 text-sm font-medium text-brown-light">Address</dt>
-              <dd class="text-brown"><%= @poi.address %></dd>
-            </div>
-          <% end %>
+        <% if poi_has_details?(@poi) %>
+          <dl class="space-y-4">
+            <% if @poi.address.present? %>
+              <div class="flex items-start gap-3">
+                <dt class="flex-shrink-0 w-24 text-sm font-medium text-brown-light">Address</dt>
+                <dd class="text-brown"><%= @poi.address %></dd>
+              </div>
+            <% end %>
 
-          <% if @poi.opening_hours.present? %>
-            <div class="flex items-start gap-3">
-              <dt class="flex-shrink-0 w-24 text-sm font-medium text-brown-light">Hours</dt>
-              <dd>
-                <% format_opening_hours(@poi.opening_hours).each do |line| %>
-                  <p class="text-brown"><%= line %></p>
-                <% end %>
-              </dd>
-            </div>
-          <% end %>
+            <% if @poi.opening_hours.present? %>
+              <div class="flex items-start gap-3">
+                <dt class="flex-shrink-0 w-24 text-sm font-medium text-brown-light">Hours</dt>
+                <dd>
+                  <% format_opening_hours(@poi.opening_hours).each do |line| %>
+                    <p class="text-brown"><%= line %></p>
+                  <% end %>
+                </dd>
+              </div>
+            <% end %>
 
-          <% if @poi.phone.present? %>
-            <div class="flex items-start gap-3">
-              <dt class="flex-shrink-0 w-24 text-sm font-medium text-brown-light">Phone</dt>
-              <dd>
-                <a href="tel:<%= @poi.phone %>" class="text-sage-dark hover:text-sage inline-flex items-center gap-1">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                  </svg>
-                  <%= format_phone(@poi.phone) %>
-                </a>
-              </dd>
-            </div>
-          <% end %>
+            <% if @poi.phone.present? %>
+              <div class="flex items-start gap-3">
+                <dt class="flex-shrink-0 w-24 text-sm font-medium text-brown-light">Phone</dt>
+                <dd>
+                  <a href="tel:<%= @poi.phone %>" class="text-sage-dark hover:text-sage inline-flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                    </svg>
+                    <%= format_phone(@poi.phone) %>
+                  </a>
+                </dd>
+              </div>
+            <% end %>
 
-          <% if @poi.website.present? %>
-            <div class="flex items-start gap-3">
-              <dt class="flex-shrink-0 w-24 text-sm font-medium text-brown-light">Website</dt>
-              <dd>
-                <a href="<%= @poi.website %>" target="_blank" rel="noopener noreferrer" class="text-sage-dark hover:text-sage inline-flex items-center gap-1">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-                  </svg>
-                  <%= format_website_domain(@poi.website) %>
-                </a>
-              </dd>
-            </div>
-          <% end %>
+            <% if @poi.website.present? %>
+              <div class="flex items-start gap-3">
+                <dt class="flex-shrink-0 w-24 text-sm font-medium text-brown-light">Website</dt>
+                <dd>
+                  <a href="<%= @poi.website %>" target="_blank" rel="noopener noreferrer" class="text-sage-dark hover:text-sage inline-flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                    </svg>
+                    <%= format_website_domain(@poi.website) %>
+                  </a>
+                </dd>
+              </div>
+            <% end %>
 
-          <% if @poi.brand.present? %>
-            <div class="flex items-start gap-3">
-              <dt class="flex-shrink-0 w-24 text-sm font-medium text-brown-light">Brand</dt>
-              <dd class="text-brown"><%= @poi.brand %></dd>
-            </div>
-          <% end %>
+            <% if @poi.brand.present? %>
+              <div class="flex items-start gap-3">
+                <dt class="flex-shrink-0 w-24 text-sm font-medium text-brown-light">Brand</dt>
+                <dd class="text-brown"><%= @poi.brand %></dd>
+              </div>
+            <% end %>
 
-          <% if @poi.description.present? %>
-            <div class="flex items-start gap-3">
-              <dt class="flex-shrink-0 w-24 text-sm font-medium text-brown-light">Description</dt>
-              <dd class="text-brown"><%= @poi.description %></dd>
+            <% if @poi.description.present? %>
+              <div class="flex items-start gap-3">
+                <dt class="flex-shrink-0 w-24 text-sm font-medium text-brown-light">Description</dt>
+                <dd class="text-brown"><%= @poi.description %></dd>
+              </div>
+            <% end %>
+          </dl>
+        <% else %>
+          <div class="text-center py-6">
+            <div class="w-12 h-12 rounded-full bg-taupe-light flex items-center justify-center mx-auto mb-3">
+              <svg class="w-6 h-6 text-taupe" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
             </div>
-          <% end %>
-        </dl>
-
-        <% unless poi_has_details?(@poi) %>
-          <p class="text-taupe italic">No additional details available for this place.</p>
+            <p class="text-brown-light">No additional details available for this place.</p>
+            <p class="text-sm text-taupe mt-1">Details come from OpenStreetMap contributors and may not be complete.</p>
+          </div>
         <% end %>
       </div>
 
-      <!-- Map -->
+      <!-- Map with both POI and Stay markers -->
       <% if @poi.latitude.present? && @poi.longitude.present? %>
         <div class="cozy-card p-6">
           <h2 class="text-lg font-semibold text-brown mb-4 flex items-center gap-2">
@@ -218,65 +235,36 @@
             </svg>
             Location
           </h2>
-          <div id="mini-map" class="h-64 rounded-2xl"
-               data-controller="mini-map"
-               data-mini-map-lat-value="<%= @poi.latitude %>"
-               data-mini-map-lng-value="<%= @poi.longitude %>"
-               data-mini-map-title-value="<%= @poi.name %>">
-          </div>
+          <% if @stay.latitude.present? && @stay.longitude.present? %>
+            <div class="h-64 rounded-2xl"
+                 data-controller="poi-map"
+                 data-poi-map-poi-lat-value="<%= @poi.latitude %>"
+                 data-poi-map-poi-lng-value="<%= @poi.longitude %>"
+                 data-poi-map-poi-name-value="<%= @poi.name %>"
+                 data-poi-map-stay-lat-value="<%= @stay.latitude %>"
+                 data-poi-map-stay-lng-value="<%= @stay.longitude %>"
+                 data-poi-map-stay-name-value="<%= @stay.title %>">
+            </div>
+            <div class="flex items-center gap-4 mt-3 text-xs text-brown-light">
+              <div class="flex items-center gap-1.5">
+                <div class="w-3 h-4 bg-sky-500 rounded-sm"></div>
+                <span><%= @poi.name %></span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <div class="w-3 h-3 bg-sage-dark rounded-full"></div>
+                <span><%= @stay.title %></span>
+              </div>
+            </div>
+          <% else %>
+            <div class="h-64 rounded-2xl"
+                 data-controller="mini-map"
+                 data-mini-map-lat-value="<%= @poi.latitude %>"
+                 data-mini-map-lng-value="<%= @poi.longitude %>"
+                 data-mini-map-title-value="<%= @poi.name %>">
+            </div>
+          <% end %>
         </div>
       <% end %>
-
-      <!-- Data Sources -->
-      <div class="cozy-card p-6">
-        <h2 class="text-lg font-semibold text-brown mb-4 flex items-center gap-2">
-          <svg class="w-5 h-5 text-sage-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
-          </svg>
-          Data Sources
-        </h2>
-
-        <div class="space-y-4">
-          <!-- OpenStreetMap Source -->
-          <div class="flex items-start gap-3 p-4 rounded-2xl bg-cream border border-taupe-light">
-            <div class="w-10 h-10 rounded-full bg-sage-light flex items-center justify-center flex-shrink-0">
-              <svg class="w-5 h-5 text-sage-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            </div>
-            <div class="flex-1">
-              <h3 class="text-sm font-semibold text-brown">OpenStreetMap (Overpass API)</h3>
-              <p class="text-xs text-brown-light mt-1">Location, address, hours, contact info, and amenity details</p>
-              <% if @poi.osm_id.present? %>
-                <p class="text-xs text-taupe mt-2">OSM ID: <%= @poi.osm_id %></p>
-              <% end %>
-            </div>
-          </div>
-
-          <!-- Foursquare Source -->
-          <div class="flex items-start gap-3 p-4 rounded-2xl bg-cream border border-taupe-light">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 <%= @poi.foursquare_fetched_at.present? ? 'bg-lavender-light' : 'bg-taupe-light' %>">
-              <svg class="w-5 h-5 <%= @poi.foursquare_fetched_at.present? ? 'text-lavender-dark' : 'text-taupe' %>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
-              </svg>
-            </div>
-            <div class="flex-1">
-              <h3 class="text-sm font-semibold text-brown">Foursquare</h3>
-              <% if poi_has_foursquare_data?(@poi) %>
-                <p class="text-xs text-brown-light mt-1">Rating, price level, photo, and community tips</p>
-                <% if @poi.foursquare_fetched_at.present? %>
-                  <p class="text-xs text-taupe mt-2">Last fetched: <%= @poi.foursquare_fetched_at.strftime('%b %d, %Y at %l:%M %p') %></p>
-                <% end %>
-              <% elsif @poi.foursquare_fetched_at.present? %>
-                <p class="text-xs text-brown-light mt-1">No matching Foursquare listing found</p>
-                <p class="text-xs text-taupe mt-2">Checked: <%= @poi.foursquare_fetched_at.strftime('%b %d, %Y at %l:%M %p') %></p>
-              <% else %>
-                <p class="text-xs text-brown-light mt-1">Not yet checked</p>
-              <% end %>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Sidebar (1/3) -->
@@ -332,6 +320,33 @@
           <h3 class="text-sm font-medium text-brown-light uppercase tracking-wide mb-3">Coordinates</h3>
           <p class="text-sm text-brown font-mono"><%= @poi.latitude.round(6) %>, <%= @poi.longitude.round(6) %></p>
         </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Data Sources Footer -->
+  <div class="mt-8 pt-6 border-t border-taupe-light">
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-taupe">
+      <span class="flex items-center gap-1">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        OpenStreetMap<% if @poi.osm_id.present? %> (<%= @poi.osm_id %>)<% end %>
+      </span>
+      <% if poi_has_foursquare_data?(@poi) %>
+        <span class="flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+          </svg>
+          Foursquare
+        </span>
+      <% elsif @poi.foursquare_fetched_at.present? %>
+        <span class="flex items-center gap-1">
+          Foursquare: no match found
+        </span>
+      <% end %>
+      <% if @poi.foursquare_fetched_at.present? %>
+        <span>Updated <%= @poi.foursquare_fetched_at.strftime('%b %d, %Y') %></span>
       <% end %>
     </div>
   </div>

@@ -5,6 +5,14 @@ class PoisController < ApplicationController
   def show
     @poi = @stay.pois.find(params[:id])
     FoursquareService.enrich_poi(@poi)
+
+    # Prev/next navigation within the same category
+    siblings = @stay.pois.by_category(@poi.category).nearest.to_a
+    current_index = siblings.index { |p| p.id == @poi.id }
+    if current_index
+      @prev_poi = siblings[current_index - 1] if current_index > 0
+      @next_poi = siblings[current_index + 1]
+    end
   end
 
   def browse
@@ -91,9 +99,21 @@ class PoisController < ApplicationController
     @poi = @stay.pois.find(params[:id])
 
     if @poi.update(poi_params)
-      render json: { success: true, poi: @poi }
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace(
+            "poi_favorite_#{@poi.id}",
+            partial: "pois/favorite_button",
+            locals: { poi: @poi, stay: @stay }
+          )
+        end
+        format.json { render json: { success: true, poi: @poi } }
+      end
     else
-      render json: { errors: @poi.errors.full_messages }, status: :unprocessable_entity
+      respond_to do |format|
+        format.turbo_stream { head :unprocessable_entity }
+        format.json { render json: { errors: @poi.errors.full_messages }, status: :unprocessable_entity }
+      end
     end
   end
 

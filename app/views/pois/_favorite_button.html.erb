@@ -1,0 +1,12 @@
+<%= turbo_frame_tag "poi_favorite_#{poi.id}" do %>
+  <%= button_to stay_poi_path(stay, poi),
+                method: :patch,
+                params: { poi: { favorite: !poi.favorite } },
+                class: "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 #{poi.favorite? ? 'bg-rose-light text-rose-dark border border-rose' : 'bg-white text-brown-light border border-taupe-light hover:border-rose hover:text-rose-dark'}",
+                data: { turbo_stream: true } do %>
+    <svg class="w-4 h-4" fill="<%= poi.favorite? ? 'currentColor' : 'none' %>" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+    </svg>
+    <%= poi.favorite? ? 'Favorited' : 'Favorite' %>
+  <% end %>
+<% end %>
