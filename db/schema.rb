@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_26_100000) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_26_100100) do
   create_table "bucket_list_items", force: :cascade do |t|
     t.integer "stay_id", null: false
     t.string "title", null: false
@@ -57,6 +57,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_26_100000) do
     t.string "foursquare_photo_url"
     t.text "foursquare_tip"
     t.datetime "foursquare_fetched_at"
+    t.text "notes"
     t.index ["foursquare_id"], name: "index_pois_on_foursquare_id"
     t.index ["osm_id"], name: "index_pois_on_osm_id", unique: true
     t.index ["stay_id", "category"], name: "index_pois_on_stay_id_and_category"

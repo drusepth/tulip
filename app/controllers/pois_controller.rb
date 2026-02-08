@@ -1,6 +1,6 @@
 class PoisController < ApplicationController
   before_action :set_stay, except: [:search]
-  before_action :require_stay_edit_permission, only: [:update, :destroy]
+  before_action :require_stay_edit_permission, only: [:update, :destroy, :edit_notes, :update_notes]
 
   def show
     @poi = @stay.pois.find(params[:id])
@@ -12,6 +12,27 @@ class PoisController < ApplicationController
     if current_index
       @prev_poi = siblings[current_index - 1] if current_index > 0
       @next_poi = siblings[current_index + 1]
+    end
+  end
+
+  def edit_notes
+    @poi = @stay.pois.find(params[:id])
+    respond_to do |format|
+      format.turbo_stream
+      format.html
+    end
+  end
+
+  def update_notes
+    @poi = @stay.pois.find(params[:id])
+    respond_to do |format|
+      if @poi.update(notes: params[:poi][:notes])
+        format.turbo_stream
+        format.html { redirect_to stay_poi_path(@stay, @poi), notice: "Notes updated." }
+      else
+        format.turbo_stream { render :edit_notes, status: :unprocessable_entity }
+        format.html { redirect_to stay_poi_path(@stay, @poi), alert: "Could not update notes." }
+      end
     end
   end
 

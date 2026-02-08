@@ -12,6 +12,10 @@ Rails.application.routes.draw do
       collection do
         get :browse
       end
+      member do
+        get :edit_notes
+        patch :update_notes
+      end
     end
     resources :transit_routes, only: [:index, :create]
     resources :bucket_list_items, only: [:create, :edit, :update, :destroy] do
