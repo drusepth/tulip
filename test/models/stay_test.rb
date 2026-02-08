@@ -7,6 +7,51 @@ class StayTest < ActiveSupport::TestCase
     @user.stays.destroy_all
   end
 
+  test "should_geocode when address changes even if coordinates already exist" do
+    stay = @user.stays.create!(
+      title: "Test Stay",
+      city: "Portland",
+      country: "USA",
+      check_in: Date.new(2027, 1, 1),
+      check_out: Date.new(2027, 1, 10),
+      latitude: 45.5155,
+      longitude: -122.6789
+    )
+
+    stay.address = "123 Main St"
+    assert stay.send(:should_geocode?), "should_geocode? should return true when address changes even with existing coordinates"
+  end
+
+  test "should_geocode when city changes even if coordinates already exist" do
+    stay = @user.stays.create!(
+      title: "Test Stay",
+      city: "Portland",
+      country: "USA",
+      check_in: Date.new(2027, 1, 1),
+      check_out: Date.new(2027, 1, 10),
+      latitude: 45.5155,
+      longitude: -122.6789
+    )
+
+    stay.city = "Seattle"
+    assert stay.send(:should_geocode?), "should_geocode? should return true when city changes even with existing coordinates"
+  end
+
+  test "should not geocode when no location fields changed" do
+    stay = @user.stays.create!(
+      title: "Test Stay",
+      city: "Portland",
+      country: "USA",
+      check_in: Date.new(2027, 1, 1),
+      check_out: Date.new(2027, 1, 10),
+      latitude: 45.5155,
+      longitude: -122.6789
+    )
+
+    stay.title = "Updated Title"
+    assert_not stay.send(:should_geocode?), "should_geocode? should return false when only non-location fields change"
+  end
+
   test "find_gaps returns empty array when no stays" do
     assert_equal [], @user.stays.find_gaps
   end
