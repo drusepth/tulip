@@ -2,6 +2,11 @@ class PoisController < ApplicationController
   before_action :set_stay, except: [:search]
   before_action :require_stay_edit_permission, only: [:update, :destroy]
 
+  def show
+    @poi = @stay.pois.find(params[:id])
+    FoursquareService.enrich_poi(@poi)
+  end
+
   def browse
     @current_category = params[:category].presence || 'coffee'
     @current_category = 'coffee' unless Poi::BROWSABLE_CATEGORIES.include?(@current_category)
