@@ -89,11 +89,14 @@
   <!-- Map and Timeline Container -->
   <div class="flex-1 relative">
     <!-- Timeline Side-Panel -->
-    <div data-map-target="timeline" class="map-panel bg-cream absolute left-0 top-0 bottom-0 w-80 shadow-cozy-lg z-[1000] transition-transform duration-300"
+    <div data-map-target="timeline" class="map-panel bg-cream absolute left-0 top-0 bottom-0 w-80 shadow-cozy-lg z-[1100] transition-transform duration-300"
          data-collapsed="false">
       <!-- Collapse Toggle Button -->
       <button data-action="click->map#toggleTimeline"
-              class="absolute -right-8 top-1/2 -translate-y-1/2 bg-cream shadow-cozy rounded-r-2xl p-2 hover:bg-taupe-light border border-l-0 border-taupe-light">
+              class="absolute -right-8 top-1/2 -translate-y-1/2 bg-cream shadow-cozy rounded-r-2xl p-2 hover:bg-taupe-light border border-l-0 border-taupe-light flex items-center gap-1">
+        <svg class="w-4 h-4 text-brown sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
         <svg data-map-target="collapseIcon" class="w-4 h-4 text-brown transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
         </svg>
