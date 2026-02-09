@@ -32,9 +32,10 @@
 
   <!-- Hero Section -->
   <div class="cozy-card overflow-hidden mb-8">
-    <% if @poi.foursquare_photo_url.present? %>
+    <% hero_photo = @poi.foursquare_photo_url.presence || @poi.wikidata_image_url.presence %>
+    <% if hero_photo %>
       <div class="relative h-56 sm:h-72 warm-overlay">
-        <%= image_tag @poi.foursquare_photo_url, class: "w-full h-full object-cover", alt: @poi.name %>
+        <%= image_tag hero_photo, class: "w-full h-full object-cover", alt: @poi.name %>
         <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent" style="opacity: 0.4;"></div>
         <div class="absolute bottom-0 left-0 right-0 p-6">
           <div class="flex items-center gap-2 mb-2">
@@ -226,6 +227,28 @@
         <% end %>
       </div>
 
+      <!-- Wikipedia Extract -->
+      <% if @poi.wikipedia_extract.present? %>
+        <div class="cozy-card p-6">
+          <h2 class="text-lg font-semibold text-brown mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-sage-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+            About
+          </h2>
+          <p class="text-brown leading-relaxed"><%= @poi.wikipedia_extract %></p>
+          <% if @poi.wikipedia_url.present? %>
+            <a href="<%= @poi.wikipedia_url %>" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center gap-1.5 mt-4 text-sm text-sage-dark hover:text-sage transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+              </svg>
+              Read more on Wikipedia
+            </a>
+          <% end %>
+        </div>
+      <% end %>
+
       <!-- Map with both POI and Stay markers -->
       <% if @poi.latitude.present? && @poi.longitude.present? %>
         <div class="cozy-card p-6">
@@ -317,6 +340,24 @@
         </div>
       <% end %>
 
+      <!-- Wikipedia Card -->
+      <% if @poi.wikipedia_url.present? %>
+        <div class="cozy-card p-6">
+          <h3 class="text-sm font-medium text-brown-light uppercase tracking-wide mb-3">Wikipedia</h3>
+          <a href="<%= @poi.wikipedia_url %>" target="_blank" rel="noopener noreferrer"
+             class="inline-flex items-center gap-2 text-sage-dark hover:text-sage transition-colors">
+            <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12.09 13.119c-.14 1.064-.496 2.2-1.07 3.41-.574 1.21-1.143 2.134-1.706 2.773l-1.068-.362c.11-.307.2-.597.266-.87.068-.272.137-.647.207-1.124.07-.477.109-.964.115-1.462a9.7 9.7 0 00-.148-1.64 7.3 7.3 0 00-.34-1.3l-2.123-5.405-.23.588c-.136.368-.29.754-.463 1.157L4.525 11.1c-.132.36-.224.664-.277.908-.053.243-.073.478-.058.705.015.226.073.47.174.733.1.262.224.505.372.727l-.852.492c-.457-.616-.795-1.273-1.013-1.97-.22-.698-.296-1.41-.228-2.135.067-.726.26-1.424.58-2.093l2.464-5.18L5.696 3.279l.807-.278 3.136 7.976.254-.473c.4-.742.761-1.478 1.085-2.209.324-.73.554-1.265.69-1.604l.927.339c-.282.727-.63 1.494-1.042 2.302-.413.808-.73 1.37-.953 1.687l.47 1.211c.154.394.337.774.547 1.14.21.365.426.653.649.864z"/>
+              <path d="M21.226 3.39l-2.14 5.289c-.344.85-.573 1.455-.687 1.818-.114.362-.17.73-.17 1.103 0 .326.036.64.108.94.073.3.178.603.315.91l-.783.499a4.49 4.49 0 01-.76-1.353 4.66 4.66 0 01-.263-1.56 7.66 7.66 0 01.108-1.16l-1.584-4.084-.984 2.132-1.248 2.76-.406-.203c.476-1.032.927-2.08 1.353-3.143.425-1.063.782-2.01 1.07-2.84L16.05 2.2l.861-.33 1.804 4.52L20.348 3l.878.39z"/>
+            </svg>
+            View Wikipedia article
+          </a>
+          <% if @poi.wikidata_id.present? %>
+            <p class="text-xs text-taupe mt-2"><%= @poi.wikidata_id %></p>
+          <% end %>
+        </div>
+      <% end %>
+
       <!-- Coordinates Card -->
       <% if @poi.latitude.present? && @poi.longitude.present? %>
         <div class="cozy-card p-6">
@@ -348,8 +389,21 @@
           Foursquare: no match found
         </span>
       <% end %>
-      <% if @poi.foursquare_fetched_at.present? %>
-        <span>Updated <%= @poi.foursquare_fetched_at.strftime('%b %d, %Y') %></span>
+      <% if poi_has_wikidata_data?(@poi) %>
+        <span class="flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+          </svg>
+          Wikipedia / Wikidata
+        </span>
+      <% elsif @poi.wikidata_fetched_at.present? %>
+        <span class="flex items-center gap-1">
+          Wikipedia: no match found
+        </span>
+      <% end %>
+      <% last_updated = [@poi.foursquare_fetched_at, @poi.wikidata_fetched_at].compact.max %>
+      <% if last_updated %>
+        <span>Updated <%= last_updated.strftime('%b %d, %Y') %></span>
       <% end %>
     </div>
   </div>

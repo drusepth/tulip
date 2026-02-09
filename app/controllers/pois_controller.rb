@@ -5,6 +5,7 @@ class PoisController < ApplicationController
   def show
     @poi = @stay.pois.find(params[:id])
     FoursquareService.enrich_poi(@poi)
+    WikidataService.enrich_poi(@poi)
 
     # Prev/next navigation within the same category
     siblings = @stay.pois.by_category(@poi.category).nearest.to_a
@@ -105,7 +106,8 @@ class PoisController < ApplicationController
             air_conditioning: poi_data[:air_conditioning],
             takeaway: poi_data[:takeaway],
             brand: poi_data[:brand],
-            description: poi_data[:description]
+            description: poi_data[:description],
+            wikidata_id: poi_data[:wikidata]
           )
         end
       end
@@ -194,7 +196,8 @@ class PoisController < ApplicationController
           air_conditioning: poi_data[:air_conditioning],
           takeaway: poi_data[:takeaway],
           brand: poi_data[:brand],
-          description: poi_data[:description]
+          description: poi_data[:description],
+          wikidata_id: poi_data[:wikidata]
         )
       end
     end
@@ -236,7 +239,8 @@ class PoisController < ApplicationController
           air_conditioning: poi_data[:air_conditioning],
           takeaway: poi_data[:takeaway],
           brand: poi_data[:brand],
-          description: poi_data[:description]
+          description: poi_data[:description],
+          wikidata_id: poi_data[:wikidata]
         )
       end
     end
