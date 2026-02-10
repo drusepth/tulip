@@ -35,8 +35,8 @@
       <% end %>
     </div>
 
-    <!-- Actions (visible on hover) -->
-    <div class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5">
+    <!-- Actions (always visible on mobile, hover on desktop) -->
+    <div class="flex-shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex items-center gap-0.5">
       <%= link_to edit_stay_bucket_list_item_path(bucket_list_item.stay, bucket_list_item),
                   class: "p-1.5 rounded-lg text-brown-light hover:text-sage-dark hover:bg-sage-light transition-colors",
                   data: { turbo_stream: true } do %>
