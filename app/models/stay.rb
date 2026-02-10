@@ -228,7 +228,6 @@ class Stay < ApplicationRecord
   end
 
   def should_geocode?
-    return false if latitude.present? && longitude.present?
     (address_changed? || city_changed? || country_changed?) && full_address.present?
   end
 
