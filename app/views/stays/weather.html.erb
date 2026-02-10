@@ -95,45 +95,57 @@
           <% @daily_data.each do |day| %>
             <% parsed_date = Date.parse(day[:date]) %>
             <div class="<%= weather_card_class(day[:condition]) %> rounded-2xl p-4">
-              <!-- Top row: stacked date + icon bubble -->
+              <!-- Header: day, date, condition + icon -->
               <div class="flex items-start justify-between mb-3">
                 <div>
                   <p class="text-lg font-bold text-brown leading-tight"><%= parsed_date.strftime('%A') %></p>
                   <p class="text-sm text-brown-light"><%= parsed_date.strftime('%B %-d') %></p>
                 </div>
-                <div class="<%= weather_bubble_class(day[:condition]) %> w-12 h-12 rounded-2xl flex items-center justify-center">
-                  <span class="text-2xl"><%= weather_icon(day[:condition]) %></span>
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-medium text-brown-light"><%= day[:condition] %></span>
+                  <div class="<%= weather_bubble_class(day[:condition]) %> w-12 h-12 rounded-2xl flex items-center justify-center">
+                    <span class="text-2xl"><%= weather_icon(day[:condition]) %></span>
+                  </div>
                 </div>
               </div>
 
-              <!-- Temperature range bar -->
-              <div class="flex items-center gap-2 mb-3">
-                <div class="text-center">
-                  <span class="text-xl font-bold text-rose-dark"><%= day[:high] %>&deg;</span>
-                  <% if day[:feels_like_high] && day[:feels_like_high] != day[:high] %>
-                    <p class="text-xs text-taupe">Feels <%= day[:feels_like_high] %>&deg;</p>
-                  <% end %>
+              <!-- Temperatures -->
+              <div class="mb-3">
+                <div class="flex items-baseline gap-1">
+                  <span class="text-2xl font-bold text-rose-dark"><%= day[:high] %>&deg;</span>
+                  <span class="text-sm text-brown-light">/</span>
+                  <span class="text-2xl font-bold text-sage-dark"><%= day[:low] %>&deg;</span>
                 </div>
-                <div class="flex-1 h-1.5 rounded-full" style="background: linear-gradient(to right, var(--color-rose-light), var(--color-sage-light));"></div>
-                <div class="text-center">
-                  <span class="text-xl font-bold text-sage-dark"><%= day[:low] %>&deg;</span>
-                  <% if day[:feels_like_low] && day[:feels_like_low] != day[:low] %>
-                    <p class="text-xs text-taupe">Feels <%= day[:feels_like_low] %>&deg;</p>
-                  <% end %>
-                </div>
+                <% has_feels_high = day[:feels_like_high] && day[:feels_like_high] != day[:high] %>
+                <% has_feels_low = day[:feels_like_low] && day[:feels_like_low] != day[:low] %>
+                <% if has_feels_high || has_feels_low %>
+                  <p class="text-xs text-taupe mt-0.5">
+                    Feels like
+                    <%= has_feels_high ? "#{day[:feels_like_high]}°" : "#{day[:high]}°" %> /
+                    <%= has_feels_low ? "#{day[:feels_like_low]}°" : "#{day[:low]}°" %>
+                  </p>
+                <% end %>
               </div>
 
-              <!-- Details row: condition + precipitation + wind + sunrise -->
-              <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-brown-light">
-                <span><%= day[:condition] %></span>
+              <!-- Details -->
+              <div class="space-y-1 text-sm text-brown-light">
                 <% if day[:precipitation_mm] && day[:precipitation_mm] > 0 %>
-                  <span class="text-blue-500"><%= day[:condition] == 'Snowy' ? '❄️' : '💧' %> <%= day[:precipitation_mm] %>mm <span class="text-taupe">(<%= day[:precipitation_hours] %>h)</span></span>
+                  <p>
+                    <%= day[:condition] == 'Snowy' ? '❄️' : '💧' %>
+                    <span class="text-brown"><%= day[:precipitation_mm] %>mm</span>
+                    over <%= day[:precipitation_hours] %>h
+                  </p>
                 <% end %>
                 <% if day[:wind_speed] && day[:wind_speed] > 10 %>
-                  <span class="text-gray-600">💨 <%= day[:wind_speed] %> <span class="text-taupe"><%= day[:wind_gusts] ? "gusts #{day[:wind_gusts]}" : "mph" %></span></span>
+                  <p>
+                    💨
+                    <span class="text-brown"><%= day[:wind_speed] %> mph</span><%= day[:wind_gusts] ? raw(" &middot; gusts #{day[:wind_gusts]} mph") : "" %>
+                  </p>
                 <% end %>
                 <% if day[:sunrise] && day[:sunset] %>
-                  <span class="text-taupe">☀️ <%= Time.parse(day[:sunrise]).strftime('%-I:%M%P') %> - <%= Time.parse(day[:sunset]).strftime('%-I:%M%P') %></span>
+                  <p>
+                    ☀️ <%= Time.parse(day[:sunrise]).strftime('%-I:%M%P') %> &ndash; <%= Time.parse(day[:sunset]).strftime('%-I:%M%P') %>
+                  </p>
                 <% end %>
               </div>
             </div>
