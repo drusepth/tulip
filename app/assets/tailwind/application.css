@@ -55,8 +55,15 @@ body {
   background-image:
     url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
   background-attachment: fixed;
-  /* Add padding for fixed bottom navbar (56px navbar + 24px grass) */
-  padding-bottom: 80px;
+  /* Add padding for fixed bottom navbar */
+  /* Mobile: 64px navbar + safe area; Desktop: 56px navbar + 24px grass */
+  padding-bottom: 72px;
+}
+
+@media (min-width: 640px) {
+  body {
+    padding-bottom: 80px;
+  }
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -1240,6 +1247,45 @@ input[type="checkbox"]:focus {
   background-repeat: repeat-x;
   background-position: bottom center;
   background-size: 120px 24px;
+}
+
+/* ========================================
+   Mobile Bottom Tab Bar
+   ======================================== */
+
+.navbar-grass-mobile {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+}
+
+.navbar-grass-mobile::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  height: 16px;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 16' preserveAspectRatio='xMidYMax meet'%3E%3Cpath d='M0,16 L0,12 Q2,7 4,12 L4,16 M4,16 L4,10 Q6,5 8,10 L8,16 M8,16 L8,11 Q10,6 12,11 L12,16 M12,16 L12,13 Q14,8 16,13 L16,16 M16,16 L16,10 Q18,5 20,10 L20,16 M20,16 L20,12 Q22,7 24,12 L24,16 M24,16 L24,9 Q26,4 28,9 L28,16 M28,16 L28,11 Q30,6 32,11 L32,16 M32,16 L32,10 Q34,5 36,10 L36,16 M36,16 L36,12 Q38,7 40,12 L40,16 M40,16 L40,10 Q42,5 44,10 L44,16 M44,16 L44,12 Q46,7 48,12 L48,16 M48,16 L48,9 Q50,4 52,9 L52,16 M52,16 L52,11 Q54,6 56,11 L56,16 M56,16 L56,10 Q58,5 60,10 L60,16 M60,16 L60,12 Q62,7 64,12 L64,16 M64,16 L64,10 Q66,5 68,10 L68,16 M68,16 L68,12 Q70,7 72,12 L72,16 M72,16 L72,9 Q74,4 76,9 L76,16 M76,16 L76,11 Q78,6 80,11 L80,16 M80,16 L80,10 Q82,5 84,10 L84,16 M84,16 L84,12 Q86,7 88,12 L88,16 M88,16 L88,10 Q90,5 92,10 L92,16 M92,16 L92,12 Q94,7 96,12 L96,16 M96,16 L96,9 Q98,4 100,9 L100,16 M100,16 L100,11 Q102,6 104,11 L104,16 M104,16 L104,10 Q106,5 108,10 L108,16 M108,16 L108,12 Q110,7 112,12 L112,16 M112,16 L112,10 Q114,5 116,10 L116,16 M116,16 L116,12 Q118,7 120,12 L120,16 Z' fill='%23B8C9B8'/%3E%3Cpath d='M1,16 L1,13 Q3,10 5,13 L5,16 M9,16 L9,12 Q11,9 13,12 L13,16 M17,16 L17,13 Q19,10 21,13 L21,16 M25,16 L25,13 Q27,10 29,13 L29,16 M33,16 L33,12 Q35,9 37,12 L37,16 M41,16 L41,13 Q43,10 45,13 L45,16 M49,16 L49,13 Q51,10 53,13 L53,16 M57,16 L57,12 Q59,9 61,12 L61,16 M65,16 L65,13 Q67,10 69,13 L69,16 M73,16 L73,13 Q75,10 77,13 L77,16 M81,16 L81,12 Q83,9 85,12 L85,16 M89,16 L89,13 Q91,10 93,13 L93,16 M97,16 L97,13 Q99,10 101,13 L101,16 M105,16 L105,12 Q107,9 109,12 L109,16 M113,16 L113,13 Q115,10 117,13 L117,16 Z' fill='%23c8d9c8'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: bottom center;
+  background-size: 120px 16px;
+}
+
+.mobile-nav-item {
+  min-width: 48px;
+  min-height: 48px;
+}
+
+.mobile-nav-active {
+  color: var(--color-sage-dark);
+}
+
+.mobile-nav-item-primary {
+  min-width: 48px;
 }
 
 /* ========================================
