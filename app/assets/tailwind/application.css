@@ -1179,6 +1179,26 @@ input[type="checkbox"]:focus {
 }
 
 /* ========================================
+   Weather Day Cards (Mobile)
+   ======================================== */
+
+/* Condition-tinted card backgrounds */
+.weather-card-sunny { background-color: #FDF0E8; }
+.weather-card-cloudy { background-color: #EDEAE6; }
+.weather-card-foggy { background-color: #EBE6E0; }
+.weather-card-rainy { background-color: #E6EDF2; }
+.weather-card-snowy { background-color: #E8E4EF; }
+.weather-card-stormy { background-color: #EAE2E8; }
+
+/* Icon bubble backgrounds */
+.weather-bubble-sunny { background-color: #F5DFD0; }
+.weather-bubble-cloudy { background-color: #DDD4CA; }
+.weather-bubble-foggy { background-color: #D8D0C8; }
+.weather-bubble-rainy { background-color: #CDE0ED; }
+.weather-bubble-snowy { background-color: #D8D2E4; }
+.weather-bubble-stormy { background-color: #DFD0DA; }
+
+/* ========================================
    Responsive Adjustments
    ======================================== */
 
