@@ -55,6 +55,7 @@ class Stay < ApplicationRecord
   after_validation :geocode, if: :should_geocode?
 
   before_save :update_status
+  after_save :clear_cached_location_data, if: :location_changed?
 
   scope :upcoming, -> { where(status: 'upcoming').order(:check_in) }
   scope :current, -> { where(status: 'current') }
@@ -229,6 +230,16 @@ class Stay < ApplicationRecord
 
   def should_geocode?
     (address_changed? || city_changed? || country_changed?) && full_address.present?
+  end
+
+  def location_changed?
+    saved_change_to_latitude? || saved_change_to_longitude?
+  end
+
+  def clear_cached_location_data
+    pois.destroy_all
+    transit_routes.destroy_all
+    update_columns(weather_data: nil, weather_fetched_at: nil) if weather_data.present?
   end
 
   def update_status
