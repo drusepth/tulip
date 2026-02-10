@@ -199,7 +199,9 @@
                             </svg>
                           <% end %>
                           <div class="min-w-0">
-                            <span class="text-brown"><%= poi.name || 'Unnamed' %></span>
+                            <%= link_to stay_poi_path(@stay, poi), class: "text-brown hover:text-sage-dark transition-colors" do %>
+                              <%= poi.name || 'Unnamed' %>
+                            <% end %>
                             <% if poi.cuisine.present? %>
                               <p class="text-xs text-brown-light truncate"><%= truncate(poi.cuisine.gsub(';', ', ').titleize, length: 60) %></p>
                             <% end %>
