@@ -8,7 +8,11 @@ class StaysController < ApplicationController
   end
 
   def show
-    @pois_by_category = @stay.pois.where.not(category: ['bus_stops', 'stations']).group_by(&:category)
+    bucket_list_titles = @stay.bucket_list_items.pluck(:title).map { |t| t&.downcase }.to_set
+    @pois_by_category = @stay.pois
+      .where.not(category: ['bus_stops', 'stations'])
+      .reject { |poi| bucket_list_titles.include?(poi.name&.downcase) }
+      .group_by(&:category)
 
     # Fetch weather data if stale and stay has coordinates
     if @stay.latitude.present? && @stay.longitude.present? && @stay.weather_stale?
