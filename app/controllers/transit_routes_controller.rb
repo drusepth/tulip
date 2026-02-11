@@ -32,11 +32,15 @@ class TransitRoutesController < ApplicationController
 
     # Fetch from Overpass API if stay has coordinates
     if @stay.latitude.present? && @stay.longitude.present?
-      routes_data = OverpassService.fetch_transit_routes(
-        lat: @stay.latitude.to_f,
-        lng: @stay.longitude.to_f,
-        route_type: route_type
-      )
+      begin
+        routes_data = OverpassService.fetch_transit_routes(
+          lat: @stay.latitude.to_f,
+          lng: @stay.longitude.to_f,
+          route_type: route_type
+        )
+      rescue OverpassService::RateLimitedError
+        return render json: { error: 'Rate limited by upstream API. Please retry later.' }, status: :too_many_requests
+      end
 
       # Cache the results
       routes_data.each do |route_data|

@@ -618,8 +618,13 @@ export default class extends Controller {
       const fetchPromises = staysToFetch.map(stay => {
         const url = this.poisUrlValue.replace(':id', stay.id) + `?category=${category}`
         return fetch(url, { signal })
-          .then(response => response.json())
-          .then(pois => ({ stay, pois }))
+          .then(response => {
+            if (response.status === 429) {
+              delete this.fetchedPOIs[`${category}-${stay.id}`]
+              return { stay, pois: [] }
+            }
+            return response.json().then(pois => ({ stay, pois }))
+          })
           .catch(error => {
             if (error.name === 'AbortError') {
               // Request was cancelled, clear the fetched flag so it can be retried
@@ -753,32 +758,27 @@ export default class extends Controller {
     return `${category}:${roundedLat.toFixed(2)}:${roundedLng.toFixed(2)}`
   }
 
-  // Returns all grid cells that overlap with the current map viewport
+  // Returns grid cells near the viewport center (not the entire viewport).
+  // Searches a 5x5 block (~5km x 5km) around center so POIs load as users
+  // pan, without flooding Overpass with requests for the full visible area.
   getVisibleGridCells(category) {
-    const gridSize = 0.01
-    const bounds = this.map.getBounds()
-    const south = bounds.getSouth()
-    const north = bounds.getNorth()
-    const west = bounds.getWest()
-    const east = bounds.getEast()
+    const gridSize = 0.01 // ~1km grid cells
+    const center = this.map.getCenter()
+    const centerLat = Math.floor(center.lat / gridSize) * gridSize
+    const centerLng = Math.floor(center.lng / gridSize) * gridSize
 
-    const minLat = Math.floor(south / gridSize) * gridSize
-    const maxLat = Math.floor(north / gridSize) * gridSize
-    const minLng = Math.floor(west / gridSize) * gridSize
-    const maxLng = Math.floor(east / gridSize) * gridSize
-
-    // Estimate total cells before allocating to avoid OOM at low zoom levels
-    const latSteps = Math.round((maxLat - minLat) / gridSize) + 1
-    const lngSteps = Math.round((maxLng - minLng) / gridSize) + 1
-    if (latSteps * lngSteps > 1000) return []
-
+    const radius = 2 // cells in each direction from center (5x5 = 25 cells max)
     const cells = []
-    for (let lat = minLat; lat <= maxLat; lat += gridSize) {
-      for (let lng = minLng; lng <= maxLng; lng += gridSize) {
+
+    for (let dLat = -radius; dLat <= radius; dLat++) {
+      for (let dLng = -radius; dLng <= radius; dLng++) {
+        const lat = centerLat + dLat * gridSize
+        const lng = centerLng + dLng * gridSize
         const gridKey = `${category}:${lat.toFixed(2)}:${lng.toFixed(2)}`
         cells.push({ lat: lat + gridSize / 2, lng: lng + gridSize / 2, gridKey })
       }
     }
+
     return cells
   }
 
@@ -789,18 +789,13 @@ export default class extends Controller {
     // so searching only makes sense at neighborhood/city zoom levels
     if (this.map.getZoom() < 13) return
 
-    const MAX_GRID_CELLS = 30
     const allCells = this.getVisibleGridCells(category)
-    const unsearchedCells = allCells.filter(cell => {
+    const cellsToSearch = allCells.filter(cell => {
       const trackingKey = `${category}-${cell.gridKey}`
       return !this.searchedGridCells[trackingKey]
     })
 
-    if (unsearchedCells.length === 0) return
-    // If zoomed way out, only search a subset near the center
-    const cellsToSearch = unsearchedCells.length > MAX_GRID_CELLS
-      ? unsearchedCells.slice(0, MAX_GRID_CELLS)
-      : unsearchedCells
+    if (cellsToSearch.length === 0) return
 
     // Mark all as searched before starting requests
     cellsToSearch.forEach(cell => {
@@ -824,20 +819,36 @@ export default class extends Controller {
     this.startLoading('poi', category)
 
     try {
-      // Fetch all unsearched grid cells in parallel
-      const fetches = cellsToSearch.map(cell =>
-        fetch(`${this.poisSearchUrlValue}?lat=${cell.lat}&lng=${cell.lng}&category=${category}`, { signal })
-          .then(r => r.json())
-          .then(pois => ({ pois, cell }))
-          .catch(error => {
-            if (error.name === 'AbortError') throw error
-            // On individual cell failure, clear its tracked state so it can retry
-            delete this.searchedGridCells[`${category}-${cell.gridKey}`]
-            return { pois: [], cell }
-          })
-      )
+      // Fetch grid cells with limited concurrency to avoid overwhelming the Overpass API
+      const MAX_CONCURRENT = 2
+      const results = []
 
-      const results = await Promise.all(fetches)
+      for (let i = 0; i < cellsToSearch.length; i += MAX_CONCURRENT) {
+        if (signal.aborted) return
+
+        const batch = cellsToSearch.slice(i, i + MAX_CONCURRENT)
+        const batchResults = await Promise.all(
+          batch.map(cell =>
+            fetch(`${this.poisSearchUrlValue}?lat=${cell.lat}&lng=${cell.lng}&category=${category}`, { signal })
+              .then(r => {
+                if (r.status === 429) {
+                  // Rate limited — clear this cell so it retries on next viewport change
+                  delete this.searchedGridCells[`${category}-${cell.gridKey}`]
+                  return { pois: [], cell }
+                }
+                return r.json().then(pois => ({ pois, cell }))
+              })
+              .catch(error => {
+                if (error.name === 'AbortError') throw error
+                // On individual cell failure, clear its tracked state so it can retry
+                delete this.searchedGridCells[`${category}-${cell.gridKey}`]
+                return { pois: [], cell }
+              })
+          )
+        )
+        results.push(...batchResults)
+      }
+
       if (signal.aborted) return
 
       results.forEach(({ pois }) => {
@@ -954,8 +965,13 @@ export default class extends Controller {
       const fetchPromises = staysToFetch.map(stay => {
         const url = this.transitUrlValue.replace(':id', stay.id) + `?route_type=${routeType}`
         return fetch(url, { signal })
-          .then(response => response.json())
-          .then(routes => ({ stay, routes }))
+          .then(response => {
+            if (response.status === 429) {
+              delete this.fetchedTransit[`${routeType}-${stay.id}`]
+              return { stay, routes: [] }
+            }
+            return response.json().then(routes => ({ stay, routes }))
+          })
           .catch(error => {
             if (error.name === 'AbortError') {
               // Request was cancelled, clear the fetched flag so it can be retried
