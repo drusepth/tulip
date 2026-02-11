@@ -11,18 +11,15 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :places, only: [:show]
+
   resources :stays do
     member do
       get :weather
       get :edit_notes
       patch :update_notes
     end
-    resources :pois, only: [:index, :show, :create, :update, :destroy] do
-      member do
-        get :edit_notes
-        patch :update_notes
-      end
-    end
+    resources :pois, only: [:index, :create, :update, :destroy]
     resources :transit_routes, only: [:index, :create]
     resources :bucket_list_items, only: [:create, :edit, :update, :destroy] do
       member do

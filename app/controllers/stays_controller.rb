@@ -9,7 +9,7 @@ class StaysController < ApplicationController
 
   def show
     bucket_list_titles = @stay.bucket_list_items.pluck(:title).map { |t| t&.downcase }.to_set
-    @pois_by_category = @stay.pois
+    @pois_by_category = @stay.pois.includes(:place)
       .where.not(category: ['bus_stops', 'stations'])
       .reject { |poi| bucket_list_titles.include?(poi.name&.downcase) }
       .group_by(&:category)

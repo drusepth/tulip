@@ -2,22 +2,23 @@ class GalleriesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_stay
 
-  GALLERY_CATEGORIES = (Poi::BROWSABLE_CATEGORIES - %w[stations bus_stops]).freeze
+  GALLERY_CATEGORIES = (Place::BROWSABLE_CATEGORIES - %w[stations bus_stops]).freeze
 
   def show
     fetch_pois_if_needed
     ensure_browsable_pois_cached
-    @pois = @stay.pois.where(category: GALLERY_CATEGORIES)
-                      .order(Arel.sql("CASE WHEN foursquare_photo_url IS NOT NULL THEN 0 ELSE 1 END"), :distance_meters)
+    @pois = @stay.pois.includes(:place).where(category: GALLERY_CATEGORIES)
+                      .joins(:place)
+                      .order(Arel.sql("CASE WHEN places.foursquare_photo_url IS NOT NULL THEN 0 ELSE 1 END"), :distance_meters)
     @categories = GALLERY_CATEGORIES
   end
 
   def add_to_bucket_list
-    # Support both poi_id (OSM/all POIs) and fsq_id (legacy Foursquare)
+    # Support both poi_id and fsq_id (Foursquare)
     poi = if params[:poi_id].present?
-      @stay.pois.find_by(id: params[:poi_id])
-    else
-      @stay.pois.find_by(foursquare_id: params[:fsq_id])
+      @stay.pois.includes(:place).find_by(id: params[:poi_id])
+    elsif params[:fsq_id].present?
+      @stay.pois.includes(:place).joins(:place).find_by(places: { foursquare_id: params[:fsq_id] })
     end
 
     if poi.blank?

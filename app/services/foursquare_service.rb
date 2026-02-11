@@ -5,21 +5,27 @@ class FoursquareService
   MATCH_THRESHOLD = 0.6 # 60% similarity required for a match
 
   class << self
-    def enrich_poi(poi)
-      return if poi.foursquare_fetched_at.present?
+    # Enrich a Place with Foursquare data
+    def enrich_place(place)
+      return if place.foursquare_fetched_at.present?
       return unless api_key_configured?
 
-      place = find_matching_place(poi)
-      return mark_as_fetched(poi) unless place
+      matching_place = find_matching_place(place)
+      return mark_as_fetched(place) unless matching_place
 
-      poi.update(
-        foursquare_id: place['fsq_place_id'],
-        foursquare_rating: place['rating'],
-        foursquare_price: place['price'],
-        foursquare_photo_url: extract_photo_url(place),
-        foursquare_tip: extract_top_tip(place),
+      place.update(
+        foursquare_id: matching_place['fsq_place_id'],
+        foursquare_rating: matching_place['rating'],
+        foursquare_price: matching_place['price'],
+        foursquare_photo_url: extract_photo_url(matching_place),
+        foursquare_tip: extract_top_tip(matching_place),
         foursquare_fetched_at: Time.current
       )
+    end
+
+    # Legacy: enrich via a POI (delegates to its place)
+    def enrich_poi(poi)
+      enrich_place(poi.place)
     end
 
     private
@@ -33,7 +39,7 @@ class FoursquareService
         Rails.application.credentials.foursquare_api_key
     end
 
-    def find_matching_place(poi)
+    def find_matching_place(place)
       response = HTTParty.get(
         "#{BASE_URL}/places/search",
         headers: {
@@ -41,7 +47,7 @@ class FoursquareService
           'X-Places-Api-Version' => API_VERSION
         },
         query: {
-          ll: "#{poi.latitude},#{poi.longitude}",
+          ll: "#{place.latitude},#{place.longitude}",
           radius: SEARCH_RADIUS,
           limit: 1,
           fields: 'fsq_place_id,name,rating,price,photos,tips'
@@ -57,7 +63,7 @@ class FoursquareService
       places = response.parsed_response['results']
       return nil if places.blank?
 
-      best_match(poi.name, places)
+      best_match(place.name, places)
     rescue StandardError => e
       Rails.logger.error("Foursquare API exception: #{e.message}")
       nil
@@ -137,8 +143,8 @@ class FoursquareService
       tip&.dig('text')
     end
 
-    def mark_as_fetched(poi)
-      poi.update(foursquare_fetched_at: Time.current)
+    def mark_as_fetched(place)
+      place.update(foursquare_fetched_at: Time.current)
     end
   end
 end

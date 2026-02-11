@@ -298,7 +298,7 @@
                             </svg>
                           <% end %>
                           <div class="min-w-0">
-                            <%= link_to stay_poi_path(@stay, poi), class: "text-brown hover:text-sage-dark transition-colors", data: { turbo_frame: "_top" } do %>
+                            <%= link_to place_path(poi.place, stay_id: @stay.id), class: "text-brown hover:text-sage-dark transition-colors", data: { turbo_frame: "_top" } do %>
                               <%= poi.name || 'Unnamed' %>
                             <% end %>
                             <% if poi.cuisine.present? %>

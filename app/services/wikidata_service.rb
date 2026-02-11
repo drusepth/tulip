@@ -4,20 +4,21 @@ class WikidataService
   SEARCH_RADIUS_KM = 1 # Max distance for coordinate-based matching
 
   class << self
-    def enrich_poi(poi)
-      return if poi.wikidata_fetched_at.present?
+    # Enrich a Place with Wikidata/Wikipedia data
+    def enrich_place(place)
+      return if place.wikidata_fetched_at.present?
 
       # Step 1: Resolve wikidata ID (from OSM tag or by searching)
-      wikidata_id = poi.wikidata_id.presence || search_wikidata_id(poi)
+      wikidata_id = place.wikidata_id.presence || search_wikidata_id(place)
 
       unless wikidata_id
-        return mark_as_fetched(poi)
+        return mark_as_fetched(place)
       end
 
       # Step 2: Fetch entity data from Wikidata
       entity = fetch_entity(wikidata_id)
       unless entity
-        return mark_as_fetched(poi, wikidata_id: wikidata_id)
+        return mark_as_fetched(place, wikidata_id: wikidata_id)
       end
 
       # Step 3: Extract Wikipedia title and fetch extract
@@ -28,7 +29,7 @@ class WikidataService
       # Step 4: Extract Wikimedia Commons image
       image_url = extract_commons_image_url(entity)
 
-      poi.update(
+      place.update(
         wikidata_id: wikidata_id,
         wikipedia_url: wikipedia_url,
         wikipedia_extract: wikipedia_extract,
@@ -36,19 +37,24 @@ class WikidataService
         wikidata_fetched_at: Time.current
       )
     rescue StandardError => e
-      Rails.logger.error("WikidataService error for POI #{poi.id}: #{e.message}")
-      mark_as_fetched(poi)
+      Rails.logger.error("WikidataService error for Place #{place.id}: #{e.message}")
+      mark_as_fetched(place)
+    end
+
+    # Legacy: enrich via a POI (delegates to its place)
+    def enrich_poi(poi)
+      enrich_place(poi.place)
     end
 
     private
 
-    # Search Wikidata for an entity matching this POI by name + coordinates
-    def search_wikidata_id(poi)
-      return nil unless poi.name.present? && poi.latitude.present? && poi.longitude.present?
+    # Search Wikidata for an entity matching this place by name + coordinates
+    def search_wikidata_id(place)
+      return nil unless place.name.present? && place.latitude.present? && place.longitude.present?
 
       response = HTTParty.get(WIKIDATA_API, query: {
         action: 'wbsearchentities',
-        search: poi.name,
+        search: place.name,
         language: 'en',
         format: 'json',
         limit: 5
@@ -68,7 +74,7 @@ class WikidataService
         next unless coords
 
         distance = haversine_km(
-          poi.latitude.to_f, poi.longitude.to_f,
+          place.latitude.to_f, place.longitude.to_f,
           coords[:lat], coords[:lng]
         )
 
@@ -171,10 +177,10 @@ class WikidataService
       r * c
     end
 
-    def mark_as_fetched(poi, wikidata_id: nil)
+    def mark_as_fetched(place, wikidata_id: nil)
       attrs = { wikidata_fetched_at: Time.current }
       attrs[:wikidata_id] = wikidata_id if wikidata_id
-      poi.update(attrs)
+      place.update(attrs)
     end
   end
 end

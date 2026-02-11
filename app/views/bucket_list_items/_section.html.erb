@@ -100,7 +100,7 @@
 
           <!-- Category chips -->
           <div class="flex flex-wrap gap-2 mb-3">
-            <% Poi::BROWSABLE_CATEGORIES.each do |category| %>
+            <% Place::BROWSABLE_CATEGORIES.each do |category| %>
               <button type="button"
                       class="category-pill"
                       data-action="click->poi-category-picker#loadCategory"

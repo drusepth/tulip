@@ -62,8 +62,10 @@ class StayTest < ActiveSupport::TestCase
     )
 
     # Create some cached POIs and transit routes
-    stay.pois.create!(name: "Coffee Shop", category: "coffee", latitude: 45.516, longitude: -122.679, distance_meters: 100, osm_id: "test_poi_1")
-    stay.pois.create!(name: "Grocery Store", category: "grocery", latitude: 45.517, longitude: -122.680, distance_meters: 200, osm_id: "test_poi_2")
+    place1 = Place.create!(name: "Coffee Shop", category: "coffee", latitude: 45.516, longitude: -122.679, osm_id: "test_poi_1")
+    place2 = Place.create!(name: "Grocery Store", category: "grocery", latitude: 45.517, longitude: -122.680, osm_id: "test_poi_2")
+    stay.pois.create!(place: place1, category: "coffee", distance_meters: 100)
+    stay.pois.create!(place: place2, category: "grocery", distance_meters: 200)
     stay.transit_routes.create!(name: "Bus 14", route_type: "bus", osm_id: "test_route_1")
     stay.update_columns(weather_data: '{"temp": 50}', weather_fetched_at: Time.current)
 
@@ -95,7 +97,8 @@ class StayTest < ActiveSupport::TestCase
       check_out: Date.new(2027, 1, 10)
     )
 
-    stay.pois.create!(name: "Coffee Shop", category: "coffee", latitude: 45.516, longitude: -122.679, distance_meters: 100, osm_id: "test_poi_3")
+    place = Place.create!(name: "Coffee Shop", category: "coffee", latitude: 45.516, longitude: -122.679, osm_id: "test_poi_3")
+    stay.pois.create!(place: place, category: "coffee", distance_meters: 100)
 
     stay.update!(title: "Updated Title", notes: "New notes")
 
