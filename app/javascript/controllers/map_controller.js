@@ -753,18 +753,51 @@ export default class extends Controller {
     return `${category}:${roundedLat.toFixed(2)}:${roundedLng.toFixed(2)}`
   }
 
+  // Returns all grid cells that overlap with the current map viewport
+  getVisibleGridCells(category) {
+    const gridSize = 0.01
+    const bounds = this.map.getBounds()
+    const south = bounds.getSouth()
+    const north = bounds.getNorth()
+    const west = bounds.getWest()
+    const east = bounds.getEast()
+
+    const minLat = Math.floor(south / gridSize) * gridSize
+    const maxLat = Math.floor(north / gridSize) * gridSize
+    const minLng = Math.floor(west / gridSize) * gridSize
+    const maxLng = Math.floor(east / gridSize) * gridSize
+
+    const cells = []
+    for (let lat = minLat; lat <= maxLat; lat += gridSize) {
+      for (let lng = minLng; lng <= maxLng; lng += gridSize) {
+        const gridKey = `${category}:${lat.toFixed(2)}:${lng.toFixed(2)}`
+        cells.push({ lat: lat + gridSize / 2, lng: lng + gridSize / 2, gridKey })
+      }
+    }
+    return cells
+  }
+
   async searchViewportPOIs(category) {
     if (!this.hasPoisSearchUrlValue) return
 
-    const center = this.map.getCenter()
-    const gridKey = this.getGridKey(center.lat, center.lng, category)
-    const trackingKey = `${category}-${gridKey}`
+    // Cap: skip viewport search if zoomed out too far (too many grid cells)
+    const MAX_GRID_CELLS = 30
+    const allCells = this.getVisibleGridCells(category)
+    const unsearchedCells = allCells.filter(cell => {
+      const trackingKey = `${category}-${cell.gridKey}`
+      return !this.searchedGridCells[trackingKey]
+    })
 
-    // Skip if we've already searched this grid cell
-    if (this.searchedGridCells[trackingKey]) return
+    if (unsearchedCells.length === 0) return
+    // If zoomed way out, only search a subset near the center
+    const cellsToSearch = unsearchedCells.length > MAX_GRID_CELLS
+      ? unsearchedCells.slice(0, MAX_GRID_CELLS)
+      : unsearchedCells
 
-    // Mark as searched before starting request
-    this.searchedGridCells[trackingKey] = true
+    // Mark all as searched before starting requests
+    cellsToSearch.forEach(cell => {
+      this.searchedGridCells[`${category}-${cell.gridKey}`] = true
+    })
 
     // Cancel any in-flight viewport search for this category
     if (this.viewportSearchAbortControllers[category]) {
@@ -783,54 +816,68 @@ export default class extends Controller {
     this.startLoading('poi', category)
 
     try {
-      const url = `${this.poisSearchUrlValue}?lat=${center.lat}&lng=${center.lng}&category=${category}`
-      const response = await fetch(url, { signal })
-      const pois = await response.json()
+      // Fetch all unsearched grid cells in parallel
+      const fetches = cellsToSearch.map(cell =>
+        fetch(`${this.poisSearchUrlValue}?lat=${cell.lat}&lng=${cell.lng}&category=${category}`, { signal })
+          .then(r => r.json())
+          .then(pois => ({ pois, cell }))
+          .catch(error => {
+            if (error.name === 'AbortError') throw error
+            // On individual cell failure, clear its tracked state so it can retry
+            delete this.searchedGridCells[`${category}-${cell.gridKey}`]
+            return { pois: [], cell }
+          })
+      )
 
+      const results = await Promise.all(fetches)
       if (signal.aborted) return
 
-      pois.forEach(poi => {
-        if (poi.latitude && poi.longitude) {
-          const icon = this.getPOIIcon(category)
-          const marker = L.marker([poi.latitude, poi.longitude], { icon })
+      results.forEach(({ pois }) => {
+        pois.forEach(poi => {
+          if (poi.latitude && poi.longitude) {
+            const icon = this.getPOIIcon(category)
+            const marker = L.marker([poi.latitude, poi.longitude], { icon })
 
-          // Find nearest stay to this POI for bucket list button
-          const nearestStay = this.findNearestStay(poi.latitude, poi.longitude)
-          const stayId = nearestStay ? nearestStay.id : null
+            // Find nearest stay to this POI for bucket list button
+            const nearestStay = this.findNearestStay(poi.latitude, poi.longitude)
+            const stayId = nearestStay ? nearestStay.id : null
 
-          marker.bindPopup(`
-            <div class="poi-popup">
-              <div class="poi-popup-header">
-                <span class="poi-popup-category ${category}">${this.getCategoryLabel(category)}</span>
+            marker.bindPopup(`
+              <div class="poi-popup">
+                <div class="poi-popup-header">
+                  <span class="poi-popup-category ${category}">${this.getCategoryLabel(category)}</span>
+                </div>
+                <h4 class="poi-popup-name">${poi.name || 'Unknown'}</h4>
+                <div class="poi-popup-details">
+                  ${poi.address ? `<span class="poi-popup-address">${poi.address}</span>` : ''}
+                  ${poi.opening_hours ? `<span class="poi-popup-hours">${poi.opening_hours}</span>` : ''}
+                </div>
+                ${poi.place_id ? `<a href="/places/${poi.place_id}${stayId ? `?stay_id=${stayId}` : ''}" class="poi-popup-link">View details</a>` : ''}
+                ${stayId ? `
+                  <button
+                    class="poi-popup-btn add-to-bucket-list-btn"
+                    data-stay-id="${stayId}"
+                    data-poi-name="${(poi.name || '').replace(/"/g, '&quot;')}"
+                    data-poi-address="${(poi.address || '').replace(/"/g, '&quot;')}"
+                  >
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Add to bucket list
+                  </button>
+                ` : ''}
               </div>
-              <h4 class="poi-popup-name">${poi.name || 'Unknown'}</h4>
-              <div class="poi-popup-details">
-                ${poi.address ? `<span class="poi-popup-address">${poi.address}</span>` : ''}
-                ${poi.opening_hours ? `<span class="poi-popup-hours">${poi.opening_hours}</span>` : ''}
-              </div>
-              ${poi.place_id ? `<a href="/places/${poi.place_id}${stayId ? `?stay_id=${stayId}` : ''}" class="poi-popup-link">View details</a>` : ''}
-              ${stayId ? `
-                <button
-                  class="poi-popup-btn add-to-bucket-list-btn"
-                  data-stay-id="${stayId}"
-                  data-poi-name="${(poi.name || '').replace(/"/g, '&quot;')}"
-                  data-poi-address="${(poi.address || '').replace(/"/g, '&quot;')}"
-                >
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                  </svg>
-                  Add to bucket list
-                </button>
-              ` : ''}
-            </div>
-          `, { className: 'cozy-popup', minWidth: 260, maxWidth: 300 })
-          layerGroup.addLayer(marker)
-        }
+            `, { className: 'cozy-popup', minWidth: 260, maxWidth: 300 })
+            layerGroup.addLayer(marker)
+          }
+        })
       })
     } catch (error) {
       if (error.name === 'AbortError') {
-        // Request was cancelled, clear the searched flag so it can be retried
-        delete this.searchedGridCells[trackingKey]
+        // Request was cancelled, clear searched flags so cells can be retried
+        cellsToSearch.forEach(cell => {
+          delete this.searchedGridCells[`${category}-${cell.gridKey}`]
+        })
         return
       }
       console.error(`Failed to search viewport POIs for ${category}:`, error)
