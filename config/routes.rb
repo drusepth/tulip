@@ -18,9 +18,6 @@ Rails.application.routes.draw do
       patch :update_notes
     end
     resources :pois, only: [:index, :show, :create, :update, :destroy] do
-      collection do
-        get :browse
-      end
       member do
         get :edit_notes
         patch :update_notes

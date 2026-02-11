@@ -3,11 +3,11 @@
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <!-- Navigation: Back + Prev/Next -->
   <div class="mb-6 flex items-center justify-between">
-    <%= link_to browse_stay_pois_path(@stay, category: @poi.category), class: "text-sage-dark hover:text-sage inline-flex items-center" do %>
+    <%= link_to stay_gallery_path(@stay), class: "text-sage-dark hover:text-sage inline-flex items-center" do %>
       <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
       </svg>
-      Back to <%= @poi.category.titleize %>
+      Back to Things to Do
     <% end %>
 
     <div class="flex items-center gap-2">
