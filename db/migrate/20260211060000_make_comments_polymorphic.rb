@@ -2,7 +2,7 @@ class MakeCommentsPolymorphic < ActiveRecord::Migration[8.0]
   def up
     # Add polymorphic columns
     add_column :comments, :commentable_type, :string
-    add_column :comments, :commentable_id, :integer
+    add_column :comments, :commentable_id, :bigint
 
     # Migrate existing data: all comments currently belong to stays
     execute <<-SQL
@@ -19,13 +19,13 @@ class MakeCommentsPolymorphic < ActiveRecord::Migration[8.0]
 
     # Remove old stay-specific columns and indexes
     remove_foreign_key :comments, :stays
-    remove_index :comments, name: "index_comments_on_stay_id_and_created_at"
-    remove_index :comments, name: "index_comments_on_stay_id"
+    remove_index :comments, name: "index_comments_on_stay_id_and_created_at", if_exists: true
+    remove_index :comments, name: "index_comments_on_stay_id", if_exists: true
     remove_column :comments, :stay_id
   end
 
   def down
-    add_column :comments, :stay_id, :integer
+    add_column :comments, :stay_id, :bigint
 
     execute <<-SQL
       UPDATE comments SET stay_id = commentable_id WHERE commentable_type = 'Stay'
