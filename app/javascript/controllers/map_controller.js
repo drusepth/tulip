@@ -758,32 +758,27 @@ export default class extends Controller {
     return `${category}:${roundedLat.toFixed(2)}:${roundedLng.toFixed(2)}`
   }
 
-  // Returns all grid cells that overlap with the current map viewport
+  // Returns grid cells near the viewport center (not the entire viewport).
+  // Searches a 5x5 block (~5km x 5km) around center so POIs load as users
+  // pan, without flooding Overpass with requests for the full visible area.
   getVisibleGridCells(category) {
-    const gridSize = 0.01
-    const bounds = this.map.getBounds()
-    const south = bounds.getSouth()
-    const north = bounds.getNorth()
-    const west = bounds.getWest()
-    const east = bounds.getEast()
+    const gridSize = 0.01 // ~1km grid cells
+    const center = this.map.getCenter()
+    const centerLat = Math.floor(center.lat / gridSize) * gridSize
+    const centerLng = Math.floor(center.lng / gridSize) * gridSize
 
-    const minLat = Math.floor(south / gridSize) * gridSize
-    const maxLat = Math.floor(north / gridSize) * gridSize
-    const minLng = Math.floor(west / gridSize) * gridSize
-    const maxLng = Math.floor(east / gridSize) * gridSize
-
-    // Estimate total cells before allocating to avoid OOM at low zoom levels
-    const latSteps = Math.round((maxLat - minLat) / gridSize) + 1
-    const lngSteps = Math.round((maxLng - minLng) / gridSize) + 1
-    if (latSteps * lngSteps > 1000) return []
-
+    const radius = 2 // cells in each direction from center (5x5 = 25 cells max)
     const cells = []
-    for (let lat = minLat; lat <= maxLat; lat += gridSize) {
-      for (let lng = minLng; lng <= maxLng; lng += gridSize) {
+
+    for (let dLat = -radius; dLat <= radius; dLat++) {
+      for (let dLng = -radius; dLng <= radius; dLng++) {
+        const lat = centerLat + dLat * gridSize
+        const lng = centerLng + dLng * gridSize
         const gridKey = `${category}:${lat.toFixed(2)}:${lng.toFixed(2)}`
         cells.push({ lat: lat + gridSize / 2, lng: lng + gridSize / 2, gridKey })
       }
     }
+
     return cells
   }
 
@@ -794,18 +789,13 @@ export default class extends Controller {
     // so searching only makes sense at neighborhood/city zoom levels
     if (this.map.getZoom() < 13) return
 
-    const MAX_GRID_CELLS = 30
     const allCells = this.getVisibleGridCells(category)
-    const unsearchedCells = allCells.filter(cell => {
+    const cellsToSearch = allCells.filter(cell => {
       const trackingKey = `${category}-${cell.gridKey}`
       return !this.searchedGridCells[trackingKey]
     })
 
-    if (unsearchedCells.length === 0) return
-    // If zoomed way out, only search a subset near the center
-    const cellsToSearch = unsearchedCells.length > MAX_GRID_CELLS
-      ? unsearchedCells.slice(0, MAX_GRID_CELLS)
-      : unsearchedCells
+    if (cellsToSearch.length === 0) return
 
     // Mark all as searched before starting requests
     cellsToSearch.forEach(cell => {
