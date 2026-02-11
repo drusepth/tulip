@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_11_000001) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_11_060000) do
   create_table "bucket_list_item_ratings", force: :cascade do |t|
     t.integer "bucket_list_item_id", null: false
     t.integer "user_id", null: false
@@ -36,6 +36,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_11_000001) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id"
+    t.integer "place_id"
+    t.index ["place_id"], name: "index_bucket_list_items_on_place_id"
     t.index ["stay_id", "category"], name: "index_bucket_list_items_on_stay_id_and_category"
     t.index ["stay_id", "completed"], name: "index_bucket_list_items_on_stay_id_and_completed"
     t.index ["stay_id"], name: "index_bucket_list_items_on_stay_id"
@@ -211,6 +213,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_11_000001) do
 
   add_foreign_key "bucket_list_item_ratings", "bucket_list_items"
   add_foreign_key "bucket_list_item_ratings", "users"
+  add_foreign_key "bucket_list_items", "places"
   add_foreign_key "bucket_list_items", "stays"
   add_foreign_key "bucket_list_items", "users"
   add_foreign_key "comments", "bucket_list_item_ratings"
