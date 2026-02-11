@@ -51,6 +51,12 @@ class CreatePlacesAndRefactorPois < ActiveRecord::Migration[8.0]
     # Remove notes from pois
     remove_column :pois, :notes, :text
 
+    # Remove indexes on columns we're about to drop from pois
+    remove_index :pois, :osm_id
+    remove_index :pois, :foursquare_id
+    remove_index :pois, name: :index_pois_on_stay_id_and_foursquare_id
+    remove_index :pois, :wikidata_id
+
     # Remove canonical data columns from pois (now on places)
     remove_column :pois, :name, :string
     remove_column :pois, :latitude, :decimal, precision: 10, scale: 6
@@ -78,10 +84,12 @@ class CreatePlacesAndRefactorPois < ActiveRecord::Migration[8.0]
     remove_column :pois, :wikipedia_extract, :text
     remove_column :pois, :wikidata_image_url, :string
     remove_column :pois, :wikidata_fetched_at, :datetime
-
-    # Remove osm_id from pois (now on places via place_id)
-    remove_index :pois, :osm_id
     remove_column :pois, :osm_id, :string
+
+    # Remove indexes on columns we're about to drop from viewport_pois
+    remove_index :viewport_pois, column: [:grid_key, :osm_id]
+    remove_index :viewport_pois, :foursquare_id
+    remove_index :viewport_pois, :wikidata_id
 
     # Remove canonical data columns from viewport_pois (now on places)
     remove_column :viewport_pois, :name, :string
@@ -109,9 +117,6 @@ class CreatePlacesAndRefactorPois < ActiveRecord::Migration[8.0]
     remove_column :viewport_pois, :wikipedia_extract, :text
     remove_column :viewport_pois, :wikidata_image_url, :string
     remove_column :viewport_pois, :wikidata_fetched_at, :datetime
-
-    # Remove osm_id from viewport_pois (now on places via place_id)
-    remove_index :viewport_pois, column: [:grid_key, :osm_id]
     remove_column :viewport_pois, :osm_id, :string
 
     # Add unique index on viewport_pois for grid_key + place_id

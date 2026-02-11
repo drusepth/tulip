@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_02_054616) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_11_000001) do
   create_table "bucket_list_item_ratings", force: :cascade do |t|
     t.integer "bucket_list_item_id", null: false
     t.integer "user_id", null: false
@@ -72,19 +72,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_054616) do
     t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
-  create_table "pois", force: :cascade do |t|
-    t.integer "stay_id", null: false
+  create_table "places", force: :cascade do |t|
+    t.string "osm_id"
     t.string "name"
     t.string "category"
     t.decimal "latitude", precision: 10, scale: 6
     t.decimal "longitude", precision: 10, scale: 6
-    t.integer "distance_meters"
-    t.string "osm_id"
     t.string "address"
     t.string "opening_hours"
-    t.boolean "favorite", default: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.string "website"
     t.string "phone"
     t.string "cuisine"
@@ -94,25 +89,37 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_054616) do
     t.boolean "takeaway"
     t.string "brand"
     t.text "description"
+    t.string "source", default: "osm"
     t.string "foursquare_id"
     t.decimal "foursquare_rating", precision: 3, scale: 1
     t.integer "foursquare_price"
     t.string "foursquare_photo_url"
     t.text "foursquare_tip"
     t.datetime "foursquare_fetched_at"
-    t.string "source", default: "osm"
-    t.text "notes"
     t.string "wikidata_id"
     t.string "wikipedia_url"
     t.text "wikipedia_extract"
     t.string "wikidata_image_url"
     t.datetime "wikidata_fetched_at"
-    t.index ["foursquare_id"], name: "index_pois_on_foursquare_id"
-    t.index ["osm_id"], name: "index_pois_on_osm_id", unique: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_places_on_category"
+    t.index ["foursquare_id"], name: "index_places_on_foursquare_id"
+    t.index ["osm_id"], name: "index_places_on_osm_id", unique: true
+    t.index ["wikidata_id"], name: "index_places_on_wikidata_id"
+  end
+
+  create_table "pois", force: :cascade do |t|
+    t.integer "stay_id", null: false
+    t.string "category"
+    t.integer "distance_meters"
+    t.boolean "favorite", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "place_id"
+    t.index ["place_id"], name: "index_pois_on_place_id"
     t.index ["stay_id", "category"], name: "index_pois_on_stay_id_and_category"
-    t.index ["stay_id", "foursquare_id"], name: "index_pois_on_stay_id_and_foursquare_id", unique: true, where: "foursquare_id IS NOT NULL"
     t.index ["stay_id"], name: "index_pois_on_stay_id"
-    t.index ["wikidata_id"], name: "index_pois_on_wikidata_id"
   end
 
   create_table "stay_collaborations", force: :cascade do |t|
@@ -190,42 +197,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_054616) do
 
   create_table "viewport_pois", force: :cascade do |t|
     t.string "grid_key", null: false
-    t.string "name"
     t.string "category", null: false
-    t.decimal "latitude", precision: 10, scale: 6
-    t.decimal "longitude", precision: 10, scale: 6
-    t.string "osm_id"
-    t.string "address"
-    t.string "opening_hours"
     t.decimal "center_lat", precision: 10, scale: 6
     t.decimal "center_lng", precision: 10, scale: 6
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "website"
-    t.string "phone"
-    t.string "cuisine"
-    t.boolean "outdoor_seating"
-    t.string "internet_access"
-    t.boolean "air_conditioning"
-    t.boolean "takeaway"
-    t.string "brand"
-    t.text "description"
-    t.string "foursquare_id"
-    t.decimal "foursquare_rating", precision: 3, scale: 1
-    t.integer "foursquare_price"
-    t.string "foursquare_photo_url"
-    t.text "foursquare_tip"
-    t.datetime "foursquare_fetched_at"
-    t.string "wikidata_id"
-    t.string "wikipedia_url"
-    t.text "wikipedia_extract"
-    t.string "wikidata_image_url"
-    t.datetime "wikidata_fetched_at"
+    t.integer "place_id"
     t.index ["category"], name: "index_viewport_pois_on_category"
-    t.index ["foursquare_id"], name: "index_viewport_pois_on_foursquare_id"
-    t.index ["grid_key", "osm_id"], name: "index_viewport_pois_on_grid_key_and_osm_id", unique: true
+    t.index ["grid_key", "place_id"], name: "index_viewport_pois_on_grid_key_and_place_id", unique: true
     t.index ["grid_key"], name: "index_viewport_pois_on_grid_key"
-    t.index ["wikidata_id"], name: "index_viewport_pois_on_wikidata_id"
+    t.index ["place_id"], name: "index_viewport_pois_on_place_id"
   end
 
   add_foreign_key "bucket_list_item_ratings", "bucket_list_items"
@@ -237,9 +218,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_054616) do
   add_foreign_key "comments", "stays"
   add_foreign_key "comments", "users"
   add_foreign_key "notifications", "users"
+  add_foreign_key "pois", "places"
   add_foreign_key "pois", "stays"
   add_foreign_key "stay_collaborations", "stays"
   add_foreign_key "stay_collaborations", "users"
   add_foreign_key "stays", "users"
   add_foreign_key "transit_routes", "stays"
+  add_foreign_key "viewport_pois", "places"
 end
