@@ -129,6 +129,46 @@
           </div>
         </div>
       </nav>
+
+      <%# Mobile navbar (hidden on desktop) %>
+      <nav class="navbar-grass-mobile bg-white border-t border-taupe-light fixed bottom-0 left-0 right-0 z-50 sm:hidden" style="padding-bottom: env(safe-area-inset-bottom, 0px);">
+        <div class="flex justify-around items-center h-16 px-2">
+          <%= link_to root_path, class: "mobile-nav-item flex flex-col items-center justify-center gap-0.5 text-brown-light hover:text-sage-dark transition-colors #{'mobile-nav-active' if current_page?(root_path)}" do %>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/>
+            </svg>
+            <span class="text-xs">Home</span>
+          <% end %>
+
+          <%= link_to map_path, class: "mobile-nav-item flex flex-col items-center justify-center gap-0.5 text-brown-light hover:text-sage-dark transition-colors #{'mobile-nav-active' if current_page?(map_path)}" do %>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"/>
+            </svg>
+            <span class="text-xs">Map</span>
+          <% end %>
+
+          <%= link_to new_stay_path, class: "mobile-nav-item-primary flex flex-col items-center justify-center" do %>
+            <span class="flex items-center justify-center w-12 h-12 rounded-full bg-sage text-white shadow-md -mt-4">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+              </svg>
+            </span>
+            <span class="text-xs text-brown-light -mt-0.5">Plan</span>
+          <% end %>
+
+          <%= link_to edit_user_registration_path, class: "mobile-nav-item flex flex-col items-center justify-center gap-0.5 text-brown-light hover:text-sage-dark transition-colors" do %>
+            <%= avatar_tag(current_user, size: 28, html_options: { class: "w-7 h-7 border-2 border-taupe-light" }) %>
+            <span class="text-xs">Account</span>
+          <% end %>
+
+          <%= button_to destroy_user_session_path, method: :delete, class: "mobile-nav-item flex flex-col items-center justify-center gap-0.5 text-brown-light hover:text-sage-dark transition-colors" do %>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"/>
+            </svg>
+            <span class="text-xs">Log out</span>
+          <% end %>
+        </div>
+      </nav>
     <% end %>
 
     <!-- Shared tooltip element for site-wide tooltips -->

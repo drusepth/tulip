@@ -63,6 +63,7 @@ class Stay < ApplicationRecord
 
   before_save :update_status
   after_commit :enqueue_poi_fetch, on: [:create, :update], if: :should_fetch_pois?
+  after_save :clear_cached_location_data, if: :location_changed?
 
   scope :with_dates, -> { where.not(check_in: nil).where.not(check_out: nil) }
   scope :wishlist, -> { where(check_in: nil).or(where(check_out: nil)) }
@@ -256,8 +257,17 @@ class Stay < ApplicationRecord
   end
 
   def should_geocode?
-    return false if latitude.present? && longitude.present?
     (address_changed? || city_changed? || country_changed?) && full_address.present?
+  end
+
+  def location_changed?
+    saved_change_to_latitude? || saved_change_to_longitude?
+  end
+
+  def clear_cached_location_data
+    pois.destroy_all
+    transit_routes.destroy_all
+    update_columns(weather_data: nil, weather_fetched_at: nil) if weather_data.present?
   end
 
   def update_status

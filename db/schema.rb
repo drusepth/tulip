@@ -101,11 +101,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_054616) do
     t.text "foursquare_tip"
     t.datetime "foursquare_fetched_at"
     t.string "source", default: "osm"
+    t.text "notes"
+    t.string "wikidata_id"
+    t.string "wikipedia_url"
+    t.text "wikipedia_extract"
+    t.string "wikidata_image_url"
+    t.datetime "wikidata_fetched_at"
     t.index ["foursquare_id"], name: "index_pois_on_foursquare_id"
     t.index ["osm_id"], name: "index_pois_on_osm_id", unique: true
     t.index ["stay_id", "category"], name: "index_pois_on_stay_id_and_category"
     t.index ["stay_id", "foursquare_id"], name: "index_pois_on_stay_id_and_foursquare_id", unique: true, where: "foursquare_id IS NOT NULL"
     t.index ["stay_id"], name: "index_pois_on_stay_id"
+    t.index ["wikidata_id"], name: "index_pois_on_wikidata_id"
   end
 
   create_table "stay_collaborations", force: :cascade do |t|
@@ -209,10 +216,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_02_054616) do
     t.string "foursquare_photo_url"
     t.text "foursquare_tip"
     t.datetime "foursquare_fetched_at"
+    t.string "wikidata_id"
+    t.string "wikipedia_url"
+    t.text "wikipedia_extract"
+    t.string "wikidata_image_url"
+    t.datetime "wikidata_fetched_at"
     t.index ["category"], name: "index_viewport_pois_on_category"
     t.index ["foursquare_id"], name: "index_viewport_pois_on_foursquare_id"
     t.index ["grid_key", "osm_id"], name: "index_viewport_pois_on_grid_key_and_osm_id", unique: true
     t.index ["grid_key"], name: "index_viewport_pois_on_grid_key"
+    t.index ["wikidata_id"], name: "index_viewport_pois_on_wikidata_id"
   end
 
   add_foreign_key "bucket_list_item_ratings", "bucket_list_items"

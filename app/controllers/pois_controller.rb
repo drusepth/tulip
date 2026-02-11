@@ -1,6 +1,41 @@
 class PoisController < ApplicationController
   before_action :set_stay, except: [:search]
-  before_action :require_stay_edit_permission, only: [:update, :destroy]
+  before_action :require_stay_edit_permission, only: [:update, :destroy, :edit_notes, :update_notes]
+
+  def show
+    @poi = @stay.pois.find(params[:id])
+    FoursquareService.enrich_poi(@poi)
+    WikidataService.enrich_poi(@poi)
+
+    # Prev/next navigation within the same category
+    siblings = @stay.pois.by_category(@poi.category).nearest.to_a
+    current_index = siblings.index { |p| p.id == @poi.id }
+    if current_index
+      @prev_poi = siblings[current_index - 1] if current_index > 0
+      @next_poi = siblings[current_index + 1]
+    end
+  end
+
+  def edit_notes
+    @poi = @stay.pois.find(params[:id])
+    respond_to do |format|
+      format.turbo_stream
+      format.html
+    end
+  end
+
+  def update_notes
+    @poi = @stay.pois.find(params[:id])
+    respond_to do |format|
+      if @poi.update(notes: params[:poi][:notes])
+        format.turbo_stream
+        format.html { redirect_to stay_poi_path(@stay, @poi), notice: "Notes updated." }
+      else
+        format.turbo_stream { render :edit_notes, status: :unprocessable_entity }
+        format.html { redirect_to stay_poi_path(@stay, @poi), alert: "Could not update notes." }
+      end
+    end
+  end
 
   def browse
     @current_category = params[:category].presence || 'coffee'
@@ -68,7 +103,8 @@ class PoisController < ApplicationController
             air_conditioning: poi_data[:air_conditioning],
             takeaway: poi_data[:takeaway],
             brand: poi_data[:brand],
-            description: poi_data[:description]
+            description: poi_data[:description],
+            wikidata_id: poi_data[:wikidata]
           )
         end
       end
@@ -83,9 +119,21 @@ class PoisController < ApplicationController
     @poi = @stay.pois.find(params[:id])
 
     if @poi.update(poi_params)
-      render json: { success: true, poi: @poi }
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace(
+            "poi_favorite_#{@poi.id}",
+            partial: "pois/favorite_button",
+            locals: { poi: @poi, stay: @stay }
+          )
+        end
+        format.json { render json: { success: true, poi: @poi } }
+      end
     else
-      render json: { errors: @poi.errors.full_messages }, status: :unprocessable_entity
+      respond_to do |format|
+        format.turbo_stream { head :unprocessable_entity }
+        format.json { render json: { errors: @poi.errors.full_messages }, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -145,7 +193,8 @@ class PoisController < ApplicationController
           air_conditioning: poi_data[:air_conditioning],
           takeaway: poi_data[:takeaway],
           brand: poi_data[:brand],
-          description: poi_data[:description]
+          description: poi_data[:description],
+          wikidata_id: poi_data[:wikidata]
         )
       end
     end
@@ -187,7 +236,8 @@ class PoisController < ApplicationController
           air_conditioning: poi_data[:air_conditioning],
           takeaway: poi_data[:takeaway],
           brand: poi_data[:brand],
-          description: poi_data[:description]
+          description: poi_data[:description],
+          wikidata_id: poi_data[:wikidata]
         )
       end
     end

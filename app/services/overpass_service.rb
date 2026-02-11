@@ -153,7 +153,8 @@ class OverpassService
           air_conditioning: tags['air_conditioning'] == 'yes',
           takeaway: tags['takeaway'] == 'yes',
           brand: tags['brand'],
-          description: tags['description']
+          description: tags['description'],
+          wikidata: tags['wikidata']
         }
       end.compact
     end

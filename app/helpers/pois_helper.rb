@@ -66,6 +66,12 @@ module PoisHelper
     end
   end
 
+  def poi_has_wikidata_data?(poi)
+    poi.wikipedia_extract.present? ||
+      poi.wikipedia_url.present? ||
+      poi.wikidata_image_url.present?
+  end
+
   def poi_has_details?(poi)
     poi.address.present? ||
       poi.opening_hours.present? ||

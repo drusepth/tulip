@@ -257,6 +257,66 @@
       <!-- Bucket List -->
       <%= render "bucket_list_items/section", stay: @stay %>
 
+      <!-- POIs -->
+      <% if @pois_by_category.any? %>
+        <div class="cozy-card p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-brown">Nearby Points of Interest</h2>
+            <%= link_to browse_stay_pois_path(@stay), class: "text-sage-dark hover:text-sage text-sm inline-flex items-center" do %>
+              Browse all
+              <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            <% end %>
+          </div>
+          <div class="space-y-6">
+            <% @pois_by_category.each do |category, pois| %>
+              <div>
+                <h3 class="text-sm font-medium text-brown-light uppercase tracking-wide mb-2">
+                  <%= category.titleize.gsub('_', ' ') %>
+                </h3>
+                <ul class="space-y-2">
+                  <% pois.sort_by(&:distance_meters).first(5).each do |poi| %>
+                    <%= turbo_frame_tag dom_id(poi) do %>
+                      <li class="flex items-center justify-between py-2 border-b border-taupe-light last:border-0">
+                        <div class="flex items-center gap-2 min-w-0 flex-1">
+                          <%= button_to stay_bucket_list_items_path(@stay),
+                                        method: :post,
+                                        params: { bucket_list_item: { title: poi.name, address: poi.address }, source_poi_id: poi.id, compact: true },
+                                        class: "w-6 h-6 flex-shrink-0 flex items-center justify-center rounded-full bg-sage-light hover:bg-sage hover:scale-110 hover:shadow-md text-sage-dark hover:text-white transition-all duration-200 cursor-pointer",
+                                        title: "Add to bucket list",
+                                        data: {
+                                          controller: "loading-button",
+                                          action: "click->loading-button#start"
+                                        } do %>
+                            <svg data-loading-button-target="icon" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            <svg data-loading-button-target="spinner" class="hidden w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                          <% end %>
+                          <div class="min-w-0">
+                            <%= link_to stay_poi_path(@stay, poi), class: "text-brown hover:text-sage-dark transition-colors", data: { turbo_frame: "_top" } do %>
+                              <%= poi.name || 'Unnamed' %>
+                            <% end %>
+                            <% if poi.cuisine.present? %>
+                              <p class="text-xs text-brown-light truncate"><%= truncate(poi.cuisine.gsub(';', ', ').titleize, length: 60) %></p>
+                            <% end %>
+                          </div>
+                        </div>
+                        <span class="text-sm text-brown-light flex-shrink-0 ml-2"><%= format_distance(poi.distance_meters) %></span>
+                      </li>
+                    <% end %>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
       <!-- Comments -->
       <%= render "comments/section", stay: @stay %>
 
