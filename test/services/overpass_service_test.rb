@@ -29,11 +29,18 @@ class OverpassServiceTest < ActiveSupport::TestCase
     assert_equal [], result
   end
 
-  test "fetch_pois retries on 429 and succeeds" do
-    stub_request(:post, OverpassService::OVERPASS_URL)
-      .to_return(status: 429, body: "Rate limited")
-      .then
-      .to_return(status: 200, body: poi_response_body.to_json)
+  test "fetch_pois retries on 429 and succeeds with different endpoint" do
+    # First endpoint returns 429, second succeeds
+    stubs = stub_all_endpoints
+    stubs.each_with_index do |s, i|
+      if i == 0
+        s.to_return(status: 429, body: "Rate limited")
+          .then
+          .to_return(status: 200, body: poi_response_body.to_json)
+      else
+        s.to_return(status: 200, body: poi_response_body.to_json)
+      end
+    end
 
     result = OverpassService.fetch_pois(lat: @lat, lng: @lng, category: "coffee")
 
@@ -42,10 +49,16 @@ class OverpassServiceTest < ActiveSupport::TestCase
   end
 
   test "fetch_pois retries on 504 and succeeds" do
-    stub_request(:post, OverpassService::OVERPASS_URL)
-      .to_return(status: 504, body: "Gateway Timeout")
-      .then
-      .to_return(status: 200, body: poi_response_body.to_json)
+    stubs = stub_all_endpoints
+    stubs.each_with_index do |s, i|
+      if i == 0
+        s.to_return(status: 504, body: "Gateway Timeout")
+          .then
+          .to_return(status: 200, body: poi_response_body.to_json)
+      else
+        s.to_return(status: 200, body: poi_response_body.to_json)
+      end
+    end
 
     result = OverpassService.fetch_pois(lat: @lat, lng: @lng, category: "coffee")
 
@@ -53,8 +66,7 @@ class OverpassServiceTest < ActiveSupport::TestCase
   end
 
   test "fetch_pois raises RateLimitedError after exhausting retries on 429" do
-    stub_request(:post, OverpassService::OVERPASS_URL)
-      .to_return(status: 429, body: "Rate limited")
+    stub_all_endpoints.each { |s| s.to_return(status: 429, body: "Rate limited") }
 
     assert_raises(OverpassService::RateLimitedError) do
       OverpassService.fetch_pois(lat: @lat, lng: @lng, category: "coffee")
@@ -62,8 +74,7 @@ class OverpassServiceTest < ActiveSupport::TestCase
   end
 
   test "fetch_pois raises RateLimitedError after exhausting retries on 504" do
-    stub_request(:post, OverpassService::OVERPASS_URL)
-      .to_return(status: 504, body: "Gateway Timeout")
+    stub_all_endpoints.each { |s| s.to_return(status: 504, body: "Gateway Timeout") }
 
     assert_raises(OverpassService::RateLimitedError) do
       OverpassService.fetch_pois(lat: @lat, lng: @lng, category: "coffee")
@@ -71,8 +82,7 @@ class OverpassServiceTest < ActiveSupport::TestCase
   end
 
   test "fetch_pois returns empty array on non-rate-limit errors" do
-    stub_request(:post, OverpassService::OVERPASS_URL)
-      .to_return(status: 500, body: "Internal Server Error")
+    stub_all_endpoints.each { |s| s.to_return(status: 500, body: "Internal Server Error") }
 
     result = OverpassService.fetch_pois(lat: @lat, lng: @lng, category: "coffee")
 
@@ -80,8 +90,7 @@ class OverpassServiceTest < ActiveSupport::TestCase
   end
 
   test "fetch_pois returns empty array on network timeout" do
-    stub_request(:post, OverpassService::OVERPASS_URL)
-      .to_timeout
+    stub_all_endpoints.each(&:to_timeout)
 
     result = OverpassService.fetch_pois(lat: @lat, lng: @lng, category: "coffee")
 
@@ -89,8 +98,7 @@ class OverpassServiceTest < ActiveSupport::TestCase
   end
 
   test "fetch_transit_routes raises RateLimitedError on persistent 429" do
-    stub_request(:post, OverpassService::OVERPASS_URL)
-      .to_return(status: 429, body: "Rate limited")
+    stub_all_endpoints.each { |s| s.to_return(status: 429, body: "Rate limited") }
 
     assert_raises(OverpassService::RateLimitedError) do
       OverpassService.fetch_transit_routes(lat: @lat, lng: @lng, route_type: "bus")
@@ -100,8 +108,16 @@ class OverpassServiceTest < ActiveSupport::TestCase
   private
 
   def stub_overpass_success(body)
-    stub_request(:post, OverpassService::OVERPASS_URL)
-      .to_return(status: 200, body: body.to_json)
+    OverpassService::OVERPASS_ENDPOINTS.each do |url|
+      stub_request(:post, url)
+        .to_return(status: 200, body: body.to_json)
+    end
+  end
+
+  def stub_all_endpoints
+    OverpassService::OVERPASS_ENDPOINTS.map do |url|
+      stub_request(:post, url)
+    end
   end
 
   def poi_response_body
