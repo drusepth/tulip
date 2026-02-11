@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     resources :pois, only: [:index, :show, :create, :update, :destroy] do
       collection do
         get :browse
+        get :explore
       end
       member do
         get :edit_notes

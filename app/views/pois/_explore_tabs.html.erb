@@ -1,0 +1,17 @@
+<%= turbo_frame_tag "explore_tabs" do %>
+  <div class="mb-6">
+    <nav class="flex flex-wrap gap-2" aria-label="Categories">
+      <% categories = [['all', 'All']] + Poi::BROWSABLE_CATEGORIES.map { |c| [c, c.titleize] } %>
+      <% categories.each do |value, label| %>
+        <%= link_to explore_stay_pois_path(stay, category: value),
+                    data: { turbo_stream: true },
+                    class: "inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors #{current_category == value ? 'bg-sage text-white' : 'bg-cream text-brown-light hover:bg-taupe-light hover:text-brown'}" do %>
+          <% if value != 'all' %>
+            <%= category_icon(value, size: "w-4 h-4") %>
+          <% end %>
+          <%= label %>
+        <% end %>
+      <% end %>
+    </nav>
+  </div>
+<% end %>

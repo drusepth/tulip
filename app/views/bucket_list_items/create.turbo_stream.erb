@@ -12,6 +12,12 @@
 
 <% if @source_poi %>
   <%= turbo_stream.replace dom_id(@source_poi) do %>
-    <%= render @compact ? "pois/item_added_compact" : "pois/item_added", poi: @source_poi, stay: @stay %>
+    <% if @explore %>
+      <%= render "pois/explore_card", poi: @source_poi, stay: @stay, on_bucket_list: true %>
+    <% elsif @compact %>
+      <%= render "pois/item_added_compact", poi: @source_poi, stay: @stay %>
+    <% else %>
+      <%= render "pois/item_added", poi: @source_poi, stay: @stay %>
+    <% end %>
   <% end %>
 <% end %>

@@ -28,6 +28,28 @@
 
     <div data-collapsible-target="content" class="hidden mt-3 ml-10 space-y-3 text-sm">
       <% if has_details %>
+        <% if poi.foursquare_photo_url.present? %>
+          <%= image_tag poi.foursquare_photo_url, class: "w-full h-32 object-cover rounded-lg", alt: poi.name %>
+        <% end %>
+
+        <% if poi.foursquare_rating.present? || poi.foursquare_price.present? %>
+          <div class="flex items-center gap-3">
+            <% if poi.foursquare_rating.present? %>
+              <div class="flex items-center gap-1">
+                <span class="text-amber-500">&#9733;</span>
+                <span class="text-brown font-medium"><%= foursquare_rating_stars(poi.foursquare_rating) %></span>
+              </div>
+            <% end %>
+            <% if poi.foursquare_price.present? %>
+              <span class="text-taupe font-medium"><%= foursquare_price_display(poi.foursquare_price) %></span>
+            <% end %>
+          </div>
+        <% end %>
+
+        <% if poi.foursquare_tip.present? %>
+          <p class="text-brown-light italic">"<%= truncate(poi.foursquare_tip, length: 150) %>"</p>
+        <% end %>
+
         <% if poi.address.present? %>
           <p class="text-brown-light"><%= poi.address %></p>
         <% end %>

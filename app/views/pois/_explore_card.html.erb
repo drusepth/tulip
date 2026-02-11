@@ -1,0 +1,105 @@
+<%= turbo_frame_tag dom_id(poi) do %>
+  <div class="cozy-card overflow-hidden group">
+    <!-- Hero Image -->
+    <div class="relative h-44 bg-taupe-light">
+      <% if poi.foursquare_photo_url.present? %>
+        <%= image_tag poi.foursquare_photo_url,
+                      class: "w-full h-full object-cover",
+                      alt: poi.name,
+                      loading: "lazy" %>
+      <% else %>
+        <div class="w-full h-full flex items-center justify-center bg-taupe-light">
+          <div class="text-taupe">
+            <%= category_icon(poi.category, size: "w-12 h-12") %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Category Badge -->
+      <span class="absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium bg-white text-brown">
+        <%= poi.category.titleize %>
+      </span>
+
+      <!-- Distance Badge -->
+      <span class="absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-medium bg-white text-brown-light">
+        <%= format_distance(poi.distance_meters) %>
+      </span>
+    </div>
+
+    <!-- Card Body -->
+    <div class="p-4">
+      <!-- Name & Cuisine -->
+      <div class="mb-2">
+        <%= link_to stay_poi_path(stay, poi), class: "text-brown font-semibold text-base hover:text-sage-dark transition-colors line-clamp-1", data: { turbo_frame: "_top" } do %>
+          <%= poi.name || 'Unnamed' %>
+        <% end %>
+        <% if poi.cuisine.present? %>
+          <p class="text-sm text-brown-light mt-0.5 line-clamp-1"><%= poi.cuisine.gsub(';', ', ').titleize %></p>
+        <% end %>
+      </div>
+
+      <!-- Rating & Price -->
+      <% if poi.foursquare_rating.present? || poi.foursquare_price.present? %>
+        <div class="flex items-center gap-3 mb-2">
+          <% if poi.foursquare_rating.present? %>
+            <div class="flex items-center gap-1">
+              <span class="text-amber-500 text-sm">&#9733;</span>
+              <span class="text-brown text-sm font-medium"><%= foursquare_rating_stars(poi.foursquare_rating) %></span>
+            </div>
+          <% end %>
+          <% if poi.foursquare_price.present? %>
+            <span class="text-taupe text-sm font-medium"><%= foursquare_price_display(poi.foursquare_price) %></span>
+          <% end %>
+        </div>
+      <% end %>
+
+      <!-- Foursquare Tip -->
+      <% if poi.foursquare_tip.present? %>
+        <p class="text-brown-light text-xs italic mb-3 line-clamp-2">"<%= truncate(poi.foursquare_tip, length: 100) %>"</p>
+      <% end %>
+
+      <!-- Amenity Badges -->
+      <% badges = poi_amenity_badges(poi) %>
+      <% if badges.any? %>
+        <div class="flex flex-wrap gap-1.5 mb-3">
+          <% badges.each do |badge| %>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-lavender-light text-lavender-dark">
+              <%= badge[:label] %>
+            </span>
+          <% end %>
+        </div>
+      <% end %>
+
+      <!-- Action Button -->
+      <div class="mt-auto pt-2 border-t border-taupe-light">
+        <% if on_bucket_list %>
+          <div class="flex items-center gap-2 text-sage text-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            On bucket list
+          </div>
+        <% else %>
+          <%= button_to stay_bucket_list_items_path(stay),
+                        method: :post,
+                        params: { bucket_list_item: { title: poi.name, address: poi.address }, source_poi_id: poi.id, explore: true },
+                        class: "w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-sage-light hover:bg-sage text-sage-dark hover:text-white transition-all duration-200 text-sm font-medium cursor-pointer",
+                        title: "Add to bucket list",
+                        data: {
+                          controller: "loading-button",
+                          action: "click->loading-button#start"
+                        } do %>
+            <svg data-loading-button-target="icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            <svg data-loading-button-target="spinner" class="hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span data-loading-button-target="icon">Add to bucket list</span>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

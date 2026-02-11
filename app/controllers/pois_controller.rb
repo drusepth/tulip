@@ -58,6 +58,37 @@ class PoisController < ApplicationController
     end
   end
 
+  def explore
+    @current_category = params[:category].presence || 'all'
+    @current_category = 'all' unless @current_category == 'all' || Poi::BROWSABLE_CATEGORIES.include?(@current_category)
+
+    # Ensure POIs are cached for all browsable categories
+    Poi::BROWSABLE_CATEGORIES.each { |cat| ensure_pois_cached(cat) }
+
+    @pois = if @current_category == 'all'
+              @stay.pois.where(category: Poi::BROWSABLE_CATEGORIES).nearest
+            else
+              @stay.pois.by_category(@current_category).nearest
+            end
+
+    # Enrich POIs with Foursquare data (lazy, cached per-POI)
+    @pois.each { |poi| FoursquareService.enrich_poi(poi) }
+
+    # Track which POI names are already on the bucket list
+    bucket_list_titles = @stay.bucket_list_items.pluck(:title).map(&:downcase).to_set
+    @bucket_list_poi_ids = @pois.select { |poi| bucket_list_titles.include?(poi.name&.downcase) }.map(&:id).to_set
+
+    respond_to do |format|
+      format.html
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.replace("explore_tabs", partial: "pois/explore_tabs", locals: { stay: @stay, current_category: @current_category }),
+          turbo_stream.replace("explore_grid", partial: "pois/explore_grid", locals: { pois: @pois, stay: @stay, bucket_list_poi_ids: @bucket_list_poi_ids })
+        ]
+      end
+    end
+  end
+
   def index
     @pois = @stay.pois
     @pois = @pois.by_category(params[:category]) if params[:category].present?
