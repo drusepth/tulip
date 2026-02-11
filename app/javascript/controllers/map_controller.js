@@ -767,6 +767,11 @@ export default class extends Controller {
     const minLng = Math.floor(west / gridSize) * gridSize
     const maxLng = Math.floor(east / gridSize) * gridSize
 
+    // Estimate total cells before allocating to avoid OOM at low zoom levels
+    const latSteps = Math.round((maxLat - minLat) / gridSize) + 1
+    const lngSteps = Math.round((maxLng - minLng) / gridSize) + 1
+    if (latSteps * lngSteps > 1000) return []
+
     const cells = []
     for (let lat = minLat; lat <= maxLat; lat += gridSize) {
       for (let lng = minLng; lng <= maxLng; lng += gridSize) {
@@ -780,7 +785,10 @@ export default class extends Controller {
   async searchViewportPOIs(category) {
     if (!this.hasPoisSearchUrlValue) return
 
-    // Cap: skip viewport search if zoomed out too far (too many grid cells)
+    // Skip viewport search when zoomed out too far — grid cells are ~1km,
+    // so searching only makes sense at neighborhood/city zoom levels
+    if (this.map.getZoom() < 13) return
+
     const MAX_GRID_CELLS = 30
     const allCells = this.getVisibleGridCells(category)
     const unsearchedCells = allCells.filter(cell => {
