@@ -97,52 +97,43 @@
         </div>
       <% end %>
     <% else %>
-      <!-- Destination Inspiration Card -->
-      <%= link_to destinations_path, class: "block group" do %>
-        <div class="hero-card h-24 md:h-72">
-          <!-- Gradient Background (no specific destination image) -->
-          <div class="absolute inset-0 bg-gradient-to-br from-lavender to-lavender-dark"></div>
+      <!-- You're Home Card -->
+      <div class="cozy-card h-24 md:h-72 overflow-hidden relative">
+        <!-- Decorative botanical background -->
+        <div class="absolute inset-0" style="background: linear-gradient(to bottom right, var(--color-cream), var(--color-sage-light), var(--color-rose-light));"></div>
+        <!-- Subtle leaf pattern overlay -->
+        <div class="absolute inset-0" style="opacity: 0.07; background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cpath d=&quot;M30 10 Q35 20 30 30 Q25 20 30 10Z&quot; fill=&quot;%238FA68F&quot;/%3E%3Cpath d=&quot;M15 35 Q20 25 25 35 Q20 30 15 35Z&quot; fill=&quot;%238FA68F&quot;/%3E%3Cpath d=&quot;M45 40 Q40 30 45 25 Q50 30 45 40Z&quot; fill=&quot;%238FA68F&quot;/%3E%3C/svg%3E'); background-size: 60px 60px;"></div>
 
-          <!-- Mobile Layout (compact horizontal) -->
-          <div class="absolute inset-0 p-4 md:hidden flex items-center justify-between">
-            <div class="text-white">
-              <p class="text-xs font-medium flex items-center gap-1.5 mb-0.5">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                No current stay
-              </p>
-              <p class="text-base font-semibold">Discover your next adventure</p>
-            </div>
-            <div class="destination-explore-btn flex items-center gap-1 px-3 py-1.5 backdrop-blur-sm rounded-full text-white text-sm font-medium">
-              Explore
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </div>
+        <!-- Mobile Layout -->
+        <div class="absolute inset-0 p-4 md:hidden flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-sage-light flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5 text-sage-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+            </svg>
           </div>
-
-          <!-- Desktop Layout (full card like current stay) -->
-          <div class="absolute inset-0 p-6 hidden md:flex flex-col justify-end text-white">
-            <div class="flex items-center gap-2 mb-2">
-              <span class="badge bg-white text-lavender-dark">
-                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                No current stay
-              </span>
-            </div>
-            <h2 class="text-2xl font-bold group-hover:underline">Discover your next adventure</h2>
-            <p class="text-white mt-1">You're between adventures</p>
-            <div class="mt-3 flex items-center text-sm text-white opacity-80">
-              <span>Browse <%= FeaturedDestination::DESTINATIONS.length %> inspiring destinations</span>
-              <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </div>
+          <div>
+            <p class="text-sm font-semibold text-brown" style="font-family: var(--font-heading);">You're Home</p>
+            <p class="text-xs text-brown-light">Resting between adventures</p>
           </div>
         </div>
-      <% end %>
+
+        <!-- Desktop Layout -->
+        <div class="absolute inset-0 p-6 hidden md:flex flex-col items-center justify-center text-center">
+          <div class="w-16 h-16 rounded-full bg-sage-light flex items-center justify-center mb-4">
+            <svg class="w-8 h-8 text-sage-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-brown" style="font-family: var(--font-heading);">You're Home</h2>
+          <p class="text-brown-light mt-2">Enjoying the comfort of home between adventures</p>
+          <div class="mt-4 flex items-center gap-1.5 text-sm text-sage-dark">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+            </svg>
+            <span>Time to plan your next getaway</span>
+          </div>
+        </div>
+      </div>
     <% end %>
     </div>
 
@@ -220,40 +211,60 @@
 
   <!-- Upcoming Stays Timeline -->
   <% remaining_upcoming = @upcoming_stays.reject { |s| s == @next_stay } %>
-  <% if remaining_upcoming.any? %>
-    <div class="mb-8">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <% remaining_upcoming.each do |stay| %>
-          <%= link_to stay_path(stay), class: "block group" do %>
-            <div class="hero-card h-48 <%= 'ring-2 ring-dashed ring-lavender' unless stay.booked? %>">
-              <% if stay.image_url.present? %>
-                <img src="<%= stay.image_url %>" alt="<%= stay.title %>"
-                     class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                <div class="hero-card-overlay"></div>
-              <% else %>
-                <div class="absolute inset-0 bg-gradient-to-br <%= stay.booked? ? 'from-taupe to-taupe-dark' : 'from-lavender to-lavender-dark' %>"></div>
-              <% end %>
-              <div class="absolute inset-0 p-4 flex flex-col justify-end text-white">
-                <div class="flex items-center gap-2 mb-1">
-                  <% unless stay.booked? %>
-                    <span class="badge badge-planned text-white" style="background-color: rgba(158, 146, 176, 0.9) text-xs">
-                      Planned
-                    </span>
-                  <% end %>
-                </div>
-                <h3 class="font-semibold group-hover:underline truncate"><%= stay.title %></h3>
-                <p class="text-white opacity-80 text-sm"><%= [stay.city, stay.country].compact.join(', ') %></p>
-                <div class="mt-2 flex items-center justify-between text-xs text-white opacity-70">
-                  <span><%= stay.check_in.strftime('%b %d') %> - <%= stay.check_out.strftime('%b %d') %></span>
-                  <span>in <%= pluralize(stay.days_until_check_in, 'day') %></span>
-                </div>
+  <div class="mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <% remaining_upcoming.each do |stay| %>
+        <%= link_to stay_path(stay), class: "block group" do %>
+          <div class="hero-card h-48 <%= 'ring-2 ring-dashed ring-lavender' unless stay.booked? %>">
+            <% if stay.image_url.present? %>
+              <img src="<%= stay.image_url %>" alt="<%= stay.title %>"
+                   class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <div class="hero-card-overlay"></div>
+            <% else %>
+              <div class="absolute inset-0 bg-gradient-to-br <%= stay.booked? ? 'from-taupe to-taupe-dark' : 'from-lavender to-lavender-dark' %>"></div>
+            <% end %>
+            <div class="absolute inset-0 p-4 flex flex-col justify-end text-white">
+              <div class="flex items-center gap-2 mb-1">
+                <% unless stay.booked? %>
+                  <span class="badge badge-planned text-white" style="background-color: rgba(158, 146, 176, 0.9) text-xs">
+                    Planned
+                  </span>
+                <% end %>
+              </div>
+              <h3 class="font-semibold group-hover:underline truncate"><%= stay.title %></h3>
+              <p class="text-white opacity-80 text-sm"><%= [stay.city, stay.country].compact.join(', ') %></p>
+              <div class="mt-2 flex items-center justify-between text-xs text-white opacity-70">
+                <span><%= stay.check_in.strftime('%b %d') %> - <%= stay.check_out.strftime('%b %d') %></span>
+                <span>in <%= pluralize(stay.days_until_check_in, 'day') %></span>
               </div>
             </div>
-          <% end %>
+          </div>
         <% end %>
-      </div>
+      <% end %>
+
+      <!-- Discover Destinations Card -->
+      <%= link_to destinations_path, class: "block group" do %>
+        <div class="hero-card h-48">
+          <div class="absolute inset-0 bg-gradient-to-br from-lavender to-lavender-dark"></div>
+          <div class="absolute inset-0 p-4 flex flex-col items-center justify-center text-center text-white">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center mb-3" style="background-color: rgba(255,255,255,0.2);">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h3 class="font-semibold group-hover:underline" style="font-family: var(--font-heading);">Discover a New Destination</h3>
+            <p class="text-white text-sm mt-1 opacity-80">Browse <%= FeaturedDestination::DESTINATIONS.length %> inspiring places</p>
+            <div class="mt-3 flex items-center gap-1 text-sm font-medium">
+              <span>Explore</span>
+              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+      <% end %>
     </div>
-  <% end %>
+  </div>
 
   <!-- Wishlist Section (stays without dates) -->
   <% if @wishlist_stays.any? %>
