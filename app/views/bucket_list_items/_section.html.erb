@@ -40,7 +40,7 @@
       <!-- Pending Items -->
       <% if pending_count > 0 %>
         <div id="bucket_list_pending_items" class="mt-5 space-y-1">
-          <% stay.bucket_list_items.pending.ordered.each do |item| %>
+          <% stay.bucket_list_items.includes(:place).pending.ordered.each do |item| %>
             <%= render "bucket_list_items/item", bucket_list_item: item, stay: stay %>
           <% end %>
         </div>
@@ -61,7 +61,7 @@
       <% end %>
 
       <!-- Completed Items (Always Visible) -->
-      <% completed_items = stay.bucket_list_items.completed.ordered %>
+      <% completed_items = stay.bucket_list_items.includes(:place).completed.ordered %>
       <% if completed_items.any? %>
         <div class="mt-5 pt-4 border-t border-taupe-light">
           <div class="flex items-center gap-2 text-sm text-sage-dark mb-3">

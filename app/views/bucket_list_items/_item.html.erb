@@ -18,9 +18,15 @@
 
     <!-- Content -->
     <div class="flex-1 min-w-0">
-      <span class="<%= bucket_list_item.completed? ? 'text-brown-light' : 'text-brown font-medium' %>">
-        <%= bucket_list_item.title %>
-      </span>
+      <% if bucket_list_item.place.present? %>
+        <%= link_to place_path(bucket_list_item.place, stay_id: stay.id), class: "#{bucket_list_item.completed? ? 'text-brown-light' : 'text-brown font-medium'} hover:text-sage-dark transition-colors", data: { turbo_frame: "_top" } do %>
+          <%= bucket_list_item.title %>
+        <% end %>
+      <% else %>
+        <span class="<%= bucket_list_item.completed? ? 'text-brown-light' : 'text-brown font-medium' %>">
+          <%= bucket_list_item.title %>
+        </span>
+      <% end %>
       <% if bucket_list_item.user.present? && stay.collaborators.any? && !bucket_list_item.completed? %>
         <p class="text-xs text-taupe mt-1 flex items-center gap-1.5">
           <%= avatar_tag(bucket_list_item.user, size: 16, html_options: {

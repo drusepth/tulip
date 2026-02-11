@@ -27,6 +27,7 @@ class BucketListItemsController < ApplicationController
     @bucket_list_item = @stay.bucket_list_items.build(bucket_list_item_params)
     @bucket_list_item.user = current_user
     @source_poi = @stay.pois.find_by(id: params[:source_poi_id]) if params[:source_poi_id].present?
+    @bucket_list_item.place = @source_poi.place if @source_poi&.place
     @compact = params[:compact].present?
 
     respond_to do |format|
