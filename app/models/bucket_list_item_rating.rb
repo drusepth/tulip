@@ -22,7 +22,7 @@ class BucketListItemRating < ApplicationRecord
 
   def create_rating_comment
     create_comment!(
-      stay: bucket_list_item.stay,
+      commentable: bucket_list_item.stay,
       user: user,
       bucket_list_item_rating: self
     )

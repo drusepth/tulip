@@ -1,5 +1,5 @@
 class Comment < ApplicationRecord
-  belongs_to :stay
+  belongs_to :commentable, polymorphic: true
   belongs_to :user
   belongs_to :parent, class_name: "Comment", optional: true
   belongs_to :bucket_list_item_rating, optional: true
@@ -16,6 +16,11 @@ class Comment < ApplicationRecord
   after_create_commit :notify_on_create, unless: :rating_comment?
 
   delegate :bucket_list_item, to: :bucket_list_item_rating, allow_nil: true
+
+  # Convenience accessor for backward compatibility
+  def stay
+    commentable if commentable_type == "Stay"
+  end
 
   def rating_comment?
     bucket_list_item_rating_id.present?

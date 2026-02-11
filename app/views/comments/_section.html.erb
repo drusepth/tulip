@@ -1,6 +1,8 @@
 <%= turbo_frame_tag "comments_section", class: "block" do %>
-  <% comments_count = stay.comments.count %>
-  <% top_level_comments = stay.comments.top_level.ordered.includes(:user, replies: :user) %>
+  <% commentable = local_assigns[:commentable] || local_assigns[:stay] %>
+  <% is_place = commentable.is_a?(Place) %>
+  <% comments_count = commentable.comments.count %>
+  <% top_level_comments = commentable.comments.top_level.ordered.includes(:user, replies: :user) %>
 
   <div class="relative overflow-hidden cozy-card p-4 sm:p-6" id="comments_container">
     <!-- Decorative corner flourish (hidden on mobile) -->
@@ -20,7 +22,7 @@
         </div>
         <div>
           <h2 class="text-base sm:text-lg font-semibold text-brown">Comments</h2>
-          <p class="text-xs text-brown-light hidden sm:block">Discuss this trip with collaborators</p>
+          <p class="text-xs text-brown-light hidden sm:block"><%= is_place ? "Share your thoughts about this place" : "Discuss this trip with collaborators" %></p>
         </div>
       </div>
       <div id="comments_count" class="flex items-center gap-2">
@@ -31,13 +33,13 @@
     </div>
 
     <!-- Add Comment Form -->
-    <%= render "comments/form", stay: stay %>
+    <%= render "comments/form", commentable: commentable %>
 
     <!-- Comments List -->
     <div id="comments_list" class="divide-y divide-taupe-light">
       <% if top_level_comments.any? %>
         <% top_level_comments.each do |comment| %>
-          <%= render "comments/comment", comment: comment, stay: stay %>
+          <%= render "comments/comment", comment: comment, commentable: commentable %>
         <% end %>
       <% else %>
         <div id="comments_empty_state" class="text-center py-6">

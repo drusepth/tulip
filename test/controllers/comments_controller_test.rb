@@ -8,7 +8,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
     @stay = stays(:one)
     @stay.comments.destroy_all # Clean up fixture comments
     @comment = Comment.create!(
-      stay: @stay,
+      commentable: @stay,
       user: @user,
       body: "This is a test comment"
     )
@@ -125,7 +125,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroying parent comment also destroys replies" do
     reply = Comment.create!(
-      stay: @stay,
+      commentable: @stay,
       user: @other_user,
       body: "This is a reply",
       parent: @comment
@@ -151,7 +151,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
   test "collaborator can edit own comment" do
     # User two is already a collaborator via fixtures
     collaborator_comment = Comment.create!(
-      stay: @stay,
+      commentable: @stay,
       user: @other_user,
       body: "Collaborator's comment"
     )
