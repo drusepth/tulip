@@ -52,7 +52,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_11_060000) do
     t.datetime "updated_at", null: false
     t.integer "bucket_list_item_rating_id"
     t.string "commentable_type", null: false
-    t.integer "commentable_id", null: false
+    t.bigint "commentable_id", null: false
     t.index ["bucket_list_item_rating_id"], name: "index_comments_on_bucket_list_item_rating_id"
     t.index ["commentable_type", "commentable_id", "created_at"], name: "index_comments_on_commentable_and_created_at"
     t.index ["parent_id"], name: "index_comments_on_parent_id"
