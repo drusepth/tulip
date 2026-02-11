@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_11_060000) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_11_060001) do
   create_table "bucket_list_item_ratings", force: :cascade do |t|
     t.integer "bucket_list_item_id", null: false
     t.integer "user_id", null: false
