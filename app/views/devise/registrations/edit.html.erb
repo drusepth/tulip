@@ -1,7 +1,15 @@
 <div class="max-w-2xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold" style="font-family: var(--font-heading);">Account Settings</h1>
-    <p class="text-brown-light mt-2">Manage your account details and security</p>
+  <div class="mb-8 flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold" style="font-family: var(--font-heading);">Account Settings</h1>
+      <p class="text-brown-light mt-2">Manage your account details and security</p>
+    </div>
+    <%= button_to destroy_user_session_path, method: :delete, class: "btn-outline flex items-center gap-2 text-brown-light hover:text-rose-dark hover:border-rose-dark transition-colors" do %>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+      </svg>
+      <span>Log out</span>
+    <% end %>
   </div>
 
   <div class="cozy-card p-8 mb-6">
