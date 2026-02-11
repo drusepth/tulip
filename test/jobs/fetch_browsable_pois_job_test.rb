@@ -31,7 +31,7 @@ class FetchBrowsablePoisJobTest < ActiveJob::TestCase
     FetchBrowsablePoisJob.perform_now(@stay.id)
 
     @stay.reload
-    assert_equal Poi::BROWSABLE_CATEGORIES.sort, @stay.pois_cached_categories.sort
+    assert_equal Place::BROWSABLE_CATEGORIES.sort, @stay.pois_cached_categories.sort
   end
 
   test "skips already cached categories" do
@@ -63,12 +63,14 @@ class FetchBrowsablePoisJobTest < ActiveJob::TestCase
     assert_empty @stay.pois_cached_categories
   end
 
-  test "creates POIs from fetched data" do
-    initial_count = @stay.pois.count
+  test "creates Places and POIs from fetched data" do
+    initial_poi_count = @stay.pois.count
+    initial_place_count = Place.count
 
     FetchBrowsablePoisJob.perform_now(@stay.id)
 
-    # Should have created POIs (one per category from our stub)
-    assert @stay.pois.count > initial_count
+    # Should have created POIs and Places
+    assert @stay.pois.count > initial_poi_count
+    assert Place.count > initial_place_count
   end
 end

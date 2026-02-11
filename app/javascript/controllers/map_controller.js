@@ -657,6 +657,7 @@ export default class extends Controller {
                   ${poi.address ? `<span class="poi-popup-address">${poi.address}</span>` : ''}
                   ${poi.opening_hours ? `<span class="poi-popup-hours">${poi.opening_hours}</span>` : ''}
                 </div>
+                ${poi.place_id ? `<a href="/places/${poi.place_id}?stay_id=${stay.id}" class="poi-popup-link">View details</a>` : ''}
                 <button
                   class="poi-popup-btn add-to-bucket-list-btn"
                   data-stay-id="${stay.id}"
@@ -807,6 +808,7 @@ export default class extends Controller {
                 ${poi.address ? `<span class="poi-popup-address">${poi.address}</span>` : ''}
                 ${poi.opening_hours ? `<span class="poi-popup-hours">${poi.opening_hours}</span>` : ''}
               </div>
+              ${poi.place_id ? `<a href="/places/${poi.place_id}${stayId ? `?stay_id=${stayId}` : ''}" class="poi-popup-link">View details</a>` : ''}
               ${stayId ? `
                 <button
                   class="poi-popup-btn add-to-bucket-list-btn"

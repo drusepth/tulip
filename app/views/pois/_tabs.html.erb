@@ -9,7 +9,7 @@
 
   <p class="text-xs text-brown-light mb-3 font-medium uppercase tracking-wide">Browse by Category</p>
   <div class="flex flex-wrap gap-2" role="navigation" aria-label="Categories">
-    <% Poi::BROWSABLE_CATEGORIES.each do |category| %>
+    <% Place::BROWSABLE_CATEGORIES.each do |category| %>
       <%= link_to browse_stay_pois_path(stay, category: category),
                   data: { turbo_stream: true, action: "click->poi-tabs#showLoading", poi_tabs_target: "tab" },
                   class: "category-pill #{current_category == category ? 'active' : ''}" do %>

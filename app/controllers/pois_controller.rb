@@ -1,48 +1,13 @@
 class PoisController < ApplicationController
   before_action :set_stay, except: [:search]
-  before_action :require_stay_edit_permission, only: [:update, :destroy, :edit_notes, :update_notes]
-
-  def show
-    @poi = @stay.pois.find(params[:id])
-    FoursquareService.enrich_poi(@poi)
-    WikidataService.enrich_poi(@poi)
-
-    # Prev/next navigation within the same category
-    siblings = @stay.pois.by_category(@poi.category).nearest.to_a
-    current_index = siblings.index { |p| p.id == @poi.id }
-    if current_index
-      @prev_poi = siblings[current_index - 1] if current_index > 0
-      @next_poi = siblings[current_index + 1]
-    end
-  end
-
-  def edit_notes
-    @poi = @stay.pois.find(params[:id])
-    respond_to do |format|
-      format.turbo_stream
-      format.html
-    end
-  end
-
-  def update_notes
-    @poi = @stay.pois.find(params[:id])
-    respond_to do |format|
-      if @poi.update(notes: params[:poi][:notes])
-        format.turbo_stream
-        format.html { redirect_to stay_poi_path(@stay, @poi), notice: "Notes updated." }
-      else
-        format.turbo_stream { render :edit_notes, status: :unprocessable_entity }
-        format.html { redirect_to stay_poi_path(@stay, @poi), alert: "Could not update notes." }
-      end
-    end
-  end
+  before_action :require_stay_edit_permission, only: [:update, :destroy]
 
   def browse
     @current_category = params[:category].presence || 'coffee'
-    @current_category = 'coffee' unless Poi::BROWSABLE_CATEGORIES.include?(@current_category)
+    @current_category = 'coffee' unless Place::BROWSABLE_CATEGORIES.include?(@current_category)
 
     ensure_pois_cached(@current_category)
-    @pois = @stay.pois.by_category(@current_category).nearest
+    @pois = @stay.pois.by_category(@current_category).nearest.includes(:place)
 
     respond_to do |format|
       format.html
@@ -56,7 +21,7 @@ class PoisController < ApplicationController
   end
 
   def index
-    @pois = @stay.pois
+    @pois = @stay.pois.includes(:place)
     @pois = @pois.by_category(params[:category]) if params[:category].present?
 
     render json: format_pois(@pois)
@@ -65,12 +30,12 @@ class PoisController < ApplicationController
   def fetch
     category = params[:category]
 
-    unless Poi::CATEGORIES.include?(category)
+    unless Place::CATEGORIES.include?(category)
       return render json: { error: 'Invalid category' }, status: :bad_request
     end
 
     # Check if we already have cached POIs for this stay and category
-    existing_pois = @stay.pois.by_category(category)
+    existing_pois = @stay.pois.by_category(category).includes(:place)
 
     if existing_pois.exists?
       return render json: format_pois(existing_pois)
@@ -86,30 +51,13 @@ class PoisController < ApplicationController
 
       # Cache the results
       pois_data.each do |poi_data|
-        @stay.pois.find_or_create_by(osm_id: poi_data[:osm_id]) do |poi|
-          poi.assign_attributes(
-            name: poi_data[:name],
-            category: category,
-            latitude: poi_data[:latitude],
-            longitude: poi_data[:longitude],
-            distance_meters: poi_data[:distance_meters],
-            address: poi_data[:address],
-            opening_hours: poi_data[:opening_hours],
-            website: poi_data[:website],
-            phone: poi_data[:phone],
-            cuisine: poi_data[:cuisine],
-            outdoor_seating: poi_data[:outdoor_seating],
-            internet_access: poi_data[:internet_access],
-            air_conditioning: poi_data[:air_conditioning],
-            takeaway: poi_data[:takeaway],
-            brand: poi_data[:brand],
-            description: poi_data[:description],
-            wikidata_id: poi_data[:wikidata]
-          )
+        place = Place.find_or_create_from_overpass(poi_data, category: category)
+        @stay.pois.find_or_create_by(place: place, category: category) do |poi|
+          poi.distance_meters = poi_data[:distance_meters]
         end
       end
 
-      render json: format_pois(@stay.pois.by_category(category).reload)
+      render json: format_pois(@stay.pois.by_category(category).includes(:place).reload)
     else
       render json: []
     end
@@ -149,7 +97,7 @@ class PoisController < ApplicationController
     lng = params[:lng].to_f
     category = params[:category]
 
-    unless Poi::CATEGORIES.include?(category)
+    unless Place::CATEGORIES.include?(category)
       return render json: { error: 'Invalid category' }, status: :bad_request
     end
 
@@ -161,7 +109,7 @@ class PoisController < ApplicationController
 
     # Check cache first
     if ViewportPoi.cached_for_grid?(grid_key)
-      return render json: format_viewport_pois(ViewportPoi.by_grid_key(grid_key))
+      return render json: format_viewport_pois(ViewportPoi.by_grid_key(grid_key).includes(:place))
     end
 
     # Cache miss - fetch from Overpass API using grid center
@@ -175,31 +123,15 @@ class PoisController < ApplicationController
 
     # Cache the results
     pois_data.each do |poi_data|
-      ViewportPoi.find_or_create_by(grid_key: grid_key, osm_id: poi_data[:osm_id]) do |poi|
-        poi.assign_attributes(
-          name: poi_data[:name],
-          category: category,
-          latitude: poi_data[:latitude],
-          longitude: poi_data[:longitude],
-          address: poi_data[:address],
-          opening_hours: poi_data[:opening_hours],
-          center_lat: grid_center[:lat],
-          center_lng: grid_center[:lng],
-          website: poi_data[:website],
-          phone: poi_data[:phone],
-          cuisine: poi_data[:cuisine],
-          outdoor_seating: poi_data[:outdoor_seating],
-          internet_access: poi_data[:internet_access],
-          air_conditioning: poi_data[:air_conditioning],
-          takeaway: poi_data[:takeaway],
-          brand: poi_data[:brand],
-          description: poi_data[:description],
-          wikidata_id: poi_data[:wikidata]
-        )
+      place = Place.find_or_create_from_overpass(poi_data, category: category)
+      ViewportPoi.find_or_create_by(grid_key: grid_key, place: place) do |vpoi|
+        vpoi.category = category
+        vpoi.center_lat = grid_center[:lat]
+        vpoi.center_lng = grid_center[:lng]
       end
     end
 
-    render json: format_viewport_pois(ViewportPoi.by_grid_key(grid_key))
+    render json: format_viewport_pois(ViewportPoi.by_grid_key(grid_key).includes(:place))
   end
 
   private
@@ -219,26 +151,9 @@ class PoisController < ApplicationController
     )
 
     pois_data.each do |poi_data|
-      @stay.pois.find_or_create_by(osm_id: poi_data[:osm_id]) do |poi|
-        poi.assign_attributes(
-          name: poi_data[:name],
-          category: category,
-          latitude: poi_data[:latitude],
-          longitude: poi_data[:longitude],
-          distance_meters: poi_data[:distance_meters],
-          address: poi_data[:address],
-          opening_hours: poi_data[:opening_hours],
-          website: poi_data[:website],
-          phone: poi_data[:phone],
-          cuisine: poi_data[:cuisine],
-          outdoor_seating: poi_data[:outdoor_seating],
-          internet_access: poi_data[:internet_access],
-          air_conditioning: poi_data[:air_conditioning],
-          takeaway: poi_data[:takeaway],
-          brand: poi_data[:brand],
-          description: poi_data[:description],
-          wikidata_id: poi_data[:wikidata]
-        )
+      place = Place.find_or_create_from_overpass(poi_data, category: category)
+      @stay.pois.find_or_create_by(place: place, category: category) do |poi|
+        poi.distance_meters = poi_data[:distance_meters]
       end
     end
   end
@@ -249,49 +164,53 @@ class PoisController < ApplicationController
 
   def format_pois(pois)
     pois.map do |poi|
+      place = poi.place
       {
         id: poi.id,
-        name: poi.name,
+        place_id: place.id,
+        name: place.name,
         category: poi.category,
-        latitude: poi.latitude,
-        longitude: poi.longitude,
+        latitude: place.latitude,
+        longitude: place.longitude,
         distance_meters: poi.distance_meters,
-        address: poi.address,
-        opening_hours: poi.opening_hours,
+        address: place.address,
+        opening_hours: place.opening_hours,
         favorite: poi.favorite,
-        website: poi.website,
-        phone: poi.phone,
-        cuisine: poi.cuisine,
-        outdoor_seating: poi.outdoor_seating,
-        internet_access: poi.internet_access,
-        air_conditioning: poi.air_conditioning,
-        takeaway: poi.takeaway,
-        brand: poi.brand,
-        description: poi.description
+        website: place.website,
+        phone: place.phone,
+        cuisine: place.cuisine,
+        outdoor_seating: place.outdoor_seating,
+        internet_access: place.internet_access,
+        air_conditioning: place.air_conditioning,
+        takeaway: place.takeaway,
+        brand: place.brand,
+        description: place.description
       }
     end
   end
 
   def format_viewport_pois(pois)
-    pois.map do |poi|
+    pois.map do |vpoi|
+      place = vpoi.place
       {
-        id: poi.id,
-        name: poi.name,
-        category: poi.category,
-        latitude: poi.latitude,
-        longitude: poi.longitude,
-        address: poi.address,
-        opening_hours: poi.opening_hours,
+        id: vpoi.id,
+        place_id: place.id,
+        name: place.name,
+        category: vpoi.category,
+        latitude: place.latitude,
+        longitude: place.longitude,
+        address: place.address,
+        opening_hours: place.opening_hours,
         viewport_poi: true,
-        website: poi.website,
-        phone: poi.phone,
-        cuisine: poi.cuisine,
-        outdoor_seating: poi.outdoor_seating,
-        internet_access: poi.internet_access,
-        air_conditioning: poi.air_conditioning,
-        takeaway: poi.takeaway,
-        brand: poi.brand,
-        description: poi.description
+        website: place.website,
+        phone: place.phone,
+        cuisine: place.cuisine,
+        outdoor_seating: place.outdoor_seating,
+        internet_access: place.internet_access,
+        air_conditioning: place.air_conditioning,
+        takeaway: place.takeaway,
+        brand: place.brand,
+        description: place.description
       }
     end
   end

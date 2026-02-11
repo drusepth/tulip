@@ -22,7 +22,7 @@
           </svg>
         <% end %>
         <div class="min-w-0 flex-1">
-          <%= link_to stay_poi_path(stay, poi), class: "text-brown font-medium truncate block hover:text-sage-dark transition-colors", data: { action: "click->collapsible#stopPropagation" } do %>
+          <%= link_to place_path(poi.place, stay_id: stay.id), class: "text-brown font-medium truncate block hover:text-sage-dark transition-colors", data: { action: "click->collapsible#stopPropagation" } do %>
             <%= poi.name || 'Unnamed' %>
           <% end %>
           <% if poi.cuisine.present? %>
@@ -117,7 +117,7 @@
           <p class="text-xs text-brown-light italic"><%= poi.description %></p>
         <% end %>
 
-        <%= link_to stay_poi_path(stay, poi), class: "inline-flex items-center gap-1 text-xs text-sage-dark hover:text-sage font-medium mt-1" do %>
+        <%= link_to place_path(poi.place, stay_id: stay.id), class: "inline-flex items-center gap-1 text-xs text-sage-dark hover:text-sage font-medium mt-1" do %>
           View full details
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -125,7 +125,7 @@
         <% end %>
       <% else %>
         <p class="text-taupe italic">No additional details available</p>
-        <%= link_to stay_poi_path(stay, poi), class: "inline-flex items-center gap-1 text-xs text-sage-dark hover:text-sage font-medium mt-1" do %>
+        <%= link_to place_path(poi.place, stay_id: stay.id), class: "inline-flex items-center gap-1 text-xs text-sage-dark hover:text-sage font-medium mt-1" do %>
           View details
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
