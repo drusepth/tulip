@@ -1,5 +1,14 @@
 class OverpassService
-  OVERPASS_URL = 'https://overpass-api.de/api/interpreter'.freeze
+  # Multiple public Overpass API endpoints to distribute requests and reduce
+  # rate-limiting from any single server.
+  OVERPASS_ENDPOINTS = [
+    'https://overpass-api.de/api/interpreter',
+    'https://overpass.kumi.systems/api/interpreter',
+    'https://maps.mail.ru/osm/tools/overpass/api/interpreter'
+  ].freeze
+
+  # Keep for backwards compatibility in tests
+  OVERPASS_URL = OVERPASS_ENDPOINTS.first.freeze
 
   class RateLimitedError < StandardError; end
 
@@ -114,10 +123,13 @@ class OverpassService
 
     def make_request(query)
       retries = 0
+      endpoints = OVERPASS_ENDPOINTS.shuffle
 
       loop do
+        url = endpoints[retries % endpoints.size]
+
         response = HTTParty.post(
-          OVERPASS_URL,
+          url,
           body: { data: query },
           headers: { 'Content-Type' => 'application/x-www-form-urlencoded' },
           timeout: 30
@@ -127,17 +139,17 @@ class OverpassService
           if retries < MAX_RETRIES
             retries += 1
             delay = RETRY_BASE_DELAY * retries
-            Rails.logger.warn("Overpass API returned #{response.code}, retrying in #{delay}s (attempt #{retries}/#{MAX_RETRIES})")
+            Rails.logger.warn("Overpass API (#{url}) returned #{response.code}, retrying with different endpoint in #{delay}s (attempt #{retries}/#{MAX_RETRIES})")
             sleep(delay)
             next
           end
 
-          Rails.logger.error("Overpass API returned #{response.code} after #{MAX_RETRIES} retries: #{response.body[0..200]}")
+          Rails.logger.error("Overpass API returned #{response.code} after #{MAX_RETRIES} retries across endpoints: #{response.body[0..200]}")
           raise RateLimitedError, "Overpass API rate limited (#{response.code})"
         end
 
         unless response.success?
-          Rails.logger.error("Overpass API returned #{response.code}: #{response.body[0..200]}")
+          Rails.logger.error("Overpass API (#{url}) returned #{response.code}: #{response.body[0..200]}")
           return nil
         end
 
