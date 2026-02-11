@@ -25,11 +25,15 @@ class PoisController < ApplicationController
 
     # Fetch from Overpass API if stay has coordinates
     if @stay.latitude.present? && @stay.longitude.present?
-      pois_data = OverpassService.fetch_pois(
-        lat: @stay.latitude.to_f,
-        lng: @stay.longitude.to_f,
-        category: category
-      )
+      begin
+        pois_data = OverpassService.fetch_pois(
+          lat: @stay.latitude.to_f,
+          lng: @stay.longitude.to_f,
+          category: category
+        )
+      rescue OverpassService::RateLimitedError
+        return render json: { error: 'Rate limited by upstream API. Please retry later.' }, status: :too_many_requests
+      end
 
       # Cache the results
       pois_data.each do |poi_data|
@@ -97,11 +101,15 @@ class PoisController < ApplicationController
     # Cache miss - fetch from Overpass API using grid center
     grid_center = ViewportPoi.grid_center_for(lat: lat, lng: lng)
 
-    pois_data = OverpassService.fetch_pois(
-      lat: grid_center[:lat],
-      lng: grid_center[:lng],
-      category: category
-    )
+    begin
+      pois_data = OverpassService.fetch_pois(
+        lat: grid_center[:lat],
+        lng: grid_center[:lng],
+        category: category
+      )
+    rescue OverpassService::RateLimitedError
+      return render json: { error: 'Rate limited by upstream API. Please retry later.' }, status: :too_many_requests
+    end
 
     # Cache the results
     pois_data.each do |poi_data|

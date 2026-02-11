@@ -1,6 +1,11 @@
 class OverpassService
   OVERPASS_URL = 'https://overpass-api.de/api/interpreter'.freeze
 
+  class RateLimitedError < StandardError; end
+
+  MAX_RETRIES = 2
+  RETRY_BASE_DELAY = 2 # seconds
+
   CATEGORY_TAGS = {
     'bus_stops' => [
       '["highway"="bus_stop"]'
@@ -108,19 +113,38 @@ class OverpassService
     end
 
     def make_request(query)
-      response = HTTParty.post(
-        OVERPASS_URL,
-        body: { data: query },
-        headers: { 'Content-Type' => 'application/x-www-form-urlencoded' },
-        timeout: 30
-      )
+      retries = 0
 
-      unless response.success?
-        Rails.logger.error("Overpass API returned #{response.code}: #{response.body[0..200]}")
-        return nil
+      loop do
+        response = HTTParty.post(
+          OVERPASS_URL,
+          body: { data: query },
+          headers: { 'Content-Type' => 'application/x-www-form-urlencoded' },
+          timeout: 30
+        )
+
+        if response.code == 429 || response.code == 504
+          if retries < MAX_RETRIES
+            retries += 1
+            delay = RETRY_BASE_DELAY * retries
+            Rails.logger.warn("Overpass API returned #{response.code}, retrying in #{delay}s (attempt #{retries}/#{MAX_RETRIES})")
+            sleep(delay)
+            next
+          end
+
+          Rails.logger.error("Overpass API returned #{response.code} after #{MAX_RETRIES} retries: #{response.body[0..200]}")
+          raise RateLimitedError, "Overpass API rate limited (#{response.code})"
+        end
+
+        unless response.success?
+          Rails.logger.error("Overpass API returned #{response.code}: #{response.body[0..200]}")
+          return nil
+        end
+
+        return JSON.parse(response.body)
       end
-
-      JSON.parse(response.body)
+    rescue RateLimitedError
+      raise
     rescue StandardError => e
       Rails.logger.error("Overpass API error: #{e.message}")
       nil

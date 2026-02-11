@@ -618,8 +618,13 @@ export default class extends Controller {
       const fetchPromises = staysToFetch.map(stay => {
         const url = this.poisUrlValue.replace(':id', stay.id) + `?category=${category}`
         return fetch(url, { signal })
-          .then(response => response.json())
-          .then(pois => ({ stay, pois }))
+          .then(response => {
+            if (response.status === 429) {
+              delete this.fetchedPOIs[`${category}-${stay.id}`]
+              return { stay, pois: [] }
+            }
+            return response.json().then(pois => ({ stay, pois }))
+          })
           .catch(error => {
             if (error.name === 'AbortError') {
               // Request was cancelled, clear the fetched flag so it can be retried
@@ -824,20 +829,36 @@ export default class extends Controller {
     this.startLoading('poi', category)
 
     try {
-      // Fetch all unsearched grid cells in parallel
-      const fetches = cellsToSearch.map(cell =>
-        fetch(`${this.poisSearchUrlValue}?lat=${cell.lat}&lng=${cell.lng}&category=${category}`, { signal })
-          .then(r => r.json())
-          .then(pois => ({ pois, cell }))
-          .catch(error => {
-            if (error.name === 'AbortError') throw error
-            // On individual cell failure, clear its tracked state so it can retry
-            delete this.searchedGridCells[`${category}-${cell.gridKey}`]
-            return { pois: [], cell }
-          })
-      )
+      // Fetch grid cells with limited concurrency to avoid overwhelming the Overpass API
+      const MAX_CONCURRENT = 2
+      const results = []
 
-      const results = await Promise.all(fetches)
+      for (let i = 0; i < cellsToSearch.length; i += MAX_CONCURRENT) {
+        if (signal.aborted) return
+
+        const batch = cellsToSearch.slice(i, i + MAX_CONCURRENT)
+        const batchResults = await Promise.all(
+          batch.map(cell =>
+            fetch(`${this.poisSearchUrlValue}?lat=${cell.lat}&lng=${cell.lng}&category=${category}`, { signal })
+              .then(r => {
+                if (r.status === 429) {
+                  // Rate limited — clear this cell so it retries on next viewport change
+                  delete this.searchedGridCells[`${category}-${cell.gridKey}`]
+                  return { pois: [], cell }
+                }
+                return r.json().then(pois => ({ pois, cell }))
+              })
+              .catch(error => {
+                if (error.name === 'AbortError') throw error
+                // On individual cell failure, clear its tracked state so it can retry
+                delete this.searchedGridCells[`${category}-${cell.gridKey}`]
+                return { pois: [], cell }
+              })
+          )
+        )
+        results.push(...batchResults)
+      }
+
       if (signal.aborted) return
 
       results.forEach(({ pois }) => {
@@ -954,8 +975,13 @@ export default class extends Controller {
       const fetchPromises = staysToFetch.map(stay => {
         const url = this.transitUrlValue.replace(':id', stay.id) + `?route_type=${routeType}`
         return fetch(url, { signal })
-          .then(response => response.json())
-          .then(routes => ({ stay, routes }))
+          .then(response => {
+            if (response.status === 429) {
+              delete this.fetchedTransit[`${routeType}-${stay.id}`]
+              return { stay, routes: [] }
+            }
+            return response.json().then(routes => ({ stay, routes }))
+          })
           .catch(error => {
             if (error.name === 'AbortError') {
               // Request was cancelled, clear the fetched flag so it can be retried
