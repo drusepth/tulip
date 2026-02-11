@@ -3,8 +3,8 @@ class Place < ApplicationRecord
   BROWSABLE_CATEGORIES = %w[coffee grocery food gym coworking library parks].freeze
   SOURCES = %w[osm foursquare].freeze
 
-  has_many :pois, dependent: :nullify
-  has_many :viewport_pois, dependent: :nullify
+  has_many :pois, dependent: :destroy
+  has_many :viewport_pois, dependent: :destroy
   has_many :stays, through: :pois
 
   validates :category, inclusion: { in: CATEGORIES }

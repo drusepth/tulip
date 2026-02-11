@@ -16,7 +16,7 @@ class ViewportPoi < ApplicationRecord
            :wikidata_id, :wikipedia_url, :wikipedia_extract,
            :wikidata_image_url, :wikidata_fetched_at,
            :coordinates,
-           to: :place
+           to: :place, allow_nil: true
 
   scope :by_grid_key, ->(key) { where(grid_key: key) }
   scope :by_category, ->(category) { where(category: category) }
