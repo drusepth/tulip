@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_11_000001) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_11_060000) do
   create_table "bucket_list_item_ratings", force: :cascade do |t|
     t.integer "bucket_list_item_id", null: false
     t.integer "user_id", null: false
@@ -43,17 +43,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_11_000001) do
   end
 
   create_table "comments", force: :cascade do |t|
-    t.integer "stay_id", null: false
     t.integer "user_id", null: false
     t.integer "parent_id"
     t.text "body"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "bucket_list_item_rating_id"
+    t.string "commentable_type", null: false
+    t.integer "commentable_id", null: false
     t.index ["bucket_list_item_rating_id"], name: "index_comments_on_bucket_list_item_rating_id"
+    t.index ["commentable_type", "commentable_id", "created_at"], name: "index_comments_on_commentable_and_created_at"
     t.index ["parent_id"], name: "index_comments_on_parent_id"
-    t.index ["stay_id", "created_at"], name: "index_comments_on_stay_id_and_created_at"
-    t.index ["stay_id"], name: "index_comments_on_stay_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
@@ -215,7 +215,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_11_000001) do
   add_foreign_key "bucket_list_items", "users"
   add_foreign_key "comments", "bucket_list_item_ratings"
   add_foreign_key "comments", "comments", column: "parent_id"
-  add_foreign_key "comments", "stays"
   add_foreign_key "comments", "users"
   add_foreign_key "notifications", "users"
   add_foreign_key "pois", "places"

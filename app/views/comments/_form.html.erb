@@ -1,4 +1,6 @@
-<%= form_with model: [stay, Comment.new],
+<% commentable = local_assigns[:commentable] || local_assigns[:stay] %>
+<%= form_with url: commentable_comments_path(commentable),
+             method: :post,
              id: "comment_form",
              class: "comment-form" do |f| %>
   <div class="flex gap-3">
@@ -7,6 +9,7 @@
     }) %>
     <div class="flex-1">
       <%= f.text_area :body,
+                      name: "comment[body]",
                       placeholder: "Add a comment...",
                       rows: 2,
                       class: "w-full px-4 py-2.5 border-2 border-taupe-light rounded-2xl bg-white text-brown placeholder-brown-lighter focus:outline-none focus:border-lavender focus:bg-lavender-light transition-colors text-sm resize-none" %>

@@ -1,7 +1,9 @@
-<%= form_with model: [stay, Comment.new],
+<% commentable = local_assigns[:commentable] || local_assigns[:stay] %>
+<%= form_with url: commentable_comments_path(commentable),
+             method: :post,
              class: "reply-form",
              data: { comment_reply_target: "formElement" } do |f| %>
-  <%= f.hidden_field :parent_id, value: parent.id %>
+  <input type="hidden" name="comment[parent_id]" value="<%= parent.id %>">
   <div class="flex gap-2">
     <%= avatar_tag(current_user, size: 24, html_options: {
       class: "w-6 h-6 ring-1 ring-lavender-light flex-shrink-0"
@@ -11,6 +13,7 @@
         Replying to <span class="font-medium"><%= parent.user.name %></span>
       </div>
       <%= f.text_area :body,
+                      name: "comment[body]",
                       placeholder: "Write a reply...",
                       rows: 2,
                       class: "w-full px-3 py-2 border border-taupe-light rounded-xl bg-white text-brown placeholder-brown-lighter focus:outline-none focus:border-lavender text-sm resize-none",

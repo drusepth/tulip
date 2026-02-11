@@ -1,6 +1,8 @@
 <%= turbo_frame_tag dom_id(comment) do %>
   <div class="comment p-4 rounded-2xl bg-lavender-light border border-lavender">
-    <%= form_with model: [comment.stay, comment], class: "space-y-3" do |f| %>
+    <%= form_with url: commentable_comment_path(comment.commentable, comment),
+                  method: :patch,
+                  class: "space-y-3" do |f| %>
       <div class="flex gap-3">
         <%= avatar_tag(comment.user, size: 32, html_options: {
           class: "w-8 h-8 ring-2 ring-lavender flex-shrink-0"
@@ -8,6 +10,8 @@
         <div class="flex-1">
           <label class="text-xs text-lavender-dark mb-1 block">Edit your comment</label>
           <%= f.text_area :body,
+                          name: "comment[body]",
+                          value: comment.body,
                           rows: 3,
                           class: "w-full px-3 py-2 border border-lavender rounded-xl bg-white text-brown text-sm focus:outline-none focus:border-lavender-dark resize-none",
                           autofocus: true %>
@@ -16,7 +20,7 @@
 
       <div class="flex gap-2 justify-end">
         <%= link_to "Cancel",
-                    stay_path(comment.stay),
+                    commentable_path(comment.commentable),
                     class: "text-sm text-brown-light hover:text-brown px-3 py-1.5 transition-colors",
                     data: { turbo_stream: true } %>
         <%= f.submit "Save", class: "btn-primary text-sm py-1.5 px-4 bg-lavender hover:bg-lavender-dark" %>

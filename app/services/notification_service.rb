@@ -4,6 +4,9 @@ class NotificationService
       return if comment.rating_comment?
 
       stay = comment.stay
+      # Only notify for stay comments (places are public, no owner/collaborator model)
+      return unless stay
+
       actor = comment.user
 
       # Notify the stay owner and collaborators (except the commenter)
@@ -35,17 +38,24 @@ class NotificationService
       # Don't notify if replying to own comment
       return if parent_author == actor
 
+      stay = reply.stay
+      notification_data = {
+        actor_id: actor.id,
+        actor_name: actor.name,
+        reply_preview: reply.body&.truncate(100)
+      }
+
+      # Include stay context if this is a stay comment
+      if stay
+        notification_data[:stay_id] = stay.id
+        notification_data[:stay_title] = stay.title
+      end
+
       Notification.create!(
         user: parent_author,
         notification_type: "reply_to_comment",
         notifiable: reply,
-        data: {
-          actor_id: actor.id,
-          actor_name: actor.name,
-          stay_id: reply.stay.id,
-          stay_title: reply.stay.title,
-          reply_preview: reply.body&.truncate(100)
-        }
+        data: notification_data
       )
     end
 

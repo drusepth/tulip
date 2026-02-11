@@ -1,3 +1,4 @@
+<% commentable = local_assigns[:commentable] || local_assigns[:stay] %>
 <%= turbo_frame_tag dom_id(comment) do %>
   <% is_reply = comment.parent_id.present? %>
   <% is_rating_comment = comment.rating_comment? %>
@@ -104,13 +105,13 @@
 
             <% if comment.editable_by?(current_user) %>
               <span class="mx-2">·</span>
-              <%= link_to edit_stay_comment_path(stay, comment),
+              <%= link_to edit_commentable_comment_path(commentable, comment),
                           class: "hover:text-sage-dark transition-colors",
                           data: { turbo_stream: true } do %>
                 Edit
               <% end %>
               <span class="mx-2">·</span>
-              <%= button_to stay_comment_path(stay, comment),
+              <%= button_to commentable_comment_path(commentable, comment),
                             method: :delete,
                             class: "hover:text-rose-dark transition-colors",
                             data: { turbo_confirm: "Delete this comment?", turbo_stream: true } do %>
@@ -127,7 +128,7 @@
       <% if comment.replies.any? %>
         <div class="mt-3 ml-13 space-y-0" id="<%= dom_id(comment, :replies) %>">
           <% comment.replies.ordered.each do |reply| %>
-            <%= render "comments/comment", comment: reply, stay: stay, parent_comment: comment %>
+            <%= render "comments/comment", comment: reply, commentable: commentable, parent_comment: comment %>
           <% end %>
         </div>
       <% else %>
@@ -137,7 +138,7 @@
 
       <!-- Inline Reply Form (after replies, only on top-level comments) -->
       <div data-comment-reply-target="form" class="hidden mt-3 ml-13">
-        <%= render "comments/reply_form", stay: stay, parent: comment %>
+        <%= render "comments/reply_form", commentable: commentable, parent: comment %>
       </div>
     <% end %>
   </div>

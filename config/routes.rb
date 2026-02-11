@@ -11,7 +11,9 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :places, only: [:show]
+  resources :places, only: [:show] do
+    resources :comments, only: [:create, :edit, :update, :destroy], controller: 'place_comments'
+  end
 
   resources :stays do
     member do

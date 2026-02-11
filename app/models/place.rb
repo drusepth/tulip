@@ -6,6 +6,7 @@ class Place < ApplicationRecord
   has_many :pois, dependent: :destroy
   has_many :viewport_pois, dependent: :destroy
   has_many :stays, through: :pois
+  has_many :comments, as: :commentable, dependent: :destroy
 
   validates :category, inclusion: { in: CATEGORIES }
   validates :osm_id, uniqueness: true, allow_nil: true
