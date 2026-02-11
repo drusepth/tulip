@@ -1342,6 +1342,8 @@ input[type="checkbox"]:focus {
 
 .mobile-nav-item-primary {
   min-width: 48px;
+  position: relative;
+  z-index: 1;
 }
 
 /* ========================================
