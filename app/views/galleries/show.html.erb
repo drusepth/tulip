@@ -1,4 +1,8 @@
-<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8" data-controller="gallery-filter">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8" data-controller="gallery-filter gallery-pagination"
+     data-gallery-pagination-stay-id-value="<%= @stay.id %>"
+     data-gallery-pagination-current-page-value="<%= @page %>"
+     data-gallery-pagination-has-more-value="<%= @has_more %>"
+     data-gallery-pagination-total-count-value="<%= @total_count %>">
   <!-- Header with Botanical Flourish -->
   <div class="relative mb-8">
     <!-- Decorative corner flourish (lavender, subtle) -->
@@ -47,7 +51,7 @@
     </div>
   </div>
 
-  <% if @pois.any? %>
+  <% if @places_with_distance&.any? %>
     <!-- Category Filters -->
     <% if @categories.any? %>
       <div class="cozy-card p-4 mb-6 relative overflow-hidden">
@@ -75,21 +79,43 @@
               </button>
             <% end %>
           </div>
-          <span data-gallery-filter-target="count" class="ml-auto text-xs text-brown-light"><%= @pois.count %> venues</span>
+          <span data-gallery-filter-target="count" data-gallery-pagination-target="count" class="ml-auto text-xs text-brown-light">
+            Showing <%= @places_with_distance.count %> of <%= @total_count %> venues
+          </span>
         </div>
       </div>
     <% end %>
 
     <!-- Venue Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      <% poi_titles = @pois.map(&:name).compact %>
-      <% added_titles = @stay.bucket_list_items.where(title: poi_titles).pluck(:title).to_set %>
-      <% @pois.each do |poi| %>
-        <% next if poi.name.blank? %>
-        <% added = added_titles.include?(poi.name) %>
-        <%= render partial: "galleries/venue_card", locals: { poi: poi, added: added } %>
+    <div id="venue-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <% place_titles = @places_with_distance.map { |pd| pd.place.name }.compact %>
+      <% added_titles = @stay.bucket_list_items.where(title: place_titles).pluck(:title).to_set %>
+      <% @places_with_distance.each do |place_data| %>
+        <% next if place_data.place.name.blank? %>
+        <% added = added_titles.include?(place_data.place.name) %>
+        <%= render partial: "galleries/venue_card", locals: { place_data: place_data, added: added } %>
       <% end %>
     </div>
+
+    <!-- Load More Button -->
+    <%= turbo_frame_tag "load-more-frame" do %>
+      <div class="mt-8 text-center">
+        <% if @has_more %>
+          <button type="button"
+                  data-gallery-pagination-target="loadMoreButton"
+                  data-action="click->gallery-pagination#loadMore"
+                  class="btn-primary inline-flex items-center gap-2">
+            <span data-gallery-pagination-target="buttonText">Load More</span>
+            <svg data-gallery-pagination-target="spinner" class="hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </button>
+        <% else %>
+          <p class="text-sm text-brown-light">All <%= @total_count %> venues loaded</p>
+        <% end %>
+      </div>
+    <% end %>
 
     <!-- Attribution notice (required by Foursquare) -->
     <div class="mt-8 p-4 rounded-2xl bg-cream border border-taupe-light">

@@ -8,6 +8,19 @@ export default class extends Controller {
   connect() {
     this.updateActiveState()
     this.updateCount()
+
+    // Listen for new cards being loaded via pagination
+    this.element.addEventListener("gallery-pagination:cardsLoaded", this.handleCardsLoaded.bind(this))
+  }
+
+  disconnect() {
+    this.element.removeEventListener("gallery-pagination:cardsLoaded", this.handleCardsLoaded.bind(this))
+  }
+
+  handleCardsLoaded() {
+    // Re-apply current filter to newly loaded cards
+    this.filterCards()
+    this.updateCount()
   }
 
   filter(event) {
@@ -47,12 +60,16 @@ export default class extends Controller {
     const visibleCount = this.cardTargets.filter(
       (card) => !card.classList.contains("hidden")
     ).length
-    const totalCount = this.cardTargets.length
+    const loadedCount = this.cardTargets.length
+
+    // Get the server-side total from pagination controller's data attribute
+    const paginationTotalCount = this.element.dataset.galleryPaginationTotalCountValue
+    const totalCount = paginationTotalCount ? parseInt(paginationTotalCount, 10) : loadedCount
 
     if (this.categoryValue === "all") {
-      this.countTarget.textContent = `${totalCount} venues`
+      this.countTarget.textContent = `Showing ${loadedCount} of ${totalCount} venues`
     } else {
-      this.countTarget.textContent = `${visibleCount} of ${totalCount} venues`
+      this.countTarget.textContent = `${visibleCount} of ${loadedCount} loaded (${totalCount} total)`
     }
   }
 }
