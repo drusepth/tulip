@@ -26,8 +26,15 @@ class BucketListItemsController < ApplicationController
   def create
     @bucket_list_item = @stay.bucket_list_items.build(bucket_list_item_params)
     @bucket_list_item.user = current_user
-    @source_poi = @stay.pois.find_by(id: params[:source_poi_id]) if params[:source_poi_id].present?
-    @bucket_list_item.place = @source_poi.place if @source_poi&.place
+
+    # Support both source_poi_id (legacy) and source_place_id (new) for linking to Place
+    if params[:source_place_id].present?
+      @bucket_list_item.place = Place.find_by(id: params[:source_place_id])
+    elsif params[:source_poi_id].present?
+      @source_poi = @stay.pois.find_by(id: params[:source_poi_id])
+      @bucket_list_item.place = @source_poi.place if @source_poi&.place
+    end
+
     @compact = params[:compact].present?
 
     respond_to do |format|

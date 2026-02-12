@@ -15,6 +15,24 @@ class Place < ApplicationRecord
   scope :by_category, ->(category) { where(category: category) }
   scope :with_photos, -> { where.not(foursquare_photo_url: nil) }
 
+  # Spatial query using bounding box filtering (indexed) for efficient queries
+  # radius_km is the search radius in kilometers
+  scope :within_radius, ->(lat:, lng:, radius_km:) {
+    lat_delta = radius_km / 111.0
+    lng_delta = radius_km / (111.0 * Math.cos(lat * Math::PI / 180))
+
+    where(latitude: (lat - lat_delta)..(lat + lat_delta))
+      .where(longitude: (lng - lng_delta)..(lng + lng_delta))
+  }
+
+  # Calculate distance from a point in meters
+  def distance_from(lat, lng)
+    return nil unless latitude && longitude
+    Geocoder::Calculations.distance_between(
+      [lat, lng], [latitude, longitude], units: :km
+    ) * 1000 # convert to meters
+  end
+
   def coordinates
     [latitude, longitude]
   end

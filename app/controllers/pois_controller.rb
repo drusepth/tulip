@@ -77,6 +77,29 @@ class PoisController < ApplicationController
     head :no_content
   end
 
+  # Toggle favorite status for a Place
+  # Creates a Poi record lazily if one doesn't exist for this stay+place
+  def toggle_favorite
+    place = Place.find(params[:place_id])
+
+    # Find or create Poi for this stay+place combination
+    @poi = @stay.pois.find_or_initialize_by(place: place)
+    @poi.category = place.category if @poi.new_record?
+    @poi.favorite = !@poi.favorite
+    @poi.save!
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          "place_favorite_#{place.id}",
+          partial: "pois/place_favorite_button",
+          locals: { place: place, stay: @stay, is_favorite: @poi.favorite }
+        )
+      end
+      format.json { render json: { success: true, favorite: @poi.favorite } }
+    end
+  end
+
   # Viewport-based POI search (not tied to a specific stay)
   def search
     lat = params[:lat].to_f

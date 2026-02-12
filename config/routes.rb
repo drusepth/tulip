@@ -21,7 +21,11 @@ Rails.application.routes.draw do
       get :edit_notes
       patch :update_notes
     end
-    resources :pois, only: [:index, :create, :update, :destroy]
+    resources :pois, only: [:index, :create, :update, :destroy] do
+      collection do
+        post :toggle_favorite
+      end
+    end
     resources :transit_routes, only: [:index, :create]
     resources :bucket_list_items, only: [:create, :edit, :update, :destroy] do
       member do

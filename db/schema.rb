@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_11_070000) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_12_055232) do
   create_table "bucket_list_item_ratings", force: :cascade do |t|
     t.integer "bucket_list_item_id", null: false
     t.integer "user_id", null: false
@@ -107,6 +107,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_11_070000) do
     t.datetime "updated_at", null: false
     t.index ["category"], name: "index_places_on_category"
     t.index ["foursquare_id"], name: "index_places_on_foursquare_id"
+    t.index ["latitude", "longitude"], name: "index_places_on_lat_lng"
     t.index ["osm_id"], name: "index_places_on_osm_id", unique: true
     t.index ["wikidata_id"], name: "index_places_on_wikidata_id"
   end

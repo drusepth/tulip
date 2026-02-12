@@ -1,3 +1,5 @@
+require 'ostruct'
+
 class StaysController < ApplicationController
   before_action :set_stay, only: [:show, :edit, :update, :destroy, :weather, :edit_notes, :update_notes]
   before_action :require_stay_edit_permission, only: [:edit, :update, :edit_notes, :update_notes]
@@ -7,12 +9,39 @@ class StaysController < ApplicationController
     @stays = current_user.accessible_stays.chronological
   end
 
+  DEFAULT_POI_RADIUS_KM = 5.0
+
   def show
     bucket_list_titles = @stay.bucket_list_items.pluck(:title).map { |t| t&.downcase }.to_set
-    @pois_by_category = @stay.pois.includes(:place)
-      .where.not(category: ['bus_stops', 'stations'])
-      .reject { |poi| bucket_list_titles.include?(poi.name&.downcase) }
-      .group_by(&:category)
+
+    # Query Place directly with spatial filter to get ALL places within radius
+    # This includes places discovered via map panning (ViewportPois) not just stay-linked Pois
+    if @stay.latitude.present? && @stay.longitude.present?
+      browsable_categories = Place::BROWSABLE_CATEGORIES - %w[stations bus_stops]
+      places = Place.within_radius(
+        lat: @stay.latitude,
+        lng: @stay.longitude,
+        radius_km: DEFAULT_POI_RADIUS_KM
+      ).where(category: browsable_categories)
+
+      # Build place data with distance and group by category
+      places_with_distance = places.map do |place|
+        next if bucket_list_titles.include?(place.name&.downcase)
+        OpenStruct.new(
+          place: place,
+          poi: @stay.pois.find_by(place_id: place.id), # for backward compat, may be nil
+          name: place.name,
+          cuisine: place.cuisine,
+          category: place.category,
+          distance_meters: place.distance_from(@stay.latitude, @stay.longitude),
+          address: place.address
+        )
+      end.compact
+
+      @pois_by_category = places_with_distance.group_by(&:category)
+    else
+      @pois_by_category = {}
+    end
 
     # Fetch weather data if stale and stay has coordinates
     if @stay.latitude.present? && @stay.longitude.present? && @stay.weather_stale?

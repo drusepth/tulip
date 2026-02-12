@@ -270,19 +270,20 @@
             <% end %>
           </div>
           <div class="space-y-6">
-            <% @pois_by_category.each do |category, pois| %>
+            <% @pois_by_category.each do |category, place_items| %>
               <div>
                 <h3 class="text-sm font-medium text-brown-light uppercase tracking-wide mb-2">
                   <%= category.titleize.gsub('_', ' ') %>
                 </h3>
                 <ul class="space-y-2">
-                  <% pois.sort_by(&:distance_meters).first(5).each do |poi| %>
-                    <%= turbo_frame_tag dom_id(poi) do %>
+                  <% place_items.sort_by { |p| p.distance_meters || Float::INFINITY }.first(5).each do |place_data| %>
+                    <% place = place_data.place %>
+                    <%= turbo_frame_tag "place_#{place.id}" do %>
                       <li class="flex items-center justify-between py-2 border-b border-taupe-light last:border-0">
                         <div class="flex items-center gap-2 min-w-0 flex-1">
                           <%= button_to stay_bucket_list_items_path(@stay),
                                         method: :post,
-                                        params: { bucket_list_item: { title: poi.name, address: poi.address }, source_poi_id: poi.id, compact: true },
+                                        params: { bucket_list_item: { title: place_data.name, address: place_data.address }, source_place_id: place.id, compact: true },
                                         class: "w-6 h-6 flex-shrink-0 flex items-center justify-center rounded-full bg-sage-light hover:bg-sage hover:scale-110 hover:shadow-md text-sage-dark hover:text-white transition-all duration-200 cursor-pointer",
                                         title: "Add to bucket list",
                                         data: {
@@ -298,15 +299,15 @@
                             </svg>
                           <% end %>
                           <div class="min-w-0">
-                            <%= link_to place_path(poi.place, stay_id: @stay.id), class: "text-brown hover:text-sage-dark transition-colors", data: { turbo_frame: "_top" } do %>
-                              <%= poi.name || 'Unnamed' %>
+                            <%= link_to place_path(place, stay_id: @stay.id), class: "text-brown hover:text-sage-dark transition-colors", data: { turbo_frame: "_top" } do %>
+                              <%= place_data.name || 'Unnamed' %>
                             <% end %>
-                            <% if poi.cuisine.present? %>
-                              <p class="text-xs text-brown-light truncate"><%= truncate(poi.cuisine.gsub(';', ', ').titleize, length: 60) %></p>
+                            <% if place_data.cuisine.present? %>
+                              <p class="text-xs text-brown-light truncate"><%= truncate(place_data.cuisine.gsub(';', ', ').titleize, length: 60) %></p>
                             <% end %>
                           </div>
                         </div>
-                        <span class="text-sm text-brown-light flex-shrink-0 ml-2"><%= format_distance(poi.distance_meters) %></span>
+                        <span class="text-sm text-brown-light flex-shrink-0 ml-2"><%= format_distance(place_data.distance_meters) %></span>
                       </li>
                     <% end %>
                   <% end %>
