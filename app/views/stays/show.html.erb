@@ -273,7 +273,7 @@
             <% @pois_by_category.each do |category, place_items| %>
               <div>
                 <h3 class="text-sm font-medium text-brown-light uppercase tracking-wide mb-2">
-                  <%= category.titleize.gsub('_', ' ') %>
+                  <%= category_emoji(category) %> <%= category.titleize.gsub('_', ' ') %>
                 </h3>
                 <ul class="space-y-2">
                   <% place_items.sort_by { |p| p.distance_meters || Float::INFINITY }.first(5).each do |place_data| %>

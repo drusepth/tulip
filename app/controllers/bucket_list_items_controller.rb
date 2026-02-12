@@ -29,7 +29,8 @@ class BucketListItemsController < ApplicationController
 
     # Support both source_poi_id (legacy) and source_place_id (new) for linking to Place
     if params[:source_place_id].present?
-      @bucket_list_item.place = Place.find_by(id: params[:source_place_id])
+      @source_place = Place.find_by(id: params[:source_place_id])
+      @bucket_list_item.place = @source_place
     elsif params[:source_poi_id].present?
       @source_poi = @stay.pois.find_by(id: params[:source_poi_id])
       @bucket_list_item.place = @source_poi.place if @source_poi&.place

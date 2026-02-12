@@ -8,7 +8,11 @@
   <%= render "bucket_list_items/progress", stay: @stay %>
 <% end %>
 
-<% if @source_poi %>
+<% if @source_place && @compact %>
+  <%= turbo_stream.replace "place_#{@source_place.id}" do %>
+    <%= render "bucket_list_items/place_added_compact", place: @source_place, stay: @stay %>
+  <% end %>
+<% elsif @source_poi %>
   <%= turbo_stream.replace dom_id(@source_poi) do %>
     <%= render @compact ? "pois/item_added_compact" : "pois/item_added", poi: @source_poi, stay: @stay %>
   <% end %>

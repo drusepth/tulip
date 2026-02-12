@@ -1,4 +1,20 @@
 module ApplicationHelper
+  CATEGORY_EMOJIS = {
+    "coffee" => "☕",
+    "food" => "🍝",
+    "grocery" => "🛒",
+    "gym" => "💪",
+    "coworking" => "💻",
+    "library" => "📚",
+    "parks" => "🌳",
+    "bus_stops" => "🚌",
+    "stations" => "🚉"
+  }.freeze
+
+  def category_emoji(category)
+    CATEGORY_EMOJIS[category] || "📍"
+  end
+
   def format_distance(meters)
     miles = meters / 1609.34
     if miles < 0.1
