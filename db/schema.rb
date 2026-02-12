@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_11_060001) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_11_070000) do
   create_table "bucket_list_item_ratings", force: :cascade do |t|
     t.integer "bucket_list_item_id", null: false
     t.integer "user_id", null: false
@@ -118,10 +118,21 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_11_060001) do
     t.boolean "favorite", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "place_id"
+    t.integer "place_id", null: false
     t.index ["place_id"], name: "index_pois_on_place_id"
     t.index ["stay_id", "category"], name: "index_pois_on_stay_id_and_category"
     t.index ["stay_id"], name: "index_pois_on_stay_id"
+  end
+
+  create_table "searched_grid_cells", force: :cascade do |t|
+    t.string "grid_key", null: false
+    t.string "category", null: false
+    t.datetime "searched_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category", "searched_at"], name: "index_searched_grid_cells_on_category_and_searched_at"
+    t.index ["category"], name: "index_searched_grid_cells_on_category"
+    t.index ["grid_key"], name: "index_searched_grid_cells_on_grid_key", unique: true
   end
 
   create_table "stay_collaborations", force: :cascade do |t|
@@ -204,7 +215,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_11_060001) do
     t.decimal "center_lng", precision: 10, scale: 6
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "place_id"
+    t.integer "place_id", null: false
     t.index ["category"], name: "index_viewport_pois_on_category"
     t.index ["grid_key", "place_id"], name: "index_viewport_pois_on_grid_key_and_place_id", unique: true
     t.index ["grid_key"], name: "index_viewport_pois_on_grid_key"

@@ -37,9 +37,5 @@ class ViewportPoi < ApplicationRecord
         lng: rounded_lng + (GRID_SIZE / 2)
       }
     end
-
-    def cached_for_grid?(grid_key)
-      by_grid_key(grid_key).exists?
-    end
   end
 end

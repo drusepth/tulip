@@ -93,12 +93,12 @@ class PoisController < ApplicationController
 
     grid_key = ViewportPoi.grid_key_for(lat: lat, lng: lng, category: category)
 
-    # Check cache first
-    if ViewportPoi.cached_for_grid?(grid_key)
+    # Check if we have a fresh cache for this grid (works even for empty results)
+    if SearchedGridCell.fresh_cache?(grid_key)
       return render json: format_viewport_pois(ViewportPoi.by_grid_key(grid_key).includes(:place))
     end
 
-    # Cache miss - fetch from Overpass API using grid center
+    # Cache miss or stale - fetch from Overpass API using grid center
     grid_center = ViewportPoi.grid_center_for(lat: lat, lng: lng)
 
     begin
@@ -110,6 +110,13 @@ class PoisController < ApplicationController
     rescue OverpassService::RateLimitedError
       return render json: { error: 'Rate limited by upstream API. Please retry later.' }, status: :too_many_requests
     end
+
+    # Mark grid as searched (even if empty!) - this fixes the bug where empty
+    # grid cells were never cached and caused repeated API requests
+    SearchedGridCell.mark_searched!(grid_key, category: category)
+
+    # Clear any old POIs for this grid before caching new ones (for stale refresh)
+    ViewportPoi.where(grid_key: grid_key).destroy_all
 
     # Cache the results
     pois_data.each do |poi_data|
