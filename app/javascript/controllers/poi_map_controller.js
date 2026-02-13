@@ -52,7 +52,7 @@ export default class extends Controller {
     // Dashed line connecting them
     L.polyline(
       [[this.poiLatValue, this.poiLngValue], [this.stayLatValue, this.stayLngValue]],
-      { color: '#C9B8A8', weight: 2, dashArray: '6, 8', opacity: 0.7 }
+      { color: '#7C6E5F', weight: 4, dashArray: '12, 6', opacity: 0.9 }
     ).addTo(this.map)
   }
 
