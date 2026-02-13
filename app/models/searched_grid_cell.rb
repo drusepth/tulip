@@ -1,5 +1,5 @@
 class SearchedGridCell < ApplicationRecord
-  STALE_AFTER = 1.week
+  STALE_AFTER = 3.months
 
   validates :grid_key, presence: true, uniqueness: true
   validates :category, presence: true
