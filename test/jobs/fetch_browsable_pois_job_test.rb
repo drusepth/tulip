@@ -5,7 +5,7 @@ class FetchBrowsablePoisJobTest < ActiveJob::TestCase
     @stay = stays(:one)
     @stay.update_column(:pois_cached_categories, [])
 
-    stub_request(:post, "https://overpass-api.de/api/interpreter").to_return(
+    overpass_response = {
       status: 200,
       body: {
         elements: [
@@ -24,7 +24,11 @@ class FetchBrowsablePoisJobTest < ActiveJob::TestCase
         ]
       }.to_json,
       headers: { "Content-Type" => "application/json" }
-    )
+    }
+
+    OverpassService::OVERPASS_ENDPOINTS.each do |url|
+      stub_request(:post, url).to_return(overpass_response)
+    end
   end
 
   test "fetches POIs for all browsable categories" do
@@ -35,7 +39,7 @@ class FetchBrowsablePoisJobTest < ActiveJob::TestCase
   end
 
   test "skips already cached categories" do
-    @stay.update_column(:pois_cached_categories, ["coffee", "food"])
+    @stay.update_column(:pois_cached_categories, [ "coffee", "food" ])
 
     FetchBrowsablePoisJob.perform_now(@stay.id)
 

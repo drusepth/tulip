@@ -1,9 +1,9 @@
-require 'ostruct'
+require "ostruct"
 
 class StaysController < ApplicationController
-  before_action :set_stay, only: [:show, :edit, :update, :destroy, :weather, :edit_notes, :update_notes, :place_search]
-  before_action :require_stay_edit_permission, only: [:edit, :update, :edit_notes, :update_notes]
-  before_action :require_stay_owner, only: [:destroy]
+  before_action :set_stay, only: [ :show, :edit, :update, :destroy, :weather, :edit_notes, :update_notes, :place_search ]
+  before_action :require_stay_edit_permission, only: [ :edit, :update, :edit_notes, :update_notes ]
+  before_action :require_stay_owner, only: [ :destroy ]
 
   def index
     @stays = current_user.accessible_stays.chronological

@@ -27,7 +27,7 @@ class HighlightsController < ApplicationController
   end
 
   def all_stay_participants
-    ([@stay.owner] + @stay.collaborators.to_a).uniq
+    ([ @stay.owner ] + @stay.collaborators.to_a).uniq
   end
 
   def compute_user_rating_stats(items, user)

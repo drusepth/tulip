@@ -2,9 +2,9 @@ class OverpassService
   # Multiple public Overpass API endpoints to distribute requests and reduce
   # rate-limiting from any single server.
   OVERPASS_ENDPOINTS = [
-    'https://overpass-api.de/api/interpreter',
-    'https://overpass.kumi.systems/api/interpreter',
-    'https://maps.mail.ru/osm/tools/overpass/api/interpreter'
+    "https://overpass-api.de/api/interpreter",
+    "https://overpass.kumi.systems/api/interpreter",
+    "https://maps.mail.ru/osm/tools/overpass/api/interpreter"
   ].freeze
 
   # Keep for backwards compatibility in tests
@@ -16,45 +16,45 @@ class OverpassService
   RETRY_BASE_DELAY = 2 # seconds
 
   CATEGORY_TAGS = {
-    'bus_stops' => [
+    "bus_stops" => [
       '["highway"="bus_stop"]'
     ],
-    'stations' => [
+    "stations" => [
       '["railway"~"station|subway_entrance|tram_stop|halt"]',
       '["public_transport"="station"]'
     ],
-    'coffee' => [
+    "coffee" => [
       '["amenity"="cafe"]',
       '["cuisine"="coffee"]'
     ],
-    'grocery' => [
+    "grocery" => [
       '["shop"~"supermarket|grocery|convenience"]'
     ],
-    'gym' => [
+    "gym" => [
       '["leisure"="fitness_centre"]',
       '["amenity"="gym"]'
     ],
-    'food' => [
+    "food" => [
       '["amenity"="restaurant"]'
     ],
-    'coworking' => [
+    "coworking" => [
       '["amenity"="coworking_space"]',
       '["office"="coworking"]'
     ],
-    'library' => [
+    "library" => [
       '["amenity"="library"]'
     ],
-    'parks' => [
+    "parks" => [
       '["leisure"="park"]',
       '["leisure"="garden"]'
     ]
   }.freeze
 
   TRANSIT_ROUTE_TYPES = {
-    'rails' => %w[subway tram light_rail railway],
-    'train' => %w[train],
-    'ferry' => %w[ferry],
-    'bus' => %w[bus]
+    "rails" => %w[subway tram light_rail railway],
+    "train" => %w[train],
+    "ferry" => %w[ferry],
+    "bus" => %w[bus]
   }.freeze
 
   class << self
@@ -131,7 +131,7 @@ class OverpassService
         response = HTTParty.post(
           url,
           body: { data: query },
-          headers: { 'Content-Type' => 'application/x-www-form-urlencoded' },
+          headers: { "Content-Type" => "application/x-www-form-urlencoded" },
           timeout: 30
         )
 
@@ -163,53 +163,53 @@ class OverpassService
     end
 
     def parse_poi_response(response, origin_lat, origin_lng)
-      return [] unless response && response['elements']
+      return [] unless response && response["elements"]
 
-      response['elements'].map do |element|
-        next unless element['lat'] && element['lon']
+      response["elements"].map do |element|
+        next unless element["lat"] && element["lon"]
 
-        tags = element['tags'] || {}
+        tags = element["tags"] || {}
 
         {
-          name: tags['name'],
-          latitude: element['lat'],
-          longitude: element['lon'],
+          name: tags["name"],
+          latitude: element["lat"],
+          longitude: element["lon"],
           osm_id: "#{element['type']}/#{element['id']}",
           address: build_address(tags),
-          opening_hours: tags['opening_hours'],
+          opening_hours: tags["opening_hours"],
           distance_meters: calculate_distance(
             origin_lat, origin_lng,
-            element['lat'], element['lon']
+            element["lat"], element["lon"]
           ),
-          website: tags['website'] || tags['contact:website'],
-          phone: tags['phone'] || tags['contact:phone'],
-          cuisine: tags['cuisine'],
-          outdoor_seating: tags['outdoor_seating'] == 'yes',
-          internet_access: tags['internet_access'],
-          air_conditioning: tags['air_conditioning'] == 'yes',
-          takeaway: tags['takeaway'] == 'yes',
-          brand: tags['brand'],
-          description: tags['description'],
-          wikidata: tags['wikidata']
+          website: tags["website"] || tags["contact:website"],
+          phone: tags["phone"] || tags["contact:phone"],
+          cuisine: tags["cuisine"],
+          outdoor_seating: tags["outdoor_seating"] == "yes",
+          internet_access: tags["internet_access"],
+          air_conditioning: tags["air_conditioning"] == "yes",
+          takeaway: tags["takeaway"] == "yes",
+          brand: tags["brand"],
+          description: tags["description"],
+          wikidata: tags["wikidata"]
         }
       end.compact
     end
 
     def parse_transit_response(response)
-      return [] unless response && response['elements']
+      return [] unless response && response["elements"]
 
       nodes = {}
       ways = {}
       relations = []
 
       # Phase 1: Index all nodes and ways
-      response['elements'].each do |element|
-        case element['type']
-        when 'node'
-          nodes[element['id']] = [element['lat'], element['lon']]
-        when 'way'
-          ways[element['id']] = element['nodes'] || []
-        when 'relation'
+      response["elements"].each do |element|
+        case element["type"]
+        when "node"
+          nodes[element["id"]] = [ element["lat"], element["lon"] ]
+        when "way"
+          ways[element["id"]] = element["nodes"] || []
+        when "relation"
           relations << element
         end
       end
@@ -221,7 +221,7 @@ class OverpassService
     end
 
     def build_route_geometry(relation, ways, nodes)
-      members = relation['members'] || []
+      members = relation["members"] || []
 
       # Extract way members with their geometries
       way_segments = extract_way_segments(members, ways, nodes)
@@ -232,23 +232,23 @@ class OverpassService
       return nil if stitched_paths.empty?
 
       {
-        name: relation.dig('tags', 'name') || relation.dig('tags', 'ref'),
+        name: relation.dig("tags", "name") || relation.dig("tags", "ref"),
         osm_id: "relation/#{relation['id']}",
-        color: relation.dig('tags', 'colour') || relation.dig('tags', 'color'),
+        color: relation.dig("tags", "colour") || relation.dig("tags", "color"),
         geometry: stitched_paths  # Now an array of paths (each path is array of [lat, lng])
       }
     end
 
     def extract_way_segments(members, ways, nodes)
       members.filter_map do |member|
-        next unless member['type'] == 'way' && ways[member['ref']]
+        next unless member["type"] == "way" && ways[member["ref"]]
 
-        node_ids = ways[member['ref']]
+        node_ids = ways[member["ref"]]
         coords = node_ids.map { |id| nodes[id] }.compact
         next if coords.length < 2
 
         {
-          id: member['ref'],
+          id: member["ref"],
           coords: coords,
           start_coord: coords.first,
           end_coord: coords.last
@@ -335,12 +335,12 @@ class OverpassService
       return nil unless tags
 
       parts = [
-        tags['addr:housenumber'],
-        tags['addr:street'],
-        tags['addr:city']
+        tags["addr:housenumber"],
+        tags["addr:street"],
+        tags["addr:city"]
       ].compact
 
-      parts.any? ? parts.join(' ') : nil
+      parts.any? ? parts.join(" ") : nil
     end
 
     def calculate_distance(lat1, lng1, lat2, lng2)

@@ -1,17 +1,17 @@
 class WeatherService
-  ARCHIVE_API_URL = 'https://archive-api.open-meteo.com/v1/archive'.freeze
+  ARCHIVE_API_URL = "https://archive-api.open-meteo.com/v1/archive".freeze
 
   # WMO Weather Code groupings
   WEATHER_CODE_LABELS = {
-    0 => 'Sunny', 1 => 'Sunny',
-    2 => 'Cloudy', 3 => 'Cloudy',
-    45 => 'Foggy', 48 => 'Foggy',
-    51 => 'Rainy', 53 => 'Rainy', 55 => 'Rainy',
-    61 => 'Rainy', 63 => 'Rainy', 65 => 'Rainy',
-    80 => 'Rainy', 81 => 'Rainy', 82 => 'Rainy',
-    71 => 'Snowy', 73 => 'Snowy', 75 => 'Snowy',
-    85 => 'Snowy', 86 => 'Snowy',
-    95 => 'Stormy', 96 => 'Stormy', 99 => 'Stormy'
+    0 => "Sunny", 1 => "Sunny",
+    2 => "Cloudy", 3 => "Cloudy",
+    45 => "Foggy", 48 => "Foggy",
+    51 => "Rainy", 53 => "Rainy", 55 => "Rainy",
+    61 => "Rainy", 63 => "Rainy", 65 => "Rainy",
+    80 => "Rainy", 81 => "Rainy", 82 => "Rainy",
+    71 => "Snowy", 73 => "Snowy", 75 => "Snowy",
+    85 => "Snowy", 86 => "Snowy",
+    95 => "Stormy", 96 => "Stormy", 99 => "Stormy"
   }.freeze
 
   MAX_YEARS_BACK = 5
@@ -46,9 +46,9 @@ class WeatherService
         longitude: lng,
         start_date: start_date.to_s,
         end_date: end_date.to_s,
-        daily: 'temperature_2m_max,temperature_2m_min,weather_code,apparent_temperature_max,apparent_temperature_min,precipitation_sum,precipitation_hours,wind_speed_10m_max,wind_gusts_10m_max,sunrise,sunset',
-        temperature_unit: 'fahrenheit',
-        timezone: 'auto'
+        daily: "temperature_2m_max,temperature_2m_min,weather_code,apparent_temperature_max,apparent_temperature_min,precipitation_sum,precipitation_hours,wind_speed_10m_max,wind_gusts_10m_max,sunrise,sunset",
+        temperature_unit: "fahrenheit",
+        timezone: "auto"
       }
 
       Rails.logger.info("Weather API request: #{ARCHIVE_API_URL} with params #{params}")
@@ -71,21 +71,21 @@ class WeatherService
     end
 
     def parse_response(response)
-      daily = response['daily']
+      daily = response["daily"]
       return nil unless daily
 
-      dates = daily['time'] || []
-      max_temps = daily['temperature_2m_max']&.compact || []
-      min_temps = daily['temperature_2m_min']&.compact || []
-      weather_codes = daily['weather_code']&.compact || []
-      apparent_max = daily['apparent_temperature_max'] || []
-      apparent_min = daily['apparent_temperature_min'] || []
-      precipitation_sum = daily['precipitation_sum'] || []
-      precipitation_hours = daily['precipitation_hours'] || []
-      wind_speed_max = daily['wind_speed_10m_max'] || []
-      wind_gusts_max = daily['wind_gusts_10m_max'] || []
-      sunrise_times = daily['sunrise'] || []
-      sunset_times = daily['sunset'] || []
+      dates = daily["time"] || []
+      max_temps = daily["temperature_2m_max"]&.compact || []
+      min_temps = daily["temperature_2m_min"]&.compact || []
+      weather_codes = daily["weather_code"]&.compact || []
+      apparent_max = daily["apparent_temperature_max"] || []
+      apparent_min = daily["apparent_temperature_min"] || []
+      precipitation_sum = daily["precipitation_sum"] || []
+      precipitation_hours = daily["precipitation_hours"] || []
+      wind_speed_max = daily["wind_speed_10m_max"] || []
+      wind_gusts_max = daily["wind_gusts_10m_max"] || []
+      sunrise_times = daily["sunrise"] || []
+      sunset_times = daily["sunset"] || []
 
       return nil if max_temps.empty? || min_temps.empty?
 
@@ -108,7 +108,7 @@ class WeatherService
           date: date,
           high: max_temps[i]&.round,
           low: min_temps[i]&.round,
-          condition: WEATHER_CODE_LABELS[weather_codes[i]] || 'Sunny',
+          condition: WEATHER_CODE_LABELS[weather_codes[i]] || "Sunny",
           feels_like_high: apparent_max[i]&.round,
           feels_like_low: apparent_min[i]&.round,
           precipitation_mm: precipitation_sum[i]&.round(1),
@@ -133,7 +133,7 @@ class WeatherService
       counts = Hash.new(0)
 
       weather_codes.each do |code|
-        label = WEATHER_CODE_LABELS[code] || 'Sunny'
+        label = WEATHER_CODE_LABELS[code] || "Sunny"
         counts[label] += 1
       end
 

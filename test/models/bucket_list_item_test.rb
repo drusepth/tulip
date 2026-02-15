@@ -120,7 +120,7 @@ class BucketListItemTest < ActiveSupport::TestCase
   test "coordinates returns lat/lng array when present" do
     @bucket_list_item.latitude = 37.8199
     @bucket_list_item.longitude = -122.4783
-    assert_equal [37.8199, -122.4783], @bucket_list_item.coordinates
+    assert_equal [ 37.8199, -122.4783 ], @bucket_list_item.coordinates
   end
 
   test "coordinates returns nil when missing" do

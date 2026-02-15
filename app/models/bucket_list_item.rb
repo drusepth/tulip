@@ -4,7 +4,7 @@ class BucketListItem < ApplicationRecord
   belongs_to :stay
   belongs_to :user, optional: true
   belongs_to :place, optional: true
-  has_many :ratings, class_name: 'BucketListItemRating', dependent: :destroy
+  has_many :ratings, class_name: "BucketListItemRating", dependent: :destroy
 
   before_validation :set_title_from_address
 
@@ -29,7 +29,7 @@ class BucketListItem < ApplicationRecord
   end
 
   def coordinates
-    [latitude, longitude] if latitude.present? && longitude.present?
+    [ latitude, longitude ] if latitude.present? && longitude.present?
   end
 
   def has_location?

@@ -20,6 +20,6 @@ class CreateStays < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :stays, [:check_in, :check_out]
+    add_index :stays, [ :check_in, :check_out ]
   end
 end

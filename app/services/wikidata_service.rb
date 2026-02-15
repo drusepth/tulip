@@ -1,6 +1,6 @@
 class WikidataService
-  WIKIDATA_API = 'https://www.wikidata.org/w/api.php'.freeze
-  WIKIPEDIA_API = 'https://en.wikipedia.org/w/api.php'.freeze
+  WIKIDATA_API = "https://www.wikidata.org/w/api.php".freeze
+  WIKIPEDIA_API = "https://en.wikipedia.org/w/api.php".freeze
   SEARCH_RADIUS_KM = 1 # Max distance for coordinate-based matching
 
   class << self
@@ -22,7 +22,7 @@ class WikidataService
       end
 
       # Step 3: Extract Wikipedia title and fetch extract
-      wikipedia_title = entity.dig('sitelinks', 'enwiki', 'title')
+      wikipedia_title = entity.dig("sitelinks", "enwiki", "title")
       wikipedia_extract = fetch_wikipedia_extract(wikipedia_title) if wikipedia_title
       wikipedia_url = build_wikipedia_url(wikipedia_title) if wikipedia_title
 
@@ -53,21 +53,21 @@ class WikidataService
       return nil unless place.name.present? && place.latitude.present? && place.longitude.present?
 
       response = HTTParty.get(WIKIDATA_API, query: {
-        action: 'wbsearchentities',
+        action: "wbsearchentities",
         search: place.name,
-        language: 'en',
-        format: 'json',
+        language: "en",
+        format: "json",
         limit: 5
       }, timeout: 10)
 
       return nil unless response.success?
 
-      results = response.parsed_response['search']
+      results = response.parsed_response["search"]
       return nil if results.blank?
 
       # Check each candidate for coordinate proximity
       results.each do |result|
-        entity = fetch_entity(result['id'])
+        entity = fetch_entity(result["id"])
         next unless entity
 
         coords = extract_coordinates(entity)
@@ -78,7 +78,7 @@ class WikidataService
           coords[:lat], coords[:lng]
         )
 
-        return result['id'] if distance <= SEARCH_RADIUS_KM
+        return result["id"] if distance <= SEARCH_RADIUS_KM
       end
 
       nil
@@ -89,16 +89,16 @@ class WikidataService
 
     def fetch_entity(wikidata_id)
       response = HTTParty.get(WIKIDATA_API, query: {
-        action: 'wbgetentities',
+        action: "wbgetentities",
         ids: wikidata_id,
-        format: 'json',
-        props: 'claims|sitelinks|descriptions',
-        languages: 'en'
+        format: "json",
+        props: "claims|sitelinks|descriptions",
+        languages: "en"
       }, timeout: 10)
 
       return nil unless response.success?
 
-      response.parsed_response.dig('entities', wikidata_id)
+      response.parsed_response.dig("entities", wikidata_id)
     rescue StandardError => e
       Rails.logger.error("WikidataService fetch_entity error: #{e.message}")
       nil
@@ -106,22 +106,22 @@ class WikidataService
 
     def fetch_wikipedia_extract(title)
       response = HTTParty.get(WIKIPEDIA_API, query: {
-        action: 'query',
-        prop: 'extracts',
+        action: "query",
+        prop: "extracts",
         exintro: 1,
         explaintext: 1,
         exsentences: 3,
         titles: title,
-        format: 'json'
+        format: "json"
       }, timeout: 10)
 
       return nil unless response.success?
 
-      pages = response.parsed_response.dig('query', 'pages')
+      pages = response.parsed_response.dig("query", "pages")
       return nil unless pages
 
       page = pages.values.first
-      extract = page&.dig('extract')
+      extract = page&.dig("extract")
       extract.presence
     rescue StandardError => e
       Rails.logger.error("WikidataService Wikipedia extract error: #{e.message}")
@@ -129,20 +129,20 @@ class WikidataService
     end
 
     def extract_coordinates(entity)
-      coord_claim = entity.dig('claims', 'P625')&.first
+      coord_claim = entity.dig("claims", "P625")&.first
       return nil unless coord_claim
 
-      value = coord_claim.dig('mainsnak', 'datavalue', 'value')
-      return nil unless value && value['latitude'] && value['longitude']
+      value = coord_claim.dig("mainsnak", "datavalue", "value")
+      return nil unless value && value["latitude"] && value["longitude"]
 
-      { lat: value['latitude'].to_f, lng: value['longitude'].to_f }
+      { lat: value["latitude"].to_f, lng: value["longitude"].to_f }
     end
 
     def extract_commons_image_url(entity)
-      image_claim = entity.dig('claims', 'P18')&.first
+      image_claim = entity.dig("claims", "P18")&.first
       return nil unless image_claim
 
-      filename = image_claim.dig('mainsnak', 'datavalue', 'value')
+      filename = image_claim.dig("mainsnak", "datavalue", "value")
       return nil if filename.blank?
 
       commons_thumb_url(filename)
@@ -151,7 +151,7 @@ class WikidataService
     # Build a Wikimedia Commons thumbnail URL from a filename
     # Uses the standard MD5-based path structure
     def commons_thumb_url(filename)
-      encoded_name = filename.tr(' ', '_')
+      encoded_name = filename.tr(" ", "_")
       md5 = Digest::MD5.hexdigest(encoded_name)
       escaped = CGI.escape(encoded_name)
 

@@ -32,14 +32,14 @@ class DashboardController < ApplicationController
 
   def update_statuses!(stays)
     today = Date.current
-    stays.where('check_out < ?', today).update_all(status: 'past')
-    stays.where('check_in <= ? AND check_out >= ?', today, today).update_all(status: 'current')
-    stays.where('check_in > ?', today).update_all(status: 'upcoming')
+    stays.where("check_out < ?", today).update_all(status: "past")
+    stays.where("check_in <= ? AND check_out >= ?", today, today).update_all(status: "current")
+    stays.where("check_in > ?", today).update_all(status: "upcoming")
   end
 
   def current_stay(stays)
     today = Date.current
-    stays.with_dates.find_by('check_in <= ? AND check_out >= ?', today, today)
+    stays.with_dates.find_by("check_in <= ? AND check_out >= ?", today, today)
   end
 
   def booking_alert(stays)

@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, controllers: { registrations: "users/registrations" }
   root "dashboard#index"
 
-  resources :notifications, only: [:index] do
+  resources :notifications, only: [ :index ] do
     member do
       post :mark_read
     end
@@ -11,11 +11,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :places, only: [:show] do
+  resources :places, only: [ :show ] do
     member do
       get :place_search
     end
-    resources :comments, only: [:create, :edit, :update, :destroy], controller: 'place_comments'
+    resources :comments, only: [ :create, :edit, :update, :destroy ], controller: "place_comments"
   end
 
   resources :stays do
@@ -25,28 +25,28 @@ Rails.application.routes.draw do
       patch :update_notes
       get :place_search
     end
-    resources :pois, only: [:index, :create, :update, :destroy] do
+    resources :pois, only: [ :index, :create, :update, :destroy ] do
       collection do
         post :toggle_favorite
       end
     end
-    resources :transit_routes, only: [:index, :create]
-    resources :bucket_list_items, only: [:create, :edit, :update, :destroy] do
+    resources :transit_routes, only: [ :index, :create ]
+    resources :bucket_list_items, only: [ :create, :edit, :update, :destroy ] do
       member do
         patch :toggle
       end
-      resource :rating, only: [:create, :destroy], controller: 'bucket_list_item_ratings'
+      resource :rating, only: [ :create, :destroy ], controller: "bucket_list_item_ratings"
     end
-    resources :comments, only: [:create, :edit, :update, :destroy]
-    resources :collaborations, only: [:index, :create, :destroy], controller: 'stay_collaborations' do
+    resources :comments, only: [ :create, :edit, :update, :destroy ]
+    resources :collaborations, only: [ :index, :create, :destroy ], controller: "stay_collaborations" do
       collection do
         delete :leave
       end
     end
-    resource :gallery, only: [:show], path: 'explore' do
+    resource :gallery, only: [ :show ], path: "explore" do
       post :add_to_bucket_list
     end
-    resource :highlights, only: [:show]
+    resource :highlights, only: [ :show ]
   end
 
   # Magic link for accepting collaboration invites

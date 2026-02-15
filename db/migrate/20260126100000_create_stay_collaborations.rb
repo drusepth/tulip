@@ -10,7 +10,7 @@ class CreateStayCollaborations < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :stay_collaborations, [:stay_id, :user_id], unique: true, where: 'user_id IS NOT NULL'
+    add_index :stay_collaborations, [ :stay_id, :user_id ], unique: true, where: 'user_id IS NOT NULL'
     add_index :stay_collaborations, :invite_token, unique: true
   end
 end

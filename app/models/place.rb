@@ -37,12 +37,12 @@ class Place < ApplicationRecord
   def distance_from(lat, lng)
     return nil unless latitude && longitude
     Geocoder::Calculations.distance_between(
-      [lat, lng], [latitude, longitude], units: :km
+      [ lat, lng ], [ latitude, longitude ], units: :km
     ) * 1000 # convert to meters
   end
 
   def coordinates
-    [latitude, longitude]
+    [ latitude, longitude ]
   end
 
   # Find or create a Place from Overpass data, returning the Place record

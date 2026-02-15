@@ -40,7 +40,7 @@ class UnsplashService
 
     def build_search_query(city, country)
       # Search for travel-worthy photos of the destination
-      parts = [city]
+      parts = [ city ]
       parts << country if country.present?
       parts.join(" ")
     end

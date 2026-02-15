@@ -153,7 +153,7 @@ class NotificationService
     private
 
     def recipients_for_stay(stay, exclude:)
-      recipients = [stay.owner]
+      recipients = [ stay.owner ]
       recipients += stay.collaborators.to_a
       recipients.uniq.reject { |u| u == exclude }
     end

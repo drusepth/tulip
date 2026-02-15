@@ -9,8 +9,8 @@ class TimelineController < ApplicationController
 
     # Calculate default date range based on stays
     if @stays.any?
-      default_start = [@stays.first.check_in, Date.current - 30].min
-      default_end = [@stays.last.check_out, Date.current + 90].max
+      default_start = [ @stays.first.check_in, Date.current - 30 ].min
+      default_end = [ @stays.last.check_out, Date.current + 90 ].max
     else
       default_start = Date.current - 30
       default_end = Date.current + 90
@@ -33,7 +33,7 @@ class TimelineController < ApplicationController
       @end_date = default_end
     end
 
-    @total_days = [(@end_date - @start_date).to_i, 1].max
+    @total_days = [ (@end_date - @start_date).to_i, 1 ].max
 
     # Build chronologically sorted timeline items (stays and gaps interleaved)
     @timeline_items = build_timeline_items(@stays, @gaps)
@@ -62,15 +62,15 @@ class TimelineController < ApplicationController
 
     # Calculate nights in view (clamp to visible range)
     total_nights = visible_stays.sum do |stay|
-      visible_start = [stay.check_in, @start_date].max
-      visible_end = [stay.check_out, @end_date].min
+      visible_start = [ stay.check_in, @start_date ].max
+      visible_end = [ stay.check_out, @end_date ].min
       (visible_end - visible_start).to_i
     end
 
     # Calculate gap days in view
     total_gap_days = visible_gaps.sum do |gap|
-      visible_start = [gap[:start_date], @start_date].max
-      visible_end = [gap[:end_date], @end_date].min
+      visible_start = [ gap[:start_date], @start_date ].max
+      visible_end = [ gap[:end_date], @end_date ].min
       (visible_end - visible_start).to_i
     end
 
@@ -90,7 +90,7 @@ class TimelineController < ApplicationController
     end
 
     # Price range
-    prices_per_night = stays_with_price.map { |s| s.price_total_cents / [s.duration_days, 1].max }
+    prices_per_night = stays_with_price.map { |s| s.price_total_cents / [ s.duration_days, 1 ].max }
     min_price_cents = prices_per_night.min || 0
     max_price_cents = prices_per_night.max || 0
 

@@ -12,7 +12,7 @@ module AvatarHelper
 
   def avatar_tag(user, size: 80, html_options: {})
     default_classes = "rounded-full"
-    html_options[:class] = [default_classes, html_options[:class]].compact.join(" ")
+    html_options[:class] = [ default_classes, html_options[:class] ].compact.join(" ")
     html_options[:alt] ||= "Avatar"
 
     image_tag(avatar_url(user, size: size), **html_options)
