@@ -90,6 +90,37 @@ class StaysControllerTest < ActionDispatch::IntegrationTest
     # The actual data check is done in "map_data includes collaborated stays" test
   end
 
+  # Place search tests
+  test "place_search returns matching places near stay" do
+    sign_in @user_one
+    place = places(:blue_bottle)
+    get place_search_stay_path(@stay_one), params: { q: "Blue" }, as: :json
+    assert_response :success
+    results = JSON.parse(response.body)
+    assert results.any? { |r| r["id"] == place.id }
+  end
+
+  test "place_search returns empty for non-matching query" do
+    sign_in @user_one
+    get place_search_stay_path(@stay_one), params: { q: "zzzznotfound" }, as: :json
+    assert_response :success
+    results = JSON.parse(response.body)
+    assert_empty results
+  end
+
+  test "place_search returns empty with blank query" do
+    sign_in @user_one
+    get place_search_stay_path(@stay_one), params: { q: "" }, as: :json
+    assert_response :success
+    results = JSON.parse(response.body)
+    assert_empty results
+  end
+
+  test "place_search requires authentication" do
+    get place_search_stay_path(@stay_one), params: { q: "Coffee" }, as: :json
+    assert_includes [ 302, 401 ], response.status
+  end
+
   # Map data includes shared stays
   test "map_data includes collaborated stays" do
     sign_in @user_two

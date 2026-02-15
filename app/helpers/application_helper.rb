@@ -49,6 +49,17 @@ module ApplicationHelper
     end
   end
 
+  # Render @[Place Name](place:123) mentions as links
+  def render_comment_body(body)
+    return "" if body.blank?
+    escaped = ERB::Util.html_escape(body)
+    escaped.gsub(/@\[([^\]]+)\]\(place:(\d+)\)/) do
+      name = Regexp.last_match(1)
+      place_id = Regexp.last_match(2)
+      "<a href=\"#{place_path(place_id)}\" class=\"place-mention\">@#{name}</a>"
+    end.html_safe
+  end
+
   def commentable_path(commentable)
     if commentable.is_a?(Place)
       place_path(commentable)

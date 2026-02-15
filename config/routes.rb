@@ -20,6 +20,7 @@ Rails.application.routes.draw do
       get :weather
       get :edit_notes
       patch :update_notes
+      get :place_search
     end
     resources :pois, only: [:index, :create, :update, :destroy] do
       collection do
