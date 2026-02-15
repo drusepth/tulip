@@ -107,6 +107,37 @@ class NotificationService
       end
     end
 
+    def user_mentioned(mentionable, mentioned_user_ids:, actor:)
+      stay = mentionable.is_a?(Stay) ? mentionable : mentionable.try(:stay)
+      return unless stay
+
+      # Only notify users who are part of this stay and not the actor
+      valid_user_ids = [ stay.user_id ] + stay.collaborators.pluck(:id)
+      recipient_ids = (mentioned_user_ids & valid_user_ids) - [ actor.id ]
+      return if recipient_ids.empty?
+
+      preview = case mentionable
+      when Comment then mentionable.body&.truncate(100)
+      when BucketListItem then mentionable.title&.truncate(100)
+      else nil
+      end
+
+      User.where(id: recipient_ids).find_each do |recipient|
+        Notification.create!(
+          user: recipient,
+          notification_type: "mentioned_in_comment",
+          notifiable: mentionable,
+          data: {
+            actor_id: actor.id,
+            actor_name: actor.name,
+            stay_id: stay.id,
+            stay_title: stay.title,
+            comment_preview: preview
+          }
+        )
+      end
+    end
+
     def collaboration_accepted(collaboration)
       stay = collaboration.stay
       actor = collaboration.user

@@ -150,19 +150,22 @@ export default class extends Controller {
       stations: "\uD83D\uDE89"
     }
 
-    dropdown.innerHTML = this.results.map((place, i) => {
-      const emoji = categoryEmojis[place.category] || "\uD83D\uDCCD"
+    dropdown.innerHTML = this.results.map((result, i) => {
+      const isUser = result.type === "user"
+      const emoji = isUser ? "\uD83D\uDC64" : (categoryEmojis[result.category] || "\uD83D\uDCCD")
       const selected = i === this.selectedIndex ? "mention-item-selected" : ""
+      const subtitle = isUser ? "Collaborator" : result.address
       return `<button type="button"
         class="mention-item ${selected}"
         data-action="click->place-mention#pickItem"
-        data-place-id="${place.id}"
-        data-place-name="${this.escapeHtml(place.name)}"
+        data-mention-id="${result.id}"
+        data-mention-name="${this.escapeHtml(result.name)}"
+        data-mention-type="${result.type || 'place'}"
         data-index="${i}">
         <span class="mention-item-emoji">${emoji}</span>
         <span class="mention-item-details">
-          <span class="mention-item-name">${this.escapeHtml(place.name)}</span>
-          ${place.address ? `<span class="mention-item-address">${this.escapeHtml(place.address)}</span>` : ""}
+          <span class="mention-item-name">${this.escapeHtml(result.name)}</span>
+          ${subtitle ? `<span class="mention-item-address">${this.escapeHtml(subtitle)}</span>` : ""}
         </span>
       </button>`
     }).join("")
@@ -181,21 +184,23 @@ export default class extends Controller {
   pickItem(event) {
     event.preventDefault()
     const btn = event.currentTarget
-    const place = {
-      id: btn.dataset.placeId,
-      name: btn.dataset.placeName
+    const result = {
+      id: btn.dataset.mentionId,
+      name: btn.dataset.mentionName,
+      type: btn.dataset.mentionType || "place"
     }
-    this.selectResult(place)
+    this.selectResult(result)
   }
 
-  selectResult(place) {
+  selectResult(result) {
     const textarea = this.textareaTarget
     const text     = textarea.value
     const before   = text.substring(0, this.mentionStart)
     const caret    = textarea.selectionStart
     const after    = text.substring(caret)
 
-    const mention = `@[${place.name}](place:${place.id}) `
+    const mentionType = result.type || "place"
+    const mention = `@[${result.name}](${mentionType}:${result.id}) `
     textarea.value = before + mention + after
 
     // Set caret after the mention

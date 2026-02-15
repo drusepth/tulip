@@ -16,7 +16,7 @@
            <% end %>>
         <%= f.text_area :body,
                         name: "comment[body]",
-                        placeholder: search_url ? "Add a comment... (type @ to mention a place)" : "Add a comment...",
+                        placeholder: search_url ? "Add a comment... (type @ to mention)" : "Add a comment...",
                         rows: 2,
                         class: "w-full px-4 py-2.5 border-2 border-taupe-light rounded-2xl bg-white text-brown placeholder-brown-lighter focus:outline-none focus:border-lavender focus:bg-lavender-light transition-colors text-sm resize-none",
                         data: search_url ? { place_mention_target: "textarea", action: "input->place-mention#onInput keydown->place-mention#onKeydown" } : {} %>

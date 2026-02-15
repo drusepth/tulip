@@ -127,20 +127,26 @@ class StaysController < ApplicationController
 
   def place_search
     query = params[:q].to_s.strip
-    places = if @stay.latitude.present? && @stay.longitude.present? && query.present?
-      Place.search_nearby(lat: @stay.latitude, lng: @stay.longitude, query: query, radius_km: DEFAULT_POI_RADIUS_KM)
-    else
-      Place.none
+    results = []
+
+    if query.present?
+      # Search collaborators (owner + accepted collaborators) by display name
+      mentionable_users = stay_mentionable_users
+      matching_users = mentionable_users.select { |u| u.name.downcase.include?(query.downcase) }
+      results += matching_users.map { |u|
+        { id: u.id, name: u.name, type: "user" }
+      }
+
+      # Search nearby places
+      if @stay.latitude.present? && @stay.longitude.present?
+        places = Place.search_nearby(lat: @stay.latitude, lng: @stay.longitude, query: query, radius_km: DEFAULT_POI_RADIUS_KM)
+        results += places.map { |place|
+          { id: place.id, name: place.name, category: place.category, address: place.address, type: "place" }
+        }
+      end
     end
 
-    render json: places.map { |place|
-      {
-        id: place.id,
-        name: place.name,
-        category: place.category,
-        address: place.address
-      }
-    }
+    render json: results
   end
 
   def map_data
@@ -170,6 +176,12 @@ class StaysController < ApplicationController
 
   def set_stay
     @stay = find_accessible_stay(params[:id])
+  end
+
+  def stay_mentionable_users
+    users = [ @stay.owner ]
+    users += @stay.collaborators.to_a
+    users.uniq.reject { |u| u == current_user }
   end
 
   def stay_params

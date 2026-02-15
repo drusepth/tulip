@@ -14,6 +14,7 @@ class Comment < ApplicationRecord
   scope :rating_comments, -> { where.not(bucket_list_item_rating_id: nil) }
 
   after_create_commit :notify_on_create, unless: :rating_comment?
+  after_create_commit :notify_mentions
 
   delegate :bucket_list_item, to: :bucket_list_item_rating, allow_nil: true
 
@@ -43,6 +44,16 @@ class Comment < ApplicationRecord
     else
       NotificationService.comment_created(self)
     end
+  end
+
+  def notify_mentions
+    stay = self.stay
+    return unless stay
+
+    mentioned_ids = ApplicationHelper.extract_mentioned_user_ids(body, stay: stay)
+    return if mentioned_ids.empty?
+
+    NotificationService.user_mentioned(self, mentioned_user_ids: mentioned_ids, actor: user)
   end
 
   def parent_must_be_top_level

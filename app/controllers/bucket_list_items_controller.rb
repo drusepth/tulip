@@ -40,6 +40,7 @@ class BucketListItemsController < ApplicationController
 
     respond_to do |format|
       if @bucket_list_item.save
+        notify_bucket_list_mentions(@bucket_list_item)
         format.turbo_stream
         format.html { redirect_to @stay, notice: "Bucket list item was successfully added." }
         format.json { render json: { success: true, item: @bucket_list_item }, status: :created }
@@ -61,6 +62,7 @@ class BucketListItemsController < ApplicationController
   def update
     respond_to do |format|
       if @bucket_list_item.update(bucket_list_item_params)
+        notify_bucket_list_mentions(@bucket_list_item)
         format.turbo_stream
         format.html { redirect_to @stay, notice: "Bucket list item was successfully updated." }
       else
@@ -100,6 +102,14 @@ class BucketListItemsController < ApplicationController
 
   def set_bucket_list_item
     @bucket_list_item = @stay.bucket_list_items.find(params[:id])
+  end
+
+  def notify_bucket_list_mentions(item)
+    text = [ item.title, item.notes ].compact.join(" ")
+    mentioned_ids = ApplicationHelper.extract_mentioned_user_ids(text, stay: @stay)
+    return if mentioned_ids.empty?
+
+    NotificationService.user_mentioned(item, mentioned_user_ids: mentioned_ids, actor: current_user)
   end
 
   def bucket_list_item_params

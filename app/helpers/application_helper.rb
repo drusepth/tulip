@@ -58,16 +58,33 @@ module ApplicationHelper
     end
   end
 
-  # Render @[Place Name](place:123) mentions as links.
+  # Render @[Name](place:123) and @[Name](user:123) mentions as styled inline elements.
   # Works for any text field (comments, bucket list items, etc.)
   def render_text_with_mentions(body)
     return "" if body.blank?
     escaped = ERB::Util.html_escape(body)
-    escaped.gsub(/@\[([^\]]+)\]\(place:(\d+)\)/) do
+    escaped.gsub(/@\[([^\]]+)\]\((place|user):(\d+)\)/) do
       name = Regexp.last_match(1)
-      place_id = Regexp.last_match(2)
-      "<a href=\"#{place_path(place_id)}\" class=\"place-mention\">@#{name}</a>"
+      mention_type = Regexp.last_match(2)
+      mention_id = Regexp.last_match(3)
+      if mention_type == "user"
+        "<span class=\"user-mention\">@#{name}</span>"
+      else
+        "<a href=\"#{place_path(mention_id)}\" class=\"place-mention\">@#{name}</a>"
+      end
     end.html_safe
+  end
+
+  # Extract mentioned user IDs from text containing @[Name](user:123) patterns.
+  # Only returns IDs for users who are actual collaborators on the given stay.
+  def self.extract_mentioned_user_ids(text, stay:)
+    return [] if text.blank? || stay.nil?
+    user_ids = text.scan(/@\[[^\]]+\]\(user:(\d+)\)/).flatten.map(&:to_i)
+    return [] if user_ids.empty?
+
+    # Only include users who are part of this stay (owner + accepted collaborators)
+    valid_user_ids = [ stay.user_id ] + stay.collaborators.pluck(:id)
+    user_ids & valid_user_ids
   end
 
   alias_method :render_comment_body, :render_text_with_mentions

@@ -6,6 +6,7 @@ class Notification < ApplicationRecord
     bucket_list_rated
     collaboration_invited
     collaboration_accepted
+    mentioned_in_comment
   ].freeze
 
   belongs_to :user
@@ -32,7 +33,7 @@ class Notification < ApplicationRecord
 
   def icon_name
     case notification_type
-    when "comment_on_stay", "reply_to_comment"
+    when "comment_on_stay", "reply_to_comment", "mentioned_in_comment"
       "chat_bubble"
     when "bucket_list_completed"
       "check_circle"
@@ -47,7 +48,7 @@ class Notification < ApplicationRecord
 
   def ring_color
     case notification_type
-    when "comment_on_stay", "reply_to_comment"
+    when "comment_on_stay", "reply_to_comment", "mentioned_in_comment"
       "lavender"
     when "bucket_list_completed"
       "sage"
@@ -85,6 +86,10 @@ class Notification < ApplicationRecord
       actor_name = data["actor_name"] || "Someone"
       stay_title = data["stay_title"] || "a stay"
       "#{actor_name} joined #{stay_title}"
+    when "mentioned_in_comment"
+      actor_name = data["actor_name"] || "Someone"
+      stay_title = data["stay_title"] || "a stay"
+      "#{actor_name} mentioned you in a comment on #{stay_title}"
     else
       "You have a new notification"
     end
@@ -92,7 +97,7 @@ class Notification < ApplicationRecord
 
   def target_path
     case notification_type
-    when "comment_on_stay", "reply_to_comment"
+    when "comment_on_stay", "reply_to_comment", "mentioned_in_comment"
       stay_id = data["stay_id"]
       return nil unless stay_id
       Rails.application.routes.url_helpers.stay_path(stay_id, anchor: "comments")

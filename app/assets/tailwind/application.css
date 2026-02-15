@@ -2401,6 +2401,16 @@ kbd {
   background: var(--color-sage-dark);
 }
 
+/* User mention inline styling */
+.user-mention {
+  color: var(--color-lavender-dark);
+  font-weight: 600;
+  text-decoration: none;
+  background: var(--color-lavender-light);
+  padding: 0.05em 0.35em;
+  border-radius: 0.375rem;
+}
+
 /* Dropdown container */
 .mention-dropdown {
   position: absolute;
