@@ -49,6 +49,26 @@ module ApplicationHelper
     end
   end
 
+  # Returns the place_search URL for mention autocomplete, or nil if not supported
+  def mention_search_url(commentable)
+    if commentable.is_a?(Stay)
+      place_search_stay_path(commentable)
+    elsif commentable.is_a?(Place)
+      place_search_place_path(commentable)
+    end
+  end
+
+  # Render @[Place Name](place:123) mentions as links
+  def render_comment_body(body)
+    return "" if body.blank?
+    escaped = ERB::Util.html_escape(body)
+    escaped.gsub(/@\[([^\]]+)\]\(place:(\d+)\)/) do
+      name = Regexp.last_match(1)
+      place_id = Regexp.last_match(2)
+      "<a href=\"#{place_path(place_id)}\" class=\"place-mention\">@#{name}</a>"
+    end.html_safe
+  end
+
   def commentable_path(commentable)
     if commentable.is_a?(Place)
       place_path(commentable)

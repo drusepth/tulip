@@ -1,4 +1,5 @@
 <%= turbo_frame_tag dom_id(comment) do %>
+  <% search_url = mention_search_url(comment.commentable) %>
   <div class="comment p-4 rounded-2xl bg-lavender-light border border-lavender">
     <%= form_with url: commentable_comment_path(comment.commentable, comment),
                   method: :patch,
@@ -9,12 +10,22 @@
         }) %>
         <div class="flex-1">
           <label class="text-xs text-lavender-dark mb-1 block">Edit your comment</label>
-          <%= f.text_area :body,
-                          name: "comment[body]",
-                          value: comment.body,
-                          rows: 3,
-                          class: "w-full px-3 py-2 border border-lavender rounded-xl bg-white text-brown text-sm focus:outline-none focus:border-lavender-dark resize-none",
-                          autofocus: true %>
+          <div class="relative"
+               <% if search_url %>
+               data-controller="place-mention"
+               data-place-mention-search-url-value="<%= search_url %>"
+               <% end %>>
+            <%= f.text_area :body,
+                            name: "comment[body]",
+                            value: comment.body,
+                            rows: 3,
+                            class: "w-full px-3 py-2 border border-lavender rounded-xl bg-white text-brown text-sm focus:outline-none focus:border-lavender-dark resize-none",
+                            autofocus: true,
+                            data: search_url ? { place_mention_target: "textarea", action: "input->place-mention#onInput keydown->place-mention#onKeydown" } : {} %>
+            <% if search_url %>
+              <div class="mention-dropdown hidden" data-place-mention-target="dropdown"></div>
+            <% end %>
+          </div>
         </div>
       </div>
 

@@ -14,6 +14,14 @@ class Place < ApplicationRecord
 
   scope :by_category, ->(category) { where(category: category) }
   scope :with_photos, -> { where.not(foursquare_photo_url: nil) }
+  scope :search_nearby, ->(lat:, lng:, query:, radius_km: 5.0, exclude_id: nil) {
+    scope = within_radius(lat: lat, lng: lng, radius_km: radius_km)
+      .where(category: BROWSABLE_CATEGORIES)
+      .where("LOWER(name) LIKE ?", "%#{sanitize_sql_like(query.downcase)}%")
+      .limit(8)
+    scope = scope.where.not(id: exclude_id) if exclude_id
+    scope
+  }
 
   # Spatial query using bounding box filtering (indexed) for efficient queries
   # radius_km is the search radius in kilometers

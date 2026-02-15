@@ -1,7 +1,7 @@
 require "ostruct"
 
 class StaysController < ApplicationController
-  before_action :set_stay, only: [ :show, :edit, :update, :destroy, :weather, :edit_notes, :update_notes ]
+  before_action :set_stay, only: [ :show, :edit, :update, :destroy, :weather, :edit_notes, :update_notes, :place_search ]
   before_action :require_stay_edit_permission, only: [ :edit, :update, :edit_notes, :update_notes ]
   before_action :require_stay_owner, only: [ :destroy ]
 
@@ -123,6 +123,24 @@ class StaysController < ApplicationController
         format.html { redirect_to @stay, alert: "Could not update notes." }
       end
     end
+  end
+
+  def place_search
+    query = params[:q].to_s.strip
+    places = if @stay.latitude.present? && @stay.longitude.present? && query.present?
+      Place.search_nearby(lat: @stay.latitude, lng: @stay.longitude, query: query, radius_km: DEFAULT_POI_RADIUS_KM)
+    else
+      Place.none
+    end
+
+    render json: places.map { |place|
+      {
+        id: place.id,
+        name: place.name,
+        category: place.category,
+        address: place.address
+      }
+    }
   end
 
   def map_data

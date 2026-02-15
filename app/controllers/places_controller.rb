@@ -1,4 +1,6 @@
 class PlacesController < ApplicationController
+  NEARBY_RADIUS_KM = 5.0
+
   def show
     @place = Place.find(params[:id])
     FoursquareService.enrich_place(@place)
@@ -19,5 +21,24 @@ class PlacesController < ApplicationController
         @next_place = siblings[current_index + 1]&.place
       end
     end
+  end
+
+  def place_search
+    @place = Place.find(params[:id])
+    query = params[:q].to_s.strip
+    places = if @place.latitude.present? && @place.longitude.present? && query.present?
+      Place.search_nearby(lat: @place.latitude, lng: @place.longitude, query: query, radius_km: NEARBY_RADIUS_KM, exclude_id: @place.id)
+    else
+      Place.none
+    end
+
+    render json: places.map { |p|
+      {
+        id: p.id,
+        name: p.name,
+        category: p.category,
+        address: p.address
+      }
+    }
   end
 end

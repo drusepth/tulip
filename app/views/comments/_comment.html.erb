@@ -93,7 +93,7 @@
           </div>
 
           <!-- Body -->
-          <div class="mt-1.5 text-brown text-sm whitespace-pre-wrap break-words leading-relaxed"><%= comment.body %></div>
+          <div class="mt-1.5 text-brown text-sm whitespace-pre-wrap break-words leading-relaxed"><%= render_comment_body(comment.body) %></div>
 
           <!-- Actions - always visible with dot separators -->
           <div class="mt-2.5 flex items-center text-xs text-taupe">

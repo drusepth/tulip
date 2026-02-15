@@ -1,4 +1,5 @@
 <% commentable = local_assigns[:commentable] || local_assigns[:stay] %>
+<% search_url = mention_search_url(commentable) %>
 <%= form_with url: commentable_comments_path(commentable),
              method: :post,
              class: "reply-form",
@@ -12,12 +13,21 @@
       <div class="text-xs text-lavender-dark mb-1">
         Replying to <span class="font-medium"><%= parent.user.name %></span>
       </div>
-      <%= f.text_area :body,
-                      name: "comment[body]",
-                      placeholder: "Write a reply...",
-                      rows: 2,
-                      class: "w-full px-3 py-2 border border-taupe-light rounded-xl bg-white text-brown placeholder-brown-lighter focus:outline-none focus:border-lavender text-sm resize-none",
-                      data: { comment_reply_target: "textarea" } %>
+      <div class="relative"
+           <% if search_url %>
+           data-controller="place-mention"
+           data-place-mention-search-url-value="<%= search_url %>"
+           <% end %>>
+        <%= f.text_area :body,
+                        name: "comment[body]",
+                        placeholder: search_url ? "Write a reply... (type @ to mention a place)" : "Write a reply...",
+                        rows: 2,
+                        class: "w-full px-3 py-2 border border-taupe-light rounded-xl bg-white text-brown placeholder-brown-lighter focus:outline-none focus:border-lavender text-sm resize-none",
+                        data: search_url ? { comment_reply_target: "textarea", place_mention_target: "textarea", action: "input->place-mention#onInput keydown->place-mention#onKeydown" } : { comment_reply_target: "textarea" } %>
+        <% if search_url %>
+          <div class="mention-dropdown hidden" data-place-mention-target="dropdown"></div>
+        <% end %>
+      </div>
       <div class="mt-2 flex justify-end gap-2">
         <button type="button"
                 class="text-sm text-brown-light hover:text-brown px-3 py-1 transition-colors"
