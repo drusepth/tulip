@@ -2393,10 +2393,10 @@ kbd {
   padding: 0.05em 0.35em;
   border-radius: 0.375rem;
   transition: all 0.15s ease;
-  white-space: nowrap;
 }
 
-.place-mention:hover {
+.place-mention:hover,
+.place-mention:active {
   color: white;
   background: var(--color-sage-dark);
 }
@@ -2412,10 +2412,16 @@ kbd {
   border: 1px solid var(--color-taupe-light);
   border-radius: 1rem;
   box-shadow: 0 4px 20px rgba(93, 78, 78, 0.12);
-  z-index: 50;
+  z-index: 60;
   max-height: 240px;
   overflow-y: auto;
   padding: 0.25rem;
+}
+
+@media (max-width: 640px) {
+  .mention-dropdown {
+    max-height: 180px;
+  }
 }
 
 /* Individual dropdown item */
@@ -2424,7 +2430,7 @@ kbd {
   align-items: center;
   gap: 0.5rem;
   width: 100%;
-  padding: 0.5rem 0.75rem;
+  padding: 0.625rem 0.75rem;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -2434,6 +2440,8 @@ kbd {
 }
 
 .mention-item:hover,
+.mention-item:active,
+.mention-item:focus-visible,
 .mention-item-selected {
   background-color: var(--color-lavender-light);
 }
