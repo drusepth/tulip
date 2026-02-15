@@ -17,6 +17,12 @@
 
         <div class="space-y-5">
           <div>
+            <label class="cozy-label" for="user_display_name">Display Name</label>
+            <%= f.text_field :display_name, autocomplete: "name", class: "cozy-input", placeholder: "How you'd like to be called" %>
+            <p class="text-xs text-brown-lighter mt-1">Optional — you can always set this later</p>
+          </div>
+
+          <div>
             <label class="cozy-label" for="user_email">Email</label>
             <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "cozy-input", placeholder: "you@example.com" %>
           </div>
