@@ -1,6 +1,6 @@
 class PoisController < ApplicationController
-  before_action :set_stay, except: [:search]
-  before_action :require_stay_edit_permission, only: [:update, :destroy]
+  before_action :set_stay, except: [ :search ]
+  before_action :require_stay_edit_permission, only: [ :update, :destroy ]
 
   def index
     @pois = @stay.pois.includes(:place)
@@ -13,7 +13,7 @@ class PoisController < ApplicationController
     category = params[:category]
 
     unless Place::CATEGORIES.include?(category)
-      return render json: { error: 'Invalid category' }, status: :bad_request
+      return render json: { error: "Invalid category" }, status: :bad_request
     end
 
     # Check if we already have cached POIs for this stay and category
@@ -32,7 +32,7 @@ class PoisController < ApplicationController
           category: category
         )
       rescue OverpassService::RateLimitedError
-        return render json: { error: 'Rate limited by upstream API. Please retry later.' }, status: :too_many_requests
+        return render json: { error: "Rate limited by upstream API. Please retry later." }, status: :too_many_requests
       end
 
       # Cache the results
@@ -107,11 +107,11 @@ class PoisController < ApplicationController
     category = params[:category]
 
     unless Place::CATEGORIES.include?(category)
-      return render json: { error: 'Invalid category' }, status: :bad_request
+      return render json: { error: "Invalid category" }, status: :bad_request
     end
 
     if lat == 0 && lng == 0
-      return render json: { error: 'Invalid coordinates' }, status: :bad_request
+      return render json: { error: "Invalid coordinates" }, status: :bad_request
     end
 
     grid_key = ViewportPoi.grid_key_for(lat: lat, lng: lng, category: category)
@@ -131,7 +131,7 @@ class PoisController < ApplicationController
         category: category
       )
     rescue OverpassService::RateLimitedError
-      return render json: { error: 'Rate limited by upstream API. Please retry later.' }, status: :too_many_requests
+      return render json: { error: "Rate limited by upstream API. Please retry later." }, status: :too_many_requests
     end
 
     # Mark grid as searched (even if empty!) - this fixes the bug where empty

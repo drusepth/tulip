@@ -1,7 +1,7 @@
 class BucketListItemsController < ApplicationController
-  before_action :set_stay, except: [:map_index]
-  before_action :require_stay_edit_permission, except: [:map_index]
-  before_action :set_bucket_list_item, only: [:edit, :update, :destroy, :toggle]
+  before_action :set_stay, except: [ :map_index ]
+  before_action :require_stay_edit_permission, except: [ :map_index ]
+  before_action :set_bucket_list_item, only: [ :edit, :update, :destroy, :toggle ]
 
   def map_index
     @items = BucketListItem.includes(:stay)

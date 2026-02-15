@@ -24,10 +24,10 @@ module TimelineHelper
   def tooltip_content_for(stay)
     status_badge = if stay.booked?
       badge_class = case stay.status
-        when "upcoming" then "badge-upcoming"
-        when "current" then "badge-current"
-        when "past" then "badge-past"
-        else "badge-upcoming"
+      when "upcoming" then "badge-upcoming"
+      when "current" then "badge-current"
+      when "past" then "badge-past"
+      else "badge-upcoming"
       end
       "<span class='badge #{badge_class}'>#{stay.status.capitalize}</span>"
     else
@@ -58,7 +58,7 @@ module TimelineHelper
       price_html = <<~PRICE
         <div class="text-xs text-brown-light mt-1">
           #{stay.currency} #{format_price(stay.price_total_cents)} total
-          <span class="opacity-70">(#{stay.currency} #{format_price(stay.price_total_cents / [stay.duration_days, 1].max)}/night)</span>
+          <span class="opacity-70">(#{stay.currency} #{format_price(stay.price_total_cents / [ stay.duration_days, 1 ].max)}/night)</span>
         </div>
       PRICE
     end

@@ -10,6 +10,6 @@ class CreateSearchedGridCells < ActiveRecord::Migration[8.0]
 
     add_index :searched_grid_cells, :grid_key, unique: true
     add_index :searched_grid_cells, :category
-    add_index :searched_grid_cells, [:category, :searched_at]
+    add_index :searched_grid_cells, [ :category, :searched_at ]
   end
 end

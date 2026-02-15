@@ -11,7 +11,7 @@ class CreateTransitRoutes < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :transit_routes, [:stay_id, :route_type]
+    add_index :transit_routes, [ :stay_id, :route_type ]
     add_index :transit_routes, :osm_id, unique: true
   end
 end

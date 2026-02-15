@@ -15,7 +15,7 @@ class CreateBucketListItems < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :bucket_list_items, [:stay_id, :completed]
-    add_index :bucket_list_items, [:stay_id, :category]
+    add_index :bucket_list_items, [ :stay_id, :completed ]
+    add_index :bucket_list_items, [ :stay_id, :category ]
   end
 end

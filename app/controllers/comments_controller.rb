@@ -1,7 +1,7 @@
 class CommentsController < ApplicationController
   before_action :set_stay
-  before_action :set_comment, only: [:edit, :update, :destroy]
-  before_action :require_comment_author, only: [:edit, :update, :destroy]
+  before_action :set_comment, only: [ :edit, :update, :destroy ]
+  before_action :require_comment_author, only: [ :edit, :update, :destroy ]
 
   def create
     @comment = @stay.comments.build(comment_params)

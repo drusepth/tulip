@@ -87,7 +87,7 @@ class CreatePlacesAndRefactorPois < ActiveRecord::Migration[8.0]
     remove_column :pois, :osm_id, :string
 
     # Remove indexes on columns we're about to drop from viewport_pois
-    remove_index :viewport_pois, column: [:grid_key, :osm_id]
+    remove_index :viewport_pois, column: [ :grid_key, :osm_id ]
     remove_index :viewport_pois, :foursquare_id
     remove_index :viewport_pois, :wikidata_id
 
@@ -120,6 +120,6 @@ class CreatePlacesAndRefactorPois < ActiveRecord::Migration[8.0]
     remove_column :viewport_pois, :osm_id, :string
 
     # Add unique index on viewport_pois for grid_key + place_id
-    add_index :viewport_pois, [:grid_key, :place_id], unique: true
+    add_index :viewport_pois, [ :grid_key, :place_id ], unique: true
   end
 end

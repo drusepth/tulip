@@ -14,7 +14,7 @@ class MakeCommentsPolymorphic < ActiveRecord::Migration[8.0]
     change_column_null :comments, :commentable_id, false
 
     # Add polymorphic index
-    add_index :comments, [:commentable_type, :commentable_id, :created_at],
+    add_index :comments, [ :commentable_type, :commentable_id, :created_at ],
               name: "index_comments_on_commentable_and_created_at"
 
     # Remove old stay-specific columns and indexes
@@ -39,7 +39,7 @@ class MakeCommentsPolymorphic < ActiveRecord::Migration[8.0]
     change_column_null :comments, :stay_id, false
     add_foreign_key :comments, :stays
     add_index :comments, :stay_id
-    add_index :comments, [:stay_id, :created_at]
+    add_index :comments, [ :stay_id, :created_at ]
 
     remove_index :comments, name: "index_comments_on_commentable_and_created_at"
     remove_column :comments, :commentable_type

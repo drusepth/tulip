@@ -8,6 +8,6 @@ class CreateBucketListItemRatings < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :bucket_list_item_ratings, [:bucket_list_item_id, :user_id], unique: true, name: 'index_bucket_list_item_ratings_unique'
+    add_index :bucket_list_item_ratings, [ :bucket_list_item_id, :user_id ], unique: true, name: 'index_bucket_list_item_ratings_unique'
   end
 end

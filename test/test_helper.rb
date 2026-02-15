@@ -11,7 +11,7 @@ Geocoder.configure(lookup: :test, ip_lookup: :test)
 Geocoder::Lookup::Test.set_default_stub(
   [
     {
-      "coordinates" => [40.7128, -74.0060],
+      "coordinates" => [ 40.7128, -74.0060 ],
       "address" => "New York, NY, USA",
       "city" => "New York",
       "state" => "New York",
@@ -25,7 +25,7 @@ Geocoder::Lookup::Test.set_default_stub(
 # Use Geocoder test mode to avoid hitting Nominatim in tests
 Geocoder.configure(lookup: :test, ip_lookup: :test)
 Geocoder::Lookup::Test.set_default_stub(
-  [{ "latitude" => 40.7128, "longitude" => -74.0060, "city" => "New York", "country" => "USA" }]
+  [ { "latitude" => 40.7128, "longitude" => -74.0060, "city" => "New York", "country" => "USA" } ]
 )
 
 module ActiveSupport
@@ -45,18 +45,18 @@ module ActiveSupport
         status: 200,
         body: {
           daily: {
-            time: ["2025-03-04", "2025-03-05", "2025-03-06"],
-            temperature_2m_max: [65.0, 68.0, 70.0],
-            temperature_2m_min: [50.0, 52.0, 55.0],
-            weather_code: [0, 1, 2],
-            apparent_temperature_max: [63.0, 66.0, 68.0],
-            apparent_temperature_min: [48.0, 50.0, 53.0],
-            precipitation_sum: [0.0, 0.0, 0.1],
-            precipitation_hours: [0, 0, 1],
-            wind_speed_10m_max: [10.0, 12.0, 8.0],
-            wind_gusts_10m_max: [15.0, 18.0, 12.0],
-            sunrise: ["06:30", "06:29", "06:28"],
-            sunset: ["18:15", "18:16", "18:17"]
+            time: [ "2025-03-04", "2025-03-05", "2025-03-06" ],
+            temperature_2m_max: [ 65.0, 68.0, 70.0 ],
+            temperature_2m_min: [ 50.0, 52.0, 55.0 ],
+            weather_code: [ 0, 1, 2 ],
+            apparent_temperature_max: [ 63.0, 66.0, 68.0 ],
+            apparent_temperature_min: [ 48.0, 50.0, 53.0 ],
+            precipitation_sum: [ 0.0, 0.0, 0.1 ],
+            precipitation_hours: [ 0, 0, 1 ],
+            wind_speed_10m_max: [ 10.0, 12.0, 8.0 ],
+            wind_gusts_10m_max: [ 15.0, 18.0, 12.0 ],
+            sunrise: [ "06:30", "06:29", "06:28" ],
+            sunset: [ "18:15", "18:16", "18:17" ]
           }
         }.to_json,
         headers: { "Content-Type" => "application/json" }

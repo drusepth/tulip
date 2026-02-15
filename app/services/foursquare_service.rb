@@ -1,6 +1,6 @@
 class FoursquareService
-  BASE_URL = 'https://places-api.foursquare.com'.freeze
-  API_VERSION = '2025-06-17'.freeze
+  BASE_URL = "https://places-api.foursquare.com".freeze
+  API_VERSION = "2025-06-17".freeze
   SEARCH_RADIUS = 50 # meters
   MATCH_THRESHOLD = 0.6 # 60% similarity required for a match
 
@@ -14,9 +14,9 @@ class FoursquareService
       return mark_as_fetched(place) unless matching_place
 
       place.update(
-        foursquare_id: matching_place['fsq_place_id'],
-        foursquare_rating: matching_place['rating'],
-        foursquare_price: matching_place['price'],
+        foursquare_id: matching_place["fsq_place_id"],
+        foursquare_rating: matching_place["rating"],
+        foursquare_price: matching_place["price"],
         foursquare_photo_url: extract_photo_url(matching_place),
         foursquare_tip: extract_top_tip(matching_place),
         foursquare_fetched_at: Time.current
@@ -43,14 +43,14 @@ class FoursquareService
       response = HTTParty.get(
         "#{BASE_URL}/places/search",
         headers: {
-          'Authorization' => "Bearer #{api_key}",
-          'X-Places-Api-Version' => API_VERSION
+          "Authorization" => "Bearer #{api_key}",
+          "X-Places-Api-Version" => API_VERSION
         },
         query: {
           ll: "#{place.latitude},#{place.longitude}",
           radius: SEARCH_RADIUS,
           limit: 1,
-          fields: 'fsq_place_id,name,rating,price,photos,tips'
+          fields: "fsq_place_id,name,rating,price,photos,tips"
         },
         timeout: 10
       )
@@ -60,7 +60,7 @@ class FoursquareService
         return nil
       end
 
-      places = response.parsed_response['results']
+      places = response.parsed_response["results"]
       return nil if places.blank?
 
       best_match(place.name, places)
@@ -75,7 +75,7 @@ class FoursquareService
       poi_name_normalized = poi_name.downcase.strip
 
       matches = places.map do |place|
-        place_name = place['name']&.downcase&.strip || ''
+        place_name = place["name"]&.downcase&.strip || ""
         score = similarity(poi_name_normalized, place_name)
         { place: place, score: score }
       end
@@ -90,7 +90,7 @@ class FoursquareService
       return 1.0 if a == b
       return 0.0 if a.empty? || b.empty?
 
-      longer = [a.length, b.length].max
+      longer = [ a.length, b.length ].max
       distance = levenshtein_distance(a, b)
       (longer - distance) / longer.to_f
     end
@@ -122,25 +122,25 @@ class FoursquareService
     end
 
     def extract_photo_url(place)
-      photos = place['photos']
+      photos = place["photos"]
       return nil if photos.blank?
 
       photo = photos.first
       return nil unless photo
 
-      prefix = photo['prefix']
-      suffix = photo['suffix']
+      prefix = photo["prefix"]
+      suffix = photo["suffix"]
       return nil unless prefix && suffix
 
       "#{prefix}300x200#{suffix}"
     end
 
     def extract_top_tip(place)
-      tips = place['tips']
+      tips = place["tips"]
       return nil if tips.blank?
 
       tip = tips.first
-      tip&.dig('text')
+      tip&.dig("text")
     end
 
     def mark_as_fetched(place)
