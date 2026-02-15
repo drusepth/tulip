@@ -24,7 +24,7 @@
         <% end %>
       <% else %>
         <span class="<%= bucket_list_item.completed? ? 'text-brown-light' : 'text-brown font-medium' %>">
-          <%= bucket_list_item.title %>
+          <%= render_text_with_mentions(bucket_list_item.title) %>
         </span>
       <% end %>
       <% if bucket_list_item.user.present? && stay.collaborators.any? && !bucket_list_item.completed? %>
@@ -47,7 +47,7 @@
       <% end %>
       <% if bucket_list_item.notes.present? %>
         <div class="mt-2 pl-2.5 border-l-2 border-taupe-light">
-          <p class="text-xs text-brown-light italic"><%= bucket_list_item.notes %></p>
+          <p class="text-xs text-brown-light italic"><%= render_text_with_mentions(bucket_list_item.notes) %></p>
         </div>
       <% end %>
       <% if bucket_list_item.completed? && stay.collaborators.any? %>

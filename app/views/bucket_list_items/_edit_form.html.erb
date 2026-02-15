@@ -1,14 +1,24 @@
+<% stay = bucket_list_item.stay %>
+<% search_url = place_search_stay_path(stay) if stay.latitude.present? && stay.longitude.present? %>
 <%= turbo_frame_tag dom_id(bucket_list_item) do %>
   <div class="bucket-list-item my-2 p-4 rounded-2xl bg-rose-light border border-taupe-light shadow-sm">
-    <%= form_with model: [bucket_list_item.stay, bucket_list_item],
+    <%= form_with model: [stay, bucket_list_item],
                   class: "space-y-4" do |f| %>
       <!-- Title field -->
-      <div>
+      <div class="relative"
+           <% if search_url %>
+           data-controller="place-mention"
+           data-place-mention-search-url-value="<%= search_url %>"
+           <% end %>>
         <label class="text-xs text-brown-light mb-1 block">What do you want to do here?</label>
         <%= f.text_field :title,
                          placeholder: "e.g. Try the famous ramen",
                          class: "w-full px-3 py-2 border border-taupe-light rounded-lg bg-cream text-brown text-sm placeholder-brown-lighter focus:outline-none focus:border-sage",
-                         autofocus: true %>
+                         autofocus: true,
+                         data: search_url ? { place_mention_target: "textarea", action: "input->place-mention#onInput keydown->place-mention#onKeydown" } : {} %>
+        <% if search_url %>
+          <div class="mention-dropdown hidden" data-place-mention-target="dropdown"></div>
+        <% end %>
       </div>
 
       <!-- Optional fields -->
