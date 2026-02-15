@@ -58,8 +58,9 @@ module ApplicationHelper
     end
   end
 
-  # Render @[Place Name](place:123) mentions as links
-  def render_comment_body(body)
+  # Render @[Place Name](place:123) mentions as links.
+  # Works for any text field (comments, bucket list items, etc.)
+  def render_text_with_mentions(body)
     return "" if body.blank?
     escaped = ERB::Util.html_escape(body)
     escaped.gsub(/@\[([^\]]+)\]\(place:(\d+)\)/) do
@@ -68,6 +69,8 @@ module ApplicationHelper
       "<a href=\"#{place_path(place_id)}\" class=\"place-mention\">@#{name}</a>"
     end.html_safe
   end
+
+  alias_method :render_comment_body, :render_text_with_mentions
 
   def commentable_path(commentable)
     if commentable.is_a?(Place)
