@@ -14,19 +14,21 @@ export default class extends Controller {
   static values  = { searchUrl: String }
 
   connect() {
-    this.mentionActive = false
-    this.mentionStart  = null  // caret position where '@' was typed
-    this.selectedIndex = 0
-    this.results       = []
-    this.debounceTimer = null
+    this.mentionActive  = false
+    this.mentionStart   = null  // caret position where '@' was typed
+    this.selectedIndex  = 0
+    this.results        = []
+    this.debounceTimer  = null
+    this.abortController = null
   }
 
   disconnect() {
     this.hideDropdown()
     if (this.debounceTimer) clearTimeout(this.debounceTimer)
+    if (this.abortController) this.abortController.abort()
   }
 
-  // Called on every keyup in the textarea
+  // Called on every input in the textarea
   onInput() {
     const textarea = this.textareaTarget
     const caret    = textarea.selectionStart
@@ -103,10 +105,19 @@ export default class extends Controller {
   async search(query) {
     if (!this.searchUrlValue) return
 
+    // Cancel any in-flight request so stale results don't overwrite newer ones
+    if (this.abortController) this.abortController.abort()
+    this.abortController = new AbortController()
+
     try {
       const url = `${this.searchUrlValue}?q=${encodeURIComponent(query)}`
+      const csrfToken = document.querySelector("meta[name='csrf-token']")?.content
+      const headers = { "Accept": "application/json" }
+      if (csrfToken) headers["X-CSRF-Token"] = csrfToken
+
       const response = await fetch(url, {
-        headers: { "Accept": "application/json" }
+        headers,
+        signal: this.abortController.signal
       })
       if (!response.ok) return
 
@@ -114,7 +125,7 @@ export default class extends Controller {
       this.selectedIndex = 0
       this.renderDropdown()
     } catch (e) {
-      // silently fail on network errors
+      if (e.name !== "AbortError") return // silently ignore aborts and network errors
     }
   }
 

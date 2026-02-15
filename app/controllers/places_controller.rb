@@ -25,16 +25,9 @@ class PlacesController < ApplicationController
 
   def place_search
     @place = Place.find(params[:id])
-    query = params[:q].to_s.strip.downcase
+    query = params[:q].to_s.strip
     places = if @place.latitude.present? && @place.longitude.present? && query.present?
-      Place.within_radius(
-        lat: @place.latitude,
-        lng: @place.longitude,
-        radius_km: NEARBY_RADIUS_KM
-      ).where(category: Place::BROWSABLE_CATEGORIES)
-       .where("LOWER(name) LIKE ?", "%#{Place.sanitize_sql_like(query)}%")
-       .where.not(id: @place.id)
-       .limit(8)
+      Place.search_nearby(lat: @place.latitude, lng: @place.longitude, query: query, radius_km: NEARBY_RADIUS_KM, exclude_id: @place.id)
     else
       Place.none
     end

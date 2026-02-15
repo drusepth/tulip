@@ -126,15 +126,9 @@ class StaysController < ApplicationController
   end
 
   def place_search
-    query = params[:q].to_s.strip.downcase
+    query = params[:q].to_s.strip
     places = if @stay.latitude.present? && @stay.longitude.present? && query.present?
-      Place.within_radius(
-        lat: @stay.latitude,
-        lng: @stay.longitude,
-        radius_km: DEFAULT_POI_RADIUS_KM
-      ).where(category: Place::BROWSABLE_CATEGORIES)
-       .where("LOWER(name) LIKE ?", "%#{Place.sanitize_sql_like(query)}%")
-       .limit(8)
+      Place.search_nearby(lat: @stay.latitude, lng: @stay.longitude, query: query, radius_km: DEFAULT_POI_RADIUS_KM)
     else
       Place.none
     end
