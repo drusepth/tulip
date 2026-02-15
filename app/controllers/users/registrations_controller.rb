@@ -5,7 +5,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     if requires_password?(params)
       super
     else
-      resource.update(params.except(:current_password))
+      resource.update(params.except(:current_password, :password, :password_confirmation))
     end
   end
 
