@@ -49,6 +49,15 @@ module ApplicationHelper
     end
   end
 
+  # Returns the place_search URL for mention autocomplete, or nil if not supported
+  def mention_search_url(commentable)
+    if commentable.is_a?(Stay)
+      place_search_stay_path(commentable)
+    elsif commentable.is_a?(Place)
+      place_search_place_path(commentable)
+    end
+  end
+
   # Render @[Place Name](place:123) mentions as links
   def render_comment_body(body)
     return "" if body.blank?

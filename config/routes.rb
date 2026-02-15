@@ -12,6 +12,9 @@ Rails.application.routes.draw do
   end
 
   resources :places, only: [:show] do
+    member do
+      get :place_search
+    end
     resources :comments, only: [:create, :edit, :update, :destroy], controller: 'place_comments'
   end
 

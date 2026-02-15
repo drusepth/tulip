@@ -1,5 +1,5 @@
 <% commentable = local_assigns[:commentable] || local_assigns[:stay] %>
-<% is_stay = commentable.is_a?(Stay) %>
+<% search_url = mention_search_url(commentable) %>
 <%= form_with url: commentable_comments_path(commentable),
              method: :post,
              id: "comment_form",
@@ -10,17 +10,17 @@
     }) %>
     <div class="flex-1">
       <div class="relative"
-           <% if is_stay %>
+           <% if search_url %>
            data-controller="place-mention"
-           data-place-mention-search-url-value="<%= place_search_stay_path(commentable) %>"
+           data-place-mention-search-url-value="<%= search_url %>"
            <% end %>>
         <%= f.text_area :body,
                         name: "comment[body]",
-                        placeholder: is_stay ? "Add a comment... (type @ to mention a place)" : "Add a comment...",
+                        placeholder: search_url ? "Add a comment... (type @ to mention a place)" : "Add a comment...",
                         rows: 2,
                         class: "w-full px-4 py-2.5 border-2 border-taupe-light rounded-2xl bg-white text-brown placeholder-brown-lighter focus:outline-none focus:border-lavender focus:bg-lavender-light transition-colors text-sm resize-none",
-                        data: is_stay ? { place_mention_target: "textarea", action: "input->place-mention#onInput keydown->place-mention#onKeydown" } : {} %>
-        <% if is_stay %>
+                        data: search_url ? { place_mention_target: "textarea", action: "input->place-mention#onInput keydown->place-mention#onKeydown" } : {} %>
+        <% if search_url %>
           <div class="mention-dropdown hidden" data-place-mention-target="dropdown"></div>
         <% end %>
       </div>
