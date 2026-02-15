@@ -16,7 +16,7 @@ class CreateViewportPois < ActiveRecord::Migration[8.0]
     end
 
     add_index :viewport_pois, :grid_key
-    add_index :viewport_pois, [:grid_key, :osm_id], unique: true
+    add_index :viewport_pois, [ :grid_key, :osm_id ], unique: true
     add_index :viewport_pois, :category
   end
 end

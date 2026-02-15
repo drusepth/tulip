@@ -15,7 +15,7 @@ class CreatePois < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :pois, [:stay_id, :category]
+    add_index :pois, [ :stay_id, :category ]
     add_index :pois, :osm_id, unique: true
   end
 end

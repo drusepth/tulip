@@ -1,7 +1,7 @@
 class StayCollaborationsController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:accept]
-  before_action :set_stay, except: [:accept]
-  before_action :require_stay_owner, except: [:accept, :leave]
+  skip_before_action :authenticate_user!, only: [ :accept ]
+  before_action :set_stay, except: [ :accept ]
+  before_action :require_stay_owner, except: [ :accept, :leave ]
 
   def index
     @collaborations = @stay.stay_collaborations.includes(:user).order(:created_at)
@@ -11,7 +11,7 @@ class StayCollaborationsController < ApplicationController
 
   def create
     @collaboration = @stay.stay_collaborations.build(
-      role: collaboration_params[:role] || 'editor',
+      role: safe_role,
       invited_email: collaboration_params[:invited_email]&.strip&.downcase
     )
 
@@ -34,7 +34,7 @@ class StayCollaborationsController < ApplicationController
     @collaboration = @stay.stay_collaborations.find(params[:id])
 
     # Prevent removing the owner
-    if @collaboration.role == 'owner'
+    if @collaboration.role == "owner"
       redirect_to stay_collaborations_path(@stay), alert: "Cannot remove the owner"
       return
     end
@@ -106,6 +106,11 @@ class StayCollaborationsController < ApplicationController
   end
 
   def collaboration_params
-    params.permit(:role, :invited_email)
+    params.permit(:invited_email)
+  end
+
+  def safe_role
+    allowed = StayCollaboration::ROLES.excluding("owner")
+    allowed.include?(params[:role]) ? params[:role] : "editor"
   end
 end

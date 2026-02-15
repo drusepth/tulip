@@ -83,9 +83,9 @@ class WeatherServiceTest < ActiveSupport::TestCase
   test "weather codes are grouped correctly" do
     response = {
       "daily" => {
-        "temperature_2m_max" => [50, 55, 60],
-        "temperature_2m_min" => [30, 35, 40],
-        "weather_code" => [0, 61, 95]  # Sunny, Rainy, Stormy
+        "temperature_2m_max" => [ 50, 55, 60 ],
+        "temperature_2m_min" => [ 30, 35, 40 ],
+        "weather_code" => [ 0, 61, 95 ]  # Sunny, Rainy, Stormy
       }
     }
 
@@ -112,10 +112,10 @@ class WeatherServiceTest < ActiveSupport::TestCase
   def api_response_body
     {
       "daily" => {
-        "time" => ["2025-01-15", "2025-01-16", "2025-01-17", "2025-01-18", "2025-01-19", "2025-01-20"],
-        "temperature_2m_max" => [45, 48, 50, 47, 46, 49],
-        "temperature_2m_min" => [30, 32, 35, 33, 31, 34],
-        "weather_code" => [0, 1, 2, 61, 63, 0]
+        "time" => [ "2025-01-15", "2025-01-16", "2025-01-17", "2025-01-18", "2025-01-19", "2025-01-20" ],
+        "temperature_2m_max" => [ 45, 48, 50, 47, 46, 49 ],
+        "temperature_2m_min" => [ 30, 32, 35, 33, 31, 34 ],
+        "weather_code" => [ 0, 1, 2, 61, 63, 0 ]
       }
     }
   end

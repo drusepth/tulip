@@ -14,8 +14,8 @@ class StayCollaboration < ApplicationRecord
 
   scope :pending, -> { where(invite_accepted_at: nil) }
   scope :accepted, -> { where.not(invite_accepted_at: nil) }
-  scope :editors, -> { where(role: 'editor') }
-  scope :owners, -> { where(role: 'owner') }
+  scope :editors, -> { where(role: "editor") }
+  scope :owners, -> { where(role: "owner") }
 
   def pending?
     invite_accepted_at.nil?
@@ -69,6 +69,6 @@ class StayCollaboration < ApplicationRecord
   end
 
   def default_url_host
-    Rails.application.config.action_mailer.default_url_options&.fetch(:host, 'localhost:3000') || 'localhost:3000'
+    Rails.application.config.action_mailer.default_url_options&.fetch(:host, "localhost:3000") || "localhost:3000"
   end
 end

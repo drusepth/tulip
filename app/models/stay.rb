@@ -62,20 +62,20 @@ class Stay < ApplicationRecord
   after_validation :geocode, if: :should_geocode?
 
   before_save :update_status
-  after_commit :enqueue_poi_fetch, on: [:create, :update], if: :should_fetch_pois?
+  after_commit :enqueue_poi_fetch, on: [ :create, :update ], if: :should_fetch_pois?
   after_save :clear_cached_location_data, if: :location_changed?
 
   scope :with_dates, -> { where.not(check_in: nil).where.not(check_out: nil) }
   scope :wishlist, -> { where(check_in: nil).or(where(check_out: nil)) }
-  scope :upcoming, -> { with_dates.where(status: 'upcoming').order(:check_in) }
-  scope :current, -> { with_dates.where(status: 'current') }
-  scope :past, -> { with_dates.where(status: 'past').order(check_out: :desc) }
+  scope :upcoming, -> { with_dates.where(status: "upcoming").order(:check_in) }
+  scope :current, -> { with_dates.where(status: "current") }
+  scope :past, -> { with_dates.where(status: "past").order(check_out: :desc) }
   scope :chronological, -> { with_dates.order(:check_in) }
   scope :booked, -> { where(booked: true) }
   scope :planned, -> { where(booked: false) }
 
   def full_address
-    [address, city, country].compact.join(', ')
+    [ address, city, country ].compact.join(", ")
   end
 
   def duration_days
@@ -113,12 +113,12 @@ class Stay < ApplicationRecord
   def overlapping_stays(scope = nil)
     base_scope = scope || user&.accessible_stays || Stay.none
     base_scope.where.not(id: id)
-              .where('check_in < ? AND check_out > ?', check_out, check_in)
+              .where("check_in < ? AND check_out > ?", check_out, check_in)
   end
 
   def self.current_stay
     today = Date.current
-    find_by('check_in <= ? AND check_out >= ?', today, today)
+    find_by("check_in <= ? AND check_out >= ?", today, today)
   end
 
   def self.next_upcoming
@@ -127,9 +127,9 @@ class Stay < ApplicationRecord
 
   def self.update_all_statuses!
     today = Date.current
-    where('check_out < ?', today).update_all(status: 'past')
-    where('check_in <= ? AND check_out >= ?', today, today).update_all(status: 'current')
-    where('check_in > ?', today).update_all(status: 'upcoming')
+    where("check_out < ?", today).update_all(status: "past")
+    where("check_in <= ? AND check_out >= ?", today, today).update_all(status: "current")
+    where("check_in > ?", today).update_all(status: "upcoming")
   end
 
   # Find gaps between stays. Works on any relation (e.g., current_user.stays.find_gaps)
@@ -153,7 +153,7 @@ class Stay < ApplicationRecord
         }
       end
       # Extend coverage if this stay ends later
-      max_check_out = [max_check_out, stay.check_out].max
+      max_check_out = [ max_check_out, stay.check_out ].max
     end
     gaps
   end
@@ -239,20 +239,20 @@ class Stay < ApplicationRecord
     return if title.present?
     return unless city.present?
 
-    self.title = [city, state.presence || country].compact.join(", ")
+    self.title = [ city, state.presence || country ].compact.join(", ")
   end
 
   def check_out_after_check_in
     return unless check_in && check_out
     if check_out <= check_in
-      errors.add(:check_out, 'must be after check-in date')
+      errors.add(:check_out, "must be after check-in date")
     end
   end
 
   def no_overlapping_stays
     return unless check_in && check_out
     if overlapping_stays.exists?
-      errors.add(:base, 'Dates overlap with an existing stay')
+      errors.add(:base, "Dates overlap with an existing stay")
     end
   end
 
@@ -273,18 +273,18 @@ class Stay < ApplicationRecord
   def update_status
     # Wishlist stays without dates are always "upcoming"
     unless has_dates?
-      self.status = 'upcoming'
+      self.status = "upcoming"
       return
     end
 
     today = Date.current
     self.status = if check_out < today
-                    'past'
-                  elsif check_in <= today && check_out >= today
-                    'current'
-                  else
-                    'upcoming'
-                  end
+                    "past"
+    elsif check_in <= today && check_out >= today
+                    "current"
+    else
+                    "upcoming"
+    end
   end
 
   def should_fetch_pois?

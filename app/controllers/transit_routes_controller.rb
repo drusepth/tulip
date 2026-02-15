@@ -20,7 +20,7 @@ class TransitRoutesController < ApplicationController
     route_type = params[:route_type]
 
     unless TransitRoute::ROUTE_TYPES.include?(route_type)
-      return render json: { error: 'Invalid route type' }, status: :bad_request
+      return render json: { error: "Invalid route type" }, status: :bad_request
     end
 
     # Check if we already have cached routes for this stay and type
@@ -39,7 +39,7 @@ class TransitRoutesController < ApplicationController
           route_type: route_type
         )
       rescue OverpassService::RateLimitedError
-        return render json: { error: 'Rate limited by upstream API. Please retry later.' }, status: :too_many_requests
+        return render json: { error: "Rate limited by upstream API. Please retry later." }, status: :too_many_requests
       end
 
       # Cache the results

@@ -1,4 +1,4 @@
-require 'ostruct'
+require "ostruct"
 
 class GalleriesController < ApplicationController
   before_action :authenticate_user!
@@ -140,18 +140,18 @@ class GalleriesController < ApplicationController
 
   def map_poi_category_to_bucket_list(poi_category)
     case poi_category
-    when 'food', 'coffee'
-      'restaurant'
-    when 'parks'
-      'nature'
-    when 'grocery'
-      'shopping'
-    when 'gym', 'coworking', 'library'
-      'activity'
-    when 'stations', 'bus_stops'
-      'other'
+    when "food", "coffee"
+      "restaurant"
+    when "parks"
+      "nature"
+    when "grocery"
+      "shopping"
+    when "gym", "coworking", "library"
+      "activity"
+    when "stations", "bus_stops"
+      "other"
     else
-      'other'
+      "other"
     end
   end
 end

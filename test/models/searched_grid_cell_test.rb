@@ -37,7 +37,7 @@ class SearchedGridCellTest < ActiveSupport::TestCase
 
   test "fresh_cache? returns false for stale grid" do
     grid_key = "coffee:45.52:-122.67"
-    SearchedGridCell.create!(grid_key: grid_key, category: "coffee", searched_at: 2.weeks.ago)
+    SearchedGridCell.create!(grid_key: grid_key, category: "coffee", searched_at: 4.months.ago)
 
     assert_not SearchedGridCell.fresh_cache?(grid_key)
   end
@@ -47,7 +47,7 @@ class SearchedGridCellTest < ActiveSupport::TestCase
   end
 
   test "stale? returns true when searched_at is older than STALE_AFTER" do
-    cell = SearchedGridCell.new(searched_at: 2.weeks.ago)
+    cell = SearchedGridCell.new(searched_at: 4.months.ago)
     assert cell.stale?
   end
 
@@ -61,7 +61,7 @@ class SearchedGridCellTest < ActiveSupport::TestCase
     stale_key = "coffee:45.53:-122.68"
 
     SearchedGridCell.create!(grid_key: fresh_key, category: "coffee", searched_at: 1.hour.ago)
-    SearchedGridCell.create!(grid_key: stale_key, category: "coffee", searched_at: 2.weeks.ago)
+    SearchedGridCell.create!(grid_key: stale_key, category: "coffee", searched_at: 4.months.ago)
 
     fresh_records = SearchedGridCell.fresh
     assert_includes fresh_records.pluck(:grid_key), fresh_key
@@ -73,7 +73,7 @@ class SearchedGridCellTest < ActiveSupport::TestCase
     stale_key = "coffee:45.53:-122.68"
 
     SearchedGridCell.create!(grid_key: fresh_key, category: "coffee", searched_at: 1.hour.ago)
-    SearchedGridCell.create!(grid_key: stale_key, category: "coffee", searched_at: 2.weeks.ago)
+    SearchedGridCell.create!(grid_key: stale_key, category: "coffee", searched_at: 4.months.ago)
 
     stale_records = SearchedGridCell.stale
     assert_includes stale_records.pluck(:grid_key), stale_key
