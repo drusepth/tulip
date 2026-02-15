@@ -6,7 +6,7 @@
   <div class="comment <%= is_reply ? 'pt-3' : 'py-5' %>" data-controller="comment-reply" <%= "data-comment-reply-parent-id-value=#{dom_id(parent_comment)}" if is_reply && defined?(parent_comment) %>>
     <% if is_rating_comment %>
       <!-- Rating Comment - Achievement Card Style -->
-      <div class="flex gap-4 p-4 rounded-xl bg-gradient-to-br from-sage-light to-cream border border-sage shadow-sm relative overflow-hidden">
+      <div class="flex gap-4 p-4 rounded-xl bg-gradient-to-br from-sage-light to-cream border border-sage shadow-sm relative">
         <!-- Decorative botanical corner flourish -->
         <div class="absolute top-0 right-0 w-20 h-20 pointer-events-none" style="opacity: 0.15;">
           <svg viewBox="0 0 64 64" fill="none" class="w-full h-full text-sage-dark">
