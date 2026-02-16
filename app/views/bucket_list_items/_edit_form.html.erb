@@ -1,5 +1,5 @@
 <% stay = bucket_list_item.stay %>
-<% search_url = place_search_stay_path(stay) if stay.latitude.present? && stay.longitude.present? %>
+<% search_url = mention_search_stay_path(stay) %>
 <%= turbo_frame_tag dom_id(bucket_list_item) do %>
   <div class="bucket-list-item my-2 p-4 rounded-2xl bg-rose-light border border-taupe-light shadow-sm">
     <%= form_with model: [stay, bucket_list_item],

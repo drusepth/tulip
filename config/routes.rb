@@ -24,6 +24,7 @@ Rails.application.routes.draw do
       get :edit_notes
       patch :update_notes
       get :place_search
+      get :mention_search
     end
     resources :pois, only: [ :index, :create, :update, :destroy ] do
       collection do

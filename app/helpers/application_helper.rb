@@ -49,10 +49,12 @@ module ApplicationHelper
     end
   end
 
-  # Returns the place_search URL for mention autocomplete, or nil if not supported
+  # Returns the search URL for mention autocomplete, or nil if not supported.
+  # Stays use mention_search (returns collaborators + places).
+  # Places use place_search (returns nearby places only).
   def mention_search_url(commentable)
     if commentable.is_a?(Stay)
-      place_search_stay_path(commentable)
+      mention_search_stay_path(commentable)
     elsif commentable.is_a?(Place)
       place_search_place_path(commentable)
     end

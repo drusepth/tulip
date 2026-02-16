@@ -1,4 +1,4 @@
-<% search_url = place_search_stay_path(stay) if stay.latitude.present? && stay.longitude.present? %>
+<% search_url = mention_search_stay_path(stay) %>
 <%= form_with model: [stay, BucketListItem.new],
              id: "bucket_list_form",
              class: "bucket-list-form",
