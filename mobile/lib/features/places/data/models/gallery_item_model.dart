@@ -69,10 +69,10 @@ class GalleryResponse with _$GalleryResponse {
     final placesJson = json['places'] as List<dynamic>? ?? [];
     return GalleryResponse(
       places: placesJson.map((p) => GalleryItem.fromJson(p as Map<String, dynamic>)).toList(),
-      page: json['page'] as int? ?? 1,
-      totalPages: json['total_pages'] as int? ?? 1,
-      totalCount: json['total_count'] as int? ?? 0,
-      hasMore: json['has_more'] as bool? ?? false,
+      page: (json['page'] as num?)?.toInt() ?? 1,
+      totalPages: (json['totalPages'] as num?)?.toInt() ?? 1,
+      totalCount: (json['totalCount'] as num?)?.toInt() ?? 0,
+      hasMore: json['hasMore'] as bool? ?? false,
     );
   }
 }
