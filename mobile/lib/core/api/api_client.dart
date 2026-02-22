@@ -246,7 +246,14 @@ class ApiClient {
 
   String? _extractErrorMessage(dynamic data) {
     if (data == null) return null;
-    if (data is String) return data;
+    if (data is String) {
+      // Don't use HTML error pages as messages
+      final trimmed = data.trim().toLowerCase();
+      if (trimmed.startsWith('<!doctype') || trimmed.startsWith('<html')) {
+        return null;
+      }
+      return data;
+    }
     if (data is Map) {
       return data['error'] as String? ??
           data['message'] as String? ??
