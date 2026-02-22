@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../stays/data/models/stay_model.dart';
 import '../../../stays/presentation/providers/stays_provider.dart';
+import '../../../transit/data/models/transit_route_model.dart';
 
 /// Provider for map state
 final mapStateProvider = StateNotifierProvider<MapStateNotifier, MapState>((ref) {
@@ -13,6 +14,7 @@ class MapState {
   final LatLng? center;
   final double zoom;
   final Set<String> enabledPoiCategories;
+  final Set<TransitRouteType> enabledTransitLayers;
   final bool showPois;
 
   const MapState({
@@ -25,6 +27,7 @@ class MapState {
       'grocery',
       'transit',
     },
+    this.enabledTransitLayers = const {},
     this.showPois = true,
   });
 
@@ -33,6 +36,7 @@ class MapState {
     LatLng? center,
     double? zoom,
     Set<String>? enabledPoiCategories,
+    Set<TransitRouteType>? enabledTransitLayers,
     bool? showPois,
     bool clearSelectedStay = false,
   }) {
@@ -41,6 +45,7 @@ class MapState {
       center: center ?? this.center,
       zoom: zoom ?? this.zoom,
       enabledPoiCategories: enabledPoiCategories ?? this.enabledPoiCategories,
+      enabledTransitLayers: enabledTransitLayers ?? this.enabledTransitLayers,
       showPois: showPois ?? this.showPois,
     );
   }
@@ -84,6 +89,20 @@ class MapStateNotifier extends StateNotifier<MapState> {
 
   void setEnabledCategories(Set<String> categories) {
     state = state.copyWith(enabledPoiCategories: categories);
+  }
+
+  void toggleTransitLayer(TransitRouteType type) {
+    final layers = Set<TransitRouteType>.from(state.enabledTransitLayers);
+    if (layers.contains(type)) {
+      layers.remove(type);
+    } else {
+      layers.add(type);
+    }
+    state = state.copyWith(enabledTransitLayers: layers);
+  }
+
+  void setEnabledTransitLayers(Set<TransitRouteType> layers) {
+    state = state.copyWith(enabledTransitLayers: layers);
   }
 }
 

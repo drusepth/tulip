@@ -5,7 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../shared/constants/tulip_colors.dart';
 import '../../../../shared/constants/tulip_text_styles.dart';
+import '../../../stays/data/models/stay_model.dart';
 import '../../../stays/presentation/providers/stays_provider.dart';
+import '../../../transit/data/models/transit_route_model.dart';
+import '../../../transit/presentation/providers/transit_route_provider.dart';
 import '../providers/map_provider.dart';
 import '../widgets/tulip_map.dart';
 import '../widgets/stay_marker.dart';
@@ -55,12 +58,53 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     }
   }
 
+  /// Build polylines for all enabled transit layers
+  List<Polyline> _buildTransitPolylines(List<Stay> stays, Set<TransitRouteType> enabledLayers) {
+    if (enabledLayers.isEmpty) return [];
+
+    final polylines = <Polyline>[];
+
+    for (final stay in stays) {
+      for (final type in enabledLayers) {
+        final routesAsync = ref.watch(
+          transitRoutesProvider(TransitRouteQuery(stayId: stay.id, routeType: type)),
+        );
+
+        routesAsync.whenData((routes) {
+          for (final route in routes) {
+            final color = _parseColor(route.displayColor);
+            for (final path in route.paths) {
+              if (path.length >= 2) {
+                polylines.add(Polyline(
+                  points: path,
+                  color: color.withValues(alpha: route.lineOpacity),
+                  strokeWidth: route.lineWeight,
+                ));
+              }
+            }
+          }
+        });
+      }
+    }
+
+    return polylines;
+  }
+
+  Color _parseColor(String hexColor) {
+    final hex = hexColor.replaceFirst('#', '');
+    if (hex.length == 6) {
+      return Color(int.parse('FF$hex', radix: 16));
+    }
+    return TulipColors.brownLight;
+  }
+
   @override
   Widget build(BuildContext context) {
     final staysAsync = ref.watch(staysProvider);
     final mapStays = ref.watch(mapStaysProvider);
     final mapState = ref.watch(mapStateProvider);
     final selectedStay = ref.watch(selectedMapStayProvider);
+    final transitPolylines = _buildTransitPolylines(mapStays, mapState.enabledTransitLayers);
 
     return Scaffold(
       body: Stack(
@@ -94,6 +138,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 },
                 selectedStayId: mapState.selectedStayId,
               ),
+              polylines: transitPolylines,
               onTap: (_, __) {
                 // Tap on map clears selection
                 ref.read(mapStateProvider.notifier).clearSelection();
@@ -192,8 +237,12 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               right: 16,
               child: LayerTogglePanel(
                 enabledCategories: mapState.enabledPoiCategories,
+                enabledTransitLayers: mapState.enabledTransitLayers,
                 onCategoryToggled: (category) {
                   ref.read(mapStateProvider.notifier).togglePoiCategory(category);
+                },
+                onTransitLayerToggled: (type) {
+                  ref.read(mapStateProvider.notifier).toggleTransitLayer(type);
                 },
                 onClose: () {
                   setState(() {

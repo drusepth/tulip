@@ -2,16 +2,21 @@ import 'package:flutter/material.dart';
 import '../../../../shared/constants/tulip_colors.dart';
 import '../../../../shared/constants/tulip_text_styles.dart';
 import '../providers/map_provider.dart';
+import '../../../transit/data/models/transit_route_model.dart';
 
 class LayerTogglePanel extends StatelessWidget {
   final Set<String> enabledCategories;
+  final Set<TransitRouteType> enabledTransitLayers;
   final void Function(String category) onCategoryToggled;
+  final void Function(TransitRouteType type) onTransitLayerToggled;
   final VoidCallback onClose;
 
   const LayerTogglePanel({
     super.key,
     required this.enabledCategories,
+    required this.enabledTransitLayers,
     required this.onCategoryToggled,
+    required this.onTransitLayerToggled,
     required this.onClose,
   });
 
@@ -55,8 +60,30 @@ class LayerTogglePanel extends StatelessWidget {
             ),
           ),
           const Divider(height: 1),
-          // Categories
+          // POI Categories section
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+            child: Text(
+              'Places',
+              style: TulipTextStyles.caption.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
           ...PoiCategory.all.map((category) => _buildCategoryToggle(category)),
+          const SizedBox(height: 8),
+          const Divider(height: 1),
+          // Transit Layers section
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+            child: Text(
+              'Transit',
+              style: TulipTextStyles.caption.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          ...TransitRouteType.values.map((type) => _buildTransitToggle(type)),
           const SizedBox(height: 8),
         ],
       ),
@@ -105,6 +132,77 @@ class LayerTogglePanel extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildTransitToggle(TransitRouteType type) {
+    final isEnabled = enabledTransitLayers.contains(type);
+    final color = _getTransitColor(type);
+
+    return InkWell(
+      onTap: () => onTransitLayerToggled(type),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          children: [
+            Icon(
+              _getTransitIconData(type),
+              size: 20,
+              color: isEnabled ? color : TulipColors.brownLighter,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                type.displayName,
+                style: TulipTextStyles.body.copyWith(
+                  color: isEnabled ? TulipColors.brown : TulipColors.brownLighter,
+                ),
+              ),
+            ),
+            Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isEnabled ? color : Colors.transparent,
+                border: Border.all(
+                  color: isEnabled ? color : TulipColors.brownLighter,
+                  width: 2,
+                ),
+              ),
+              child: isEnabled
+                  ? const Icon(Icons.check, size: 14, color: Colors.white)
+                  : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData _getTransitIconData(TransitRouteType type) {
+    switch (type) {
+      case TransitRouteType.rails:
+        return Icons.subway;
+      case TransitRouteType.train:
+        return Icons.train;
+      case TransitRouteType.ferry:
+        return Icons.directions_boat;
+      case TransitRouteType.bus:
+        return Icons.directions_bus;
+    }
+  }
+
+  Color _getTransitColor(TransitRouteType type) {
+    switch (type) {
+      case TransitRouteType.rails:
+        return const Color(0xFFe11d48); // Rose
+      case TransitRouteType.train:
+        return const Color(0xFF1d4ed8); // Blue
+      case TransitRouteType.ferry:
+        return const Color(0xFF0284c7); // Cyan
+      case TransitRouteType.bus:
+        return const Color(0xFF65a30d); // Lime
+    }
   }
 
   IconData _getIconData(String iconName) {
