@@ -162,14 +162,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             right: 16,
             child: Row(
               children: [
-                // Search/filter button (placeholder)
-                MapControlButton(
-                  icon: Icons.search,
-                  onPressed: () {
-                    // TODO: Implement search
-                  },
-                  tooltip: 'Search',
-                ),
                 const Spacer(),
                 // Layer toggle
                 MapControlButton(
