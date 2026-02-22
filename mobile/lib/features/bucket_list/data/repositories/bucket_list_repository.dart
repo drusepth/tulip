@@ -62,17 +62,46 @@ class BucketListRepository {
     await _apiClient.delete(Endpoints.bucketListItem(id));
   }
 
-  /// Convert snake_case keys to camelCase
+  /// Convert snake_case keys to camelCase and handle type coercion
   Map<String, dynamic> _convertKeys(Map<String, dynamic> json) {
     return json.map((key, value) {
       final newKey = _toCamelCase(key);
-      final newValue = value is Map<String, dynamic>
-          ? _convertKeys(value)
-          : value is List
-              ? value.map((e) => e is Map<String, dynamic> ? _convertKeys(e) : e).toList()
-              : value;
+      dynamic newValue = value;
+
+      // Handle nested structures
+      if (value is Map<String, dynamic>) {
+        newValue = _convertKeys(value);
+      } else if (value is List) {
+        newValue = value.map((e) => e is Map<String, dynamic> ? _convertKeys(e) : e).toList();
+      }
+
+      // Handle type coercion for numeric fields that may come as strings
+      if (newKey == 'latitude' || newKey == 'longitude' || newKey == 'averageRating') {
+        newValue = _toDouble(value);
+      } else if (newKey == 'userRating' || newKey == 'placeId' || newKey == 'stayId' || newKey == 'id') {
+        newValue = _toInt(value);
+      }
+
       return MapEntry(newKey, newValue);
     });
+  }
+
+  /// Safely convert value to double
+  double? _toDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
+  }
+
+  /// Safely convert value to int
+  int? _toInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is double) return value.round();
+    if (value is String) return int.tryParse(value);
+    return null;
   }
 
   /// Convert camelCase to snake_case for API requests
