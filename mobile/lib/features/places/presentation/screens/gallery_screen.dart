@@ -6,6 +6,7 @@ import '../../../../shared/constants/tulip_colors.dart';
 import '../../../../shared/constants/tulip_text_styles.dart';
 import '../../data/models/gallery_item_model.dart';
 import '../providers/gallery_provider.dart';
+import '../widgets/category_filter_chips.dart';
 
 class GalleryScreen extends ConsumerStatefulWidget {
   final int stayId;
@@ -94,6 +95,8 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
       return _buildEmptyState();
     }
 
+    final filteredItems = state.filteredItems;
+
     return RefreshIndicator(
       onRefresh: () => ref.read(galleryProvider(widget.stayId).notifier).refresh(),
       color: TulipColors.sage,
@@ -103,7 +106,7 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
           // Header with count
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Row(
                 children: [
                   Icon(
@@ -113,7 +116,9 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '${state.totalCount} places nearby',
+                    state.hasActiveFilter
+                        ? 'Showing ${state.filteredCount} of ${state.totalCount} places'
+                        : '${state.totalCount} places nearby',
                     style: TulipTextStyles.label,
                   ),
                 ],
@@ -121,46 +126,105 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
             ),
           ),
 
-          // Grid of gallery items
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 0.75,
-              ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  if (index < state.items.length) {
-                    return _GalleryItemCard(
-                      item: state.items[index],
-                      stayId: widget.stayId,
-                      onTap: () => context.push('/places/${state.items[index].id}?stay_id=${widget.stayId}'),
-                    );
-                  }
-                  return null;
+          // Category filter chips
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: CategoryFilterChips(
+                selectedCategory: state.selectedCategory,
+                onCategorySelected: (category) {
+                  ref.read(galleryProvider(widget.stayId).notifier).selectCategory(category);
                 },
-                childCount: state.items.length,
               ),
             ),
           ),
 
-          // Loading indicator for pagination
-          if (state.isLoadingMore)
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.all(24),
-                child: Center(
-                  child: CircularProgressIndicator(color: TulipColors.sage),
+          // Empty filter results state
+          if (filteredItems.isEmpty && state.hasActiveFilter)
+            SliverFillRemaining(
+              child: _buildEmptyFilterState(state.selectedCategory!),
+            )
+          else ...[
+            // Grid of gallery items
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  childAspectRatio: 0.75,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    if (index < filteredItems.length) {
+                      return _GalleryItemCard(
+                        item: filteredItems[index],
+                        stayId: widget.stayId,
+                        onTap: () => context.push('/places/${filteredItems[index].id}?stay_id=${widget.stayId}'),
+                      );
+                    }
+                    return null;
+                  },
+                  childCount: filteredItems.length,
                 ),
               ),
             ),
 
-          // Bottom padding
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 32),
+            // Loading indicator for pagination
+            if (state.isLoadingMore)
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Center(
+                    child: CircularProgressIndicator(color: TulipColors.sage),
+                  ),
+                ),
+              ),
+
+            // Bottom padding
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 32),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyFilterState(String category) {
+    // Capitalize the category name for display
+    final categoryDisplay = category[0].toUpperCase() + category.substring(1);
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.filter_list_off,
+            size: 64,
+            color: TulipColors.brownLighter,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No $categoryDisplay places found',
+            style: TulipTextStyles.heading3,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Try selecting a different category',
+            style: TulipTextStyles.bodySmall,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          TextButton(
+            onPressed: () {
+              ref.read(galleryProvider(widget.stayId).notifier).selectCategory(null);
+            },
+            child: Text(
+              'Show all places',
+              style: TulipTextStyles.label.copyWith(color: TulipColors.sage),
+            ),
           ),
         ],
       ),

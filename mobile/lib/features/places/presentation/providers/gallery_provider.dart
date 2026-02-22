@@ -14,6 +14,7 @@ class GalleryState {
   final int totalCount;
   final bool hasMore;
   final bool isLoadingMore;
+  final String? selectedCategory;
 
   const GalleryState({
     this.items = const [],
@@ -22,7 +23,41 @@ class GalleryState {
     this.totalCount = 0,
     this.hasMore = true,
     this.isLoadingMore = false,
+    this.selectedCategory,
   });
+
+  /// Returns items filtered by selected category (null = all)
+  List<GalleryItem> get filteredItems {
+    if (selectedCategory == null) return items;
+    return items.where((item) => _matchesCategory(item.category, selectedCategory!)).toList();
+  }
+
+  /// Returns count of filtered items
+  int get filteredCount => filteredItems.length;
+
+  /// Check if a filter is currently active
+  bool get hasActiveFilter => selectedCategory != null;
+
+  /// Helper to match category with some flexibility for plurals/variants
+  static bool _matchesCategory(String itemCategory, String filterCategory) {
+    final normalized = itemCategory.toLowerCase();
+    final filter = filterCategory.toLowerCase();
+
+    // Handle common category variations
+    if (filter == 'food') {
+      return normalized == 'food' ||
+             normalized == 'restaurant' ||
+             normalized == 'restaurants';
+    }
+    if (filter == 'gym') {
+      return normalized == 'gym' || normalized == 'gyms';
+    }
+    if (filter == 'parks') {
+      return normalized == 'park' || normalized == 'parks';
+    }
+
+    return normalized == filter || normalized == '${filter}s';
+  }
 
   GalleryState copyWith({
     List<GalleryItem>? items,
@@ -31,6 +66,8 @@ class GalleryState {
     int? totalCount,
     bool? hasMore,
     bool? isLoadingMore,
+    String? selectedCategory,
+    bool clearCategory = false,
   }) {
     return GalleryState(
       items: items ?? this.items,
@@ -39,6 +76,7 @@ class GalleryState {
       totalCount: totalCount ?? this.totalCount,
       hasMore: hasMore ?? this.hasMore,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      selectedCategory: clearCategory ? null : (selectedCategory ?? this.selectedCategory),
     );
   }
 }
@@ -146,5 +184,16 @@ class GalleryNotifier extends FamilyAsyncNotifier<GalleryState, int> {
     }).toList();
 
     state = AsyncValue.data(current.copyWith(items: updatedItems));
+  }
+
+  /// Select a category filter (null = show all)
+  void selectCategory(String? category) {
+    final current = state.valueOrNull;
+    if (current == null) return;
+
+    state = AsyncValue.data(current.copyWith(
+      selectedCategory: category,
+      clearCategory: category == null,
+    ));
   }
 }
