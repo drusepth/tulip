@@ -51,6 +51,15 @@ gem "httparty"
 # User authentication
 gem "devise"
 
+# API authentication with devise (token-based)
+gem "devise-api", github: "nejdetkadir/devise-api", branch: "main"
+
+# CORS for mobile app API access
+gem "rack-cors"
+
+# Rate limiting for API
+gem "rack-attack"
+
 group :development, :test do
   # Use sqlite3 for development and test
   gem "sqlite3", ">= 2.1"
