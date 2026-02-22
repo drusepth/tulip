@@ -86,38 +86,54 @@ class _CountdownHeroState extends State<CountdownHero> {
     final hours = _timeUntilTrip.inHours.remainder(24);
     final minutes = _timeUntilTrip.inMinutes.remainder(60);
 
+    // Use darker text on lighter background for better readability
+    const textColor = Color(0xFF5D4037); // Warm brown
+    const textColorLight = Color(0xFF8D6E63); // Lighter brown
+
     return GestureDetector(
       onTap: () => context.push('/stays/${widget.nextTrip!.id}'),
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              TulipColors.coral,
-              TulipColors.rose,
+              const Color(0xFFFDF0E8), // Warm cream
+              const Color(0xFFF5E1D8), // Soft peach
             ],
           ),
           borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: TulipColors.coral.withValues(alpha: 0.3),
+            width: 1,
+          ),
           boxShadow: [
             BoxShadow(
-              color: TulipColors.coral.withValues(alpha: 0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+              color: TulipColors.coral.withValues(alpha: 0.15),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
         child: Column(
           children: [
-            // Subtle label at top
-            Text(
-              'Next Trip',
-              style: TulipTextStyles.caption.copyWith(
-                color: Colors.white.withValues(alpha: 0.8),
+            // Subtle label at top with accent color
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: TulipColors.coral.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                'Next Trip',
+                style: TulipTextStyles.caption.copyWith(
+                  color: TulipColors.coralDark,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
             // Prominent destination with icon
             Row(
@@ -125,84 +141,91 @@ class _CountdownHeroState extends State<CountdownHero> {
               children: [
                 Icon(
                   Icons.flight_takeoff,
-                  size: 20,
-                  color: Colors.white,
+                  size: 22,
+                  color: TulipColors.coral,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 10),
                 Flexible(
                   child: Text(
                     widget.nextTrip!.location,
                     style: TulipTextStyles.heading1.copyWith(
-                      fontSize: 28,
-                      color: Colors.white,
+                      fontSize: 26,
+                      color: textColor,
+                      fontWeight: FontWeight.w600,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
-            // Clean inline countdown without boxes
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '$days',
-                  style: TulipTextStyles.body.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+            // Countdown with better visual hierarchy
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.7),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildCountdownUnit(days.toString(), 'days', textColor, textColorLight),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(
+                      '·',
+                      style: TextStyle(
+                        color: textColorLight,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
                   ),
-                ),
-                Text(
-                  ' days',
-                  style: TulipTextStyles.body.copyWith(
-                    color: Colors.white.withValues(alpha: 0.85),
+                  _buildCountdownUnit(hours.toString(), 'hrs', textColor, textColorLight),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(
+                      '·',
+                      style: TextStyle(
+                        color: textColorLight,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
                   ),
-                ),
-                Text(
-                  ' · ',
-                  style: TulipTextStyles.body.copyWith(
-                    color: Colors.white.withValues(alpha: 0.6),
-                  ),
-                ),
-                Text(
-                  '$hours',
-                  style: TulipTextStyles.body.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                Text(
-                  ' hrs',
-                  style: TulipTextStyles.body.copyWith(
-                    color: Colors.white.withValues(alpha: 0.85),
-                  ),
-                ),
-                Text(
-                  ' · ',
-                  style: TulipTextStyles.body.copyWith(
-                    color: Colors.white.withValues(alpha: 0.6),
-                  ),
-                ),
-                Text(
-                  '$minutes',
-                  style: TulipTextStyles.body.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                Text(
-                  ' min',
-                  style: TulipTextStyles.body.copyWith(
-                    color: Colors.white.withValues(alpha: 0.85),
-                  ),
-                ),
-              ],
+                  _buildCountdownUnit(minutes.toString(), 'min', textColor, textColorLight),
+                ],
+              ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildCountdownUnit(String value, String label, Color valueColor, Color labelColor) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.baseline,
+      textBaseline: TextBaseline.alphabetic,
+      children: [
+        Text(
+          value,
+          style: TulipTextStyles.heading2.copyWith(
+            color: valueColor,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(width: 3),
+        Text(
+          label,
+          style: TulipTextStyles.bodySmall.copyWith(
+            color: labelColor,
+          ),
+        ),
+      ],
     );
   }
 
