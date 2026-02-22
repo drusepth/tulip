@@ -40,6 +40,16 @@ class BucketListItem < ApplicationRecord
     ratings.find_by(user: user)
   end
 
+  def average_rating
+    return nil if ratings.empty?
+    ratings.average(:rating)&.round(1)
+  end
+
+  # Alias for controller compatibility
+  def bucket_list_item_ratings
+    ratings
+  end
+
   private
 
   def set_title_from_address
