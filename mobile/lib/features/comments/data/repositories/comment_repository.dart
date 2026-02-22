@@ -43,17 +43,35 @@ class CommentRepository {
     await _client.delete('/api/v1/comments/$commentId');
   }
 
-  /// Convert snake_case keys to camelCase
+  /// Convert snake_case keys to camelCase and handle type coercion
   Map<String, dynamic> _convertKeys(Map<String, dynamic> json) {
     return json.map((key, value) {
       final newKey = _toCamelCase(key);
-      final newValue = value is Map<String, dynamic>
-          ? _convertKeys(value)
-          : value is List
-              ? value.map((e) => e is Map<String, dynamic> ? _convertKeys(e) : e).toList()
-              : value;
+      dynamic newValue = value;
+
+      // Handle nested structures
+      if (value is Map<String, dynamic>) {
+        newValue = _convertKeys(value);
+      } else if (value is List) {
+        newValue = value.map((e) => e is Map<String, dynamic> ? _convertKeys(e) : e).toList();
+      }
+
+      // Handle type coercion for numeric fields that may come as strings
+      if (newKey == 'id' || newKey == 'parentId' || newKey == 'userId') {
+        newValue = _toInt(value);
+      }
+
       return MapEntry(newKey, newValue);
     });
+  }
+
+  /// Safely convert value to int
+  int? _toInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is double) return value.round();
+    if (value is String) return int.tryParse(value);
+    return null;
   }
 
   /// Convert camelCase to snake_case for API requests
