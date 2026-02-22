@@ -8,6 +8,7 @@ part of 'highlights_model.dart';
 
 _$HighlightsDataImpl _$$HighlightsDataImplFromJson(Map<String, dynamic> json) =>
     _$HighlightsDataImpl(
+      currentUserId: (json['currentUserId'] as num).toInt(),
       stay: StaySummary.fromJson(json['stay'] as Map<String, dynamic>),
       stats: HighlightsStats.fromJson(json['stats'] as Map<String, dynamic>),
       categories: (json['categories'] as List<dynamic>)
@@ -26,6 +27,7 @@ _$HighlightsDataImpl _$$HighlightsDataImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$HighlightsDataImplToJson(
   _$HighlightsDataImpl instance,
 ) => <String, dynamic>{
+  'currentUserId': instance.currentUserId,
   'stay': instance.stay,
   'stats': instance.stats,
   'categories': instance.categories,

@@ -124,7 +124,7 @@ class HighlightsScreen extends ConsumerWidget {
             ],
 
             // Items by category
-            _buildItemsByCategory(filteredItems),
+            _buildItemsByCategory(context, ref, highlights.currentUserId, filteredItems),
             const SizedBox(height: 32),
           ],
         ),
@@ -164,7 +164,7 @@ class HighlightsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildItemsByCategory(Map<String, dynamic> itemsByCategory) {
+  Widget _buildItemsByCategory(BuildContext context, WidgetRef ref, int currentUserId, Map<String, dynamic> itemsByCategory) {
     if (itemsByCategory.isEmpty) {
       return Center(
         child: Padding(
@@ -193,7 +193,13 @@ class HighlightsScreen extends ConsumerWidget {
             const SizedBox(height: 8),
             ...items.map((item) => Padding(
                   padding: const EdgeInsets.only(bottom: 12),
-                  child: HighlightItemCard(item: item),
+                  child: HighlightItemCard(
+                    item: item,
+                    currentUserId: currentUserId,
+                    onRate: (itemId, rating) async {
+                      await rateHighlightItem(ref, stayId, itemId, rating);
+                    },
+                  ),
                 )),
             const SizedBox(height: 12),
           ],

@@ -9,10 +9,14 @@ import '../../data/models/highlights_model.dart';
 /// Card displaying a completed bucket list item with ratings
 class HighlightItemCard extends StatelessWidget {
   final HighlightItem item;
+  final int? currentUserId;
+  final void Function(int itemId, int rating)? onRate;
 
   const HighlightItemCard({
     super.key,
     required this.item,
+    this.currentUserId,
+    this.onRate,
   });
 
   @override
@@ -89,11 +93,11 @@ class HighlightItemCard extends StatelessWidget {
           ],
 
           // Individual ratings
-          if (item.ratings.isNotEmpty) ...[
+          if (item.ratings.isNotEmpty || currentUserId != null) ...[
             const SizedBox(height: 12),
             const Divider(height: 1),
             const SizedBox(height: 12),
-            _buildRatingsList(),
+            _buildRatingsList(context),
           ],
         ],
       ),
@@ -128,7 +132,12 @@ class HighlightItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildRatingsList() {
+  Widget _buildRatingsList(BuildContext context) {
+    // Check if current user has already rated
+    final currentUserRating = currentUserId != null
+        ? item.ratings.where((r) => r.userId == currentUserId).firstOrNull
+        : null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -139,12 +148,94 @@ class HighlightItemCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        ...item.ratings.map((rating) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: _buildRatingRow(rating),
-            )),
+        // Show current user's rating row first (or prompt to rate)
+        if (currentUserId != null) ...[
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: _buildCurrentUserRatingRow(context, currentUserRating),
+          ),
+        ],
+        // Show other users' ratings
+        ...item.ratings
+            .where((rating) => rating.userId != currentUserId)
+            .map((rating) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: _buildRatingRow(rating),
+                )),
       ],
     );
+  }
+
+  Widget _buildCurrentUserRatingRow(BuildContext context, ItemRating? existingRating) {
+    final hasRated = existingRating != null;
+
+    return GestureDetector(
+      onTap: () => _showRatingDialog(context, existingRating?.rating ?? 0),
+      child: Row(
+        children: [
+          // "You" indicator
+          CircleAvatar(
+            radius: 14,
+            backgroundColor: TulipColors.sageLight,
+            child: Icon(
+              Icons.person,
+              size: 16,
+              color: TulipColors.sage,
+            ),
+          ),
+          const SizedBox(width: 10),
+          // Label
+          Expanded(
+            child: Text(
+              'You',
+              style: TulipTextStyles.bodySmall.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          // Star rating or tap to rate prompt
+          if (hasRated)
+            RatingStars(
+              rating: existingRating.rating,
+              size: 16,
+            )
+          else
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.star_border,
+                  size: 16,
+                  color: TulipColors.coral,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  'Tap to rate',
+                  style: TulipTextStyles.caption.copyWith(
+                    color: TulipColors.coral,
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _showRatingDialog(BuildContext context, int initialRating) async {
+    if (onRate == null) return;
+
+    final rating = await showRatingDialog(
+      context,
+      title: 'Rate "${item.title}"',
+      initialRating: initialRating,
+    );
+
+    if (rating != null) {
+      onRate!(item.id, rating);
+    }
   }
 
   Widget _buildRatingRow(ItemRating rating) {

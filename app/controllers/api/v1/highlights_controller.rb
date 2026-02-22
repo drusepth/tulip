@@ -24,6 +24,7 @@ module Api
         end.select { |cs| cs[:stats].present? }
 
         render json: {
+          current_user_id: current_user.id,
           stay: stay_summary_json(@stay),
           stats: {
             trip_average: trip_average,

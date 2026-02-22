@@ -8,6 +8,7 @@ class HighlightsData with _$HighlightsData {
   const HighlightsData._();
 
   const factory HighlightsData({
+    @Default(0) int currentUserId,
     required StaySummary stay,
     required HighlightsStats stats,
     required List<String> categories,

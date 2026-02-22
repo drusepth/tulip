@@ -43,7 +43,7 @@ class HighlightsRepository {
       // Handle type coercion for numeric fields
       if (newKey == 'tripAverage' || newKey == 'average' || newKey == 'averageRating') {
         newValue = _toDouble(value);
-      } else if (newKey == 'count' || newKey == 'rating' || newKey == 'userId' || newKey == 'id') {
+      } else if (newKey == 'count' || newKey == 'rating' || newKey == 'userId' || newKey == 'id' || newKey == 'currentUserId') {
         newValue = _toInt(value);
       } else if (newKey == 'distribution') {
         newValue = (value as List?)?.map((e) => _toInt(e) ?? 0).toList() ?? <int>[];

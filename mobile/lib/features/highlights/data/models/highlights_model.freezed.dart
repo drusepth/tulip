@@ -21,6 +21,7 @@ HighlightsData _$HighlightsDataFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$HighlightsData {
+  int get currentUserId => throw _privateConstructorUsedError;
   StaySummary get stay => throw _privateConstructorUsedError;
   HighlightsStats get stats => throw _privateConstructorUsedError;
   List<String> get categories => throw _privateConstructorUsedError;
@@ -45,6 +46,7 @@ abstract class $HighlightsDataCopyWith<$Res> {
   ) = _$HighlightsDataCopyWithImpl<$Res, HighlightsData>;
   @useResult
   $Res call({
+    int currentUserId,
     StaySummary stay,
     HighlightsStats stats,
     List<String> categories,
@@ -70,6 +72,7 @@ class _$HighlightsDataCopyWithImpl<$Res, $Val extends HighlightsData>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? currentUserId = null,
     Object? stay = null,
     Object? stats = null,
     Object? categories = null,
@@ -77,6 +80,10 @@ class _$HighlightsDataCopyWithImpl<$Res, $Val extends HighlightsData>
   }) {
     return _then(
       _value.copyWith(
+            currentUserId: null == currentUserId
+                ? _value.currentUserId
+                : currentUserId // ignore: cast_nullable_to_non_nullable
+                      as int,
             stay: null == stay
                 ? _value.stay
                 : stay // ignore: cast_nullable_to_non_nullable
@@ -129,6 +136,7 @@ abstract class _$$HighlightsDataImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
+    int currentUserId,
     StaySummary stay,
     HighlightsStats stats,
     List<String> categories,
@@ -155,6 +163,7 @@ class __$$HighlightsDataImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? currentUserId = null,
     Object? stay = null,
     Object? stats = null,
     Object? categories = null,
@@ -162,6 +171,10 @@ class __$$HighlightsDataImplCopyWithImpl<$Res>
   }) {
     return _then(
       _$HighlightsDataImpl(
+        currentUserId: null == currentUserId
+            ? _value.currentUserId
+            : currentUserId // ignore: cast_nullable_to_non_nullable
+                  as int,
         stay: null == stay
             ? _value.stay
             : stay // ignore: cast_nullable_to_non_nullable
@@ -187,6 +200,7 @@ class __$$HighlightsDataImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$HighlightsDataImpl extends _HighlightsData {
   const _$HighlightsDataImpl({
+    required this.currentUserId,
     required this.stay,
     required this.stats,
     required final List<String> categories,
@@ -198,6 +212,8 @@ class _$HighlightsDataImpl extends _HighlightsData {
   factory _$HighlightsDataImpl.fromJson(Map<String, dynamic> json) =>
       _$$HighlightsDataImplFromJson(json);
 
+  @override
+  final int currentUserId;
   @override
   final StaySummary stay;
   @override
@@ -220,7 +236,7 @@ class _$HighlightsDataImpl extends _HighlightsData {
 
   @override
   String toString() {
-    return 'HighlightsData(stay: $stay, stats: $stats, categories: $categories, itemsByCategory: $itemsByCategory)';
+    return 'HighlightsData(currentUserId: $currentUserId, stay: $stay, stats: $stats, categories: $categories, itemsByCategory: $itemsByCategory)';
   }
 
   @override
@@ -228,6 +244,8 @@ class _$HighlightsDataImpl extends _HighlightsData {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$HighlightsDataImpl &&
+            (identical(other.currentUserId, currentUserId) ||
+                other.currentUserId == currentUserId) &&
             (identical(other.stay, stay) || other.stay == stay) &&
             (identical(other.stats, stats) || other.stats == stats) &&
             const DeepCollectionEquality().equals(
@@ -244,6 +262,7 @@ class _$HighlightsDataImpl extends _HighlightsData {
   @override
   int get hashCode => Object.hash(
     runtimeType,
+    currentUserId,
     stay,
     stats,
     const DeepCollectionEquality().hash(_categories),
@@ -269,6 +288,7 @@ class _$HighlightsDataImpl extends _HighlightsData {
 
 abstract class _HighlightsData extends HighlightsData {
   const factory _HighlightsData({
+    required final int currentUserId,
     required final StaySummary stay,
     required final HighlightsStats stats,
     required final List<String> categories,
@@ -279,6 +299,8 @@ abstract class _HighlightsData extends HighlightsData {
   factory _HighlightsData.fromJson(Map<String, dynamic> json) =
       _$HighlightsDataImpl.fromJson;
 
+  @override
+  int get currentUserId;
   @override
   StaySummary get stay;
   @override
