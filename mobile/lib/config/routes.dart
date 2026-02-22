@@ -13,6 +13,7 @@ import '../features/timeline/presentation/screens/timeline_screen.dart';
 import '../features/profile/presentation/screens/profile_screen.dart';
 import '../features/notifications/presentation/screens/notifications_screen.dart';
 import '../features/collaboration/presentation/screens/invite_accept_screen.dart';
+import '../features/places/presentation/screens/place_detail_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -129,6 +130,20 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final token = state.pathParameters['token']!;
           return InviteAcceptScreen(token: token);
+        },
+      ),
+
+      // Place details
+      GoRoute(
+        path: '/places/:id',
+        name: 'place-detail',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          final stayId = state.uri.queryParameters['stay_id'];
+          return PlaceDetailScreen(
+            placeId: id,
+            stayId: stayId != null ? int.tryParse(stayId) : null,
+          );
         },
       ),
     ],
