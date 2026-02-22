@@ -84,8 +84,7 @@ class ApiClient {
     try {
       final response = await _dio.post(
         Endpoints.refresh,
-        data: {'refresh_token': refreshToken},
-        options: Options(headers: {'Authorization': null}),
+        options: Options(headers: {'Authorization': 'Bearer $refreshToken'}),
       );
 
       if (response.statusCode == 200) {

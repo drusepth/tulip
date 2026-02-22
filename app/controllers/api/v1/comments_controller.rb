@@ -6,7 +6,7 @@ module Api
       before_action :require_comment_author, only: [ :update, :destroy ]
 
       def index
-        @comments = @stay.comments.includes(:user).order(:created_at)
+        @comments = @stay.comments.where(bucket_list_item_rating_id: nil).includes(:user).order(:created_at)
         render json: @comments.map { |comment| comment_json(comment) }
       end
 
@@ -59,11 +59,11 @@ module Api
       def comment_json(comment)
         {
           id: comment.id,
-          body: comment.body,
+          body: comment.body || "",
           parent_id: comment.parent_id,
           user_id: comment.user_id,
-          user_name: comment.user.name,
-          user_email: comment.user.email,
+          user_name: comment.user&.name || "Unknown",
+          user_email: comment.user&.email || "",
           editable: comment.editable_by?(current_user),
           created_at: comment.created_at,
           updated_at: comment.updated_at
