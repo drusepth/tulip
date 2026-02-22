@@ -13,6 +13,7 @@ class TulipMap extends StatelessWidget {
   final List<Widget> children;
   final PositionCallback? onPositionChanged;
   final void Function(TapPosition, LatLng)? onTap;
+  final VoidCallback? onMapReady;
   final bool interactionOptions;
 
   const TulipMap({
@@ -25,6 +26,7 @@ class TulipMap extends StatelessWidget {
     this.children = const [],
     this.onPositionChanged,
     this.onTap,
+    this.onMapReady,
     this.interactionOptions = true,
   });
 
@@ -42,6 +44,7 @@ class TulipMap extends StatelessWidget {
         maxZoom: 18,
         onPositionChanged: onPositionChanged,
         onTap: onTap,
+        onMapReady: onMapReady,
         interactionOptions: interactionOptions
             ? const InteractionOptions(
                 flags: InteractiveFlag.all,

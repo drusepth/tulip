@@ -24,13 +24,21 @@ class MapScreen extends ConsumerStatefulWidget {
 class _MapScreenState extends ConsumerState<MapScreen> {
   final MapController _mapController = MapController();
   bool _showLayerPanel = false;
+  bool _mapReady = false;
 
   @override
   void initState() {
     super.initState();
-    // Fit to stays after first frame
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fitToStays();
+  }
+
+  void _onMapReady() {
+    if (_mapReady) return;
+    _mapReady = true;
+    // Small delay to ensure the map is fully rendered
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (mounted) {
+        _fitToStays();
+      }
     });
   }
 
@@ -139,6 +147,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 selectedStayId: mapState.selectedStayId,
               ),
               polylines: transitPolylines,
+              onMapReady: _onMapReady,
               onTap: (_, __) {
                 // Tap on map clears selection
                 ref.read(mapStateProvider.notifier).clearSelection();
