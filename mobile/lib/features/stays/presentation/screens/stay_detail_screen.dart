@@ -14,6 +14,7 @@ import '../../../bucket_list/presentation/providers/bucket_list_provider.dart';
 import '../../../bucket_list/presentation/widgets/bucket_list_item_tile.dart';
 import '../../../bucket_list/data/models/bucket_list_item_model.dart';
 import '../../../weather/presentation/widgets/weather_card.dart';
+import '../../../comments/presentation/widgets/comment_thread.dart';
 
 class StayDetailScreen extends ConsumerStatefulWidget {
   final int stayId;
@@ -435,8 +436,11 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
           const SizedBox(height: 16),
 
           // Collaboration info
-          if (stay.collaboratorCount > 0)
-            CozyCard(
+          GestureDetector(
+            onTap: () => context.push(
+              '/stays/${stay.id}/collaborators?title=${Uri.encodeComponent(stay.title)}&is_owner=${stay.isOwner}',
+            ),
+            child: CozyCard(
               child: Row(
                 children: [
                   Icon(
@@ -445,20 +449,32 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
                     color: TulipColors.brownLight,
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    '${stay.collaboratorCount} collaborator${stay.collaboratorCount == 1 ? '' : 's'}',
-                    style: TulipTextStyles.body,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Collaborators', style: TulipTextStyles.label),
+                        if (stay.collaboratorCount > 0)
+                          Text(
+                            '${stay.collaboratorCount} ${stay.collaboratorCount == 1 ? 'person' : 'people'} sharing',
+                            style: TulipTextStyles.caption,
+                          )
+                        else
+                          Text(
+                            'Invite others to plan together',
+                            style: TulipTextStyles.caption,
+                          ),
+                      ],
+                    ),
                   ),
-                  const Spacer(),
-                  TextButton(
-                    onPressed: () {
-                      // TODO: Show collaborators screen
-                    },
-                    child: const Text('Manage'),
+                  Icon(
+                    Icons.chevron_right,
+                    color: TulipColors.brownLight,
                   ),
                 ],
               ),
             ),
+          ),
           const SizedBox(height: 32),
         ],
       ),
@@ -642,6 +658,9 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
                             .read(bucketListProvider(stay.id).notifier)
                             .deleteItem(item.id)
                         : null,
+                    onRate: (rating) => ref
+                        .read(bucketListProvider(stay.id).notifier)
+                        .rateItem(item.id, rating),
                   ),
                 )),
           ],
@@ -732,28 +751,7 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
   }
 
   Widget _buildCommentsTab(Stay stay) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.chat_bubble_outline,
-            size: 64,
-            color: TulipColors.brownLighter,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Comments',
-            style: TulipTextStyles.heading3,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Coming soon',
-            style: TulipTextStyles.bodySmall,
-          ),
-        ],
-      ),
-    );
+    return CommentThread(stayId: stay.id);
   }
 
   void _showMoreOptions(Stay stay) {

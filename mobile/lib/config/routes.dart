@@ -13,7 +13,9 @@ import '../features/timeline/presentation/screens/timeline_screen.dart';
 import '../features/profile/presentation/screens/profile_screen.dart';
 import '../features/notifications/presentation/screens/notifications_screen.dart';
 import '../features/collaboration/presentation/screens/invite_accept_screen.dart';
+import '../features/collaboration/presentation/screens/collaborators_screen.dart';
 import '../features/places/presentation/screens/place_detail_screen.dart';
+import '../features/places/presentation/screens/gallery_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -113,6 +115,29 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final id = int.parse(state.pathParameters['id']!);
           return StayFormScreen(stayId: id);
+        },
+      ),
+      GoRoute(
+        path: '/stays/:id/gallery',
+        name: 'stay-gallery',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          final stayTitle = state.uri.queryParameters['title'];
+          return GalleryScreen(stayId: id, stayTitle: stayTitle);
+        },
+      ),
+      GoRoute(
+        path: '/stays/:id/collaborators',
+        name: 'stay-collaborators',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          final stayTitle = state.uri.queryParameters['title'] ?? 'Stay';
+          final isOwner = state.uri.queryParameters['is_owner'] == 'true';
+          return CollaboratorsScreen(
+            stayId: id,
+            stayTitle: stayTitle,
+            isOwner: isOwner,
+          );
         },
       ),
 

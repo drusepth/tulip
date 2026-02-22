@@ -7,10 +7,13 @@ import '../../../../shared/constants/tulip_colors.dart';
 import '../../../../shared/constants/tulip_text_styles.dart';
 import '../../../../shared/widgets/cozy_card.dart';
 import '../../../map/presentation/widgets/tulip_map.dart';
+import '../../../bucket_list/presentation/providers/bucket_list_provider.dart';
+import '../../../bucket_list/data/models/bucket_list_item_model.dart';
 import '../../data/models/poi_model.dart';
 import '../providers/poi_provider.dart';
+import '../providers/gallery_provider.dart';
 
-class PlaceDetailScreen extends ConsumerWidget {
+class PlaceDetailScreen extends ConsumerStatefulWidget {
   final int placeId;
   final int? stayId; // Optional: if viewing from a stay context
 
@@ -21,8 +24,15 @@ class PlaceDetailScreen extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final placeAsync = ref.watch(placeDetailProvider(placeId));
+  ConsumerState<PlaceDetailScreen> createState() => _PlaceDetailScreenState();
+}
+
+class _PlaceDetailScreenState extends ConsumerState<PlaceDetailScreen> {
+  bool _isAddingToBucketList = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final placeAsync = ref.watch(placeDetailProvider(widget.placeId));
 
     return Scaffold(
       body: placeAsync.when(
@@ -30,7 +40,7 @@ class PlaceDetailScreen extends ConsumerWidget {
           child: CircularProgressIndicator(color: TulipColors.sage),
         ),
         error: (error, stack) => _buildErrorState(context, error),
-        data: (place) => _buildPlaceDetail(context, ref, place),
+        data: (place) => _buildPlaceDetail(context, place),
       ),
     );
   }
@@ -62,7 +72,59 @@ class PlaceDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPlaceDetail(BuildContext context, WidgetRef ref, Place place) {
+  Future<void> _addToBucketList(Place place) async {
+    if (widget.stayId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Cannot add to bucket list without a stay context')),
+      );
+      return;
+    }
+
+    setState(() => _isAddingToBucketList = true);
+
+    try {
+      await ref.read(bucketListProvider(widget.stayId!).notifier).createItem(
+        BucketListItemRequest(
+          title: place.name,
+          category: place.category,
+          address: place.address,
+          latitude: place.latitude,
+          longitude: place.longitude,
+          placeId: place.id,
+        ),
+      );
+
+      // Update the gallery provider to reflect the change
+      ref.read(galleryProvider(widget.stayId!).notifier).updateItemBucketList(place.id, true);
+
+      // Refresh place detail to update the UI
+      ref.invalidate(placeDetailProvider(widget.placeId));
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Added "${place.name}" to bucket list'),
+            backgroundColor: TulipColors.sage,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to add to bucket list: $e'),
+            backgroundColor: TulipColors.roseDark,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isAddingToBucketList = false);
+      }
+    }
+  }
+
+  Widget _buildPlaceDetail(BuildContext context, Place place) {
     return CustomScrollView(
       slivers: [
         // App bar with photo
@@ -226,12 +288,19 @@ class PlaceDetailScreen extends ConsumerWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: _ActionButton(
-                        icon: place.inBucketList ? Icons.check_circle : Icons.add_circle_outline,
-                        label: place.inBucketList ? 'In Bucket List' : 'Add to List',
+                        icon: _isAddingToBucketList
+                            ? Icons.hourglass_empty
+                            : place.inBucketList
+                                ? Icons.check_circle
+                                : Icons.add_circle_outline,
+                        label: _isAddingToBucketList
+                            ? 'Adding...'
+                            : place.inBucketList
+                                ? 'In Bucket List'
+                                : 'Add to List',
                         color: place.inBucketList ? TulipColors.sage : null,
-                        onTap: () {
-                          // TODO: Add to bucket list
-                        },
+                        enabled: !place.inBucketList && !_isAddingToBucketList && widget.stayId != null,
+                        onTap: () => _addToBucketList(place),
                       ),
                     ),
                   ],
@@ -280,35 +349,40 @@ class _ActionButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final Color? color;
+  final bool enabled;
   final VoidCallback onTap;
 
   const _ActionButton({
     required this.icon,
     required this.label,
     this.color,
+    this.enabled = true,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final effectiveColor = enabled ? (color ?? TulipColors.brownLight) : TulipColors.brownLighter;
+    final effectiveTextColor = enabled ? (color ?? TulipColors.brown) : TulipColors.brownLighter;
+
     return GestureDetector(
-      onTap: onTap,
+      onTap: enabled ? onTap : null,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: enabled ? Colors.white : TulipColors.taupeLight.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: TulipColors.taupeLight),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 20, color: color ?? TulipColors.brownLight),
+            Icon(icon, size: 20, color: effectiveColor),
             const SizedBox(width: 8),
             Text(
               label,
               style: TulipTextStyles.label.copyWith(
-                color: color ?? TulipColors.brown,
+                color: effectiveTextColor,
               ),
             ),
           ],

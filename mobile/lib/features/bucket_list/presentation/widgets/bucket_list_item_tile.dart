@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import '../../../../shared/constants/tulip_colors.dart';
 import '../../../../shared/constants/tulip_text_styles.dart';
 import '../../data/models/bucket_list_item_model.dart';
+import 'rating_stars.dart';
 
 class BucketListItemTile extends StatelessWidget {
   final BucketListItem item;
   final VoidCallback? onTap;
   final VoidCallback? onToggle;
   final VoidCallback? onDelete;
+  final ValueChanged<int>? onRate;
 
   const BucketListItemTile({
     super.key,
@@ -15,6 +17,7 @@ class BucketListItemTile extends StatelessWidget {
     this.onTap,
     this.onToggle,
     this.onDelete,
+    this.onRate,
   });
 
   @override
@@ -82,9 +85,10 @@ class BucketListItemTile extends StatelessWidget {
                         style: TulipTextStyles.caption,
                       ),
                     ],
-                    if (item.hasRating) ...[
+                    // Show rating or rate button for completed items
+                    if (item.completed) ...[
                       const SizedBox(height: 4),
-                      _buildRatingStars(),
+                      _buildRatingSection(context),
                     ],
                   ],
                 ),
@@ -103,19 +107,68 @@ class BucketListItemTile extends StatelessWidget {
     );
   }
 
-  Widget _buildRatingStars() {
-    final rating = item.averageRating ?? 0;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(5, (index) {
-        final filled = index < rating.round();
-        return Icon(
-          filled ? Icons.star : Icons.star_border,
-          size: 14,
-          color: filled ? TulipColors.coral : TulipColors.brownLighter,
-        );
-      }),
+  Widget _buildRatingSection(BuildContext context) {
+    final userRating = item.userRating ?? 0;
+    final averageRating = item.averageRating ?? 0;
+
+    if (userRating > 0) {
+      // User has already rated - show their rating
+      return GestureDetector(
+        onTap: () => _showRatingDialog(context),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RatingStars(
+              rating: userRating,
+              size: 14,
+            ),
+            if (averageRating > 0 && averageRating != userRating.toDouble()) ...[
+              const SizedBox(width: 8),
+              Text(
+                'Avg: ${averageRating.toStringAsFixed(1)}',
+                style: TulipTextStyles.caption,
+              ),
+            ],
+          ],
+        ),
+      );
+    }
+
+    // User hasn't rated yet - show prompt
+    return GestureDetector(
+      onTap: () => _showRatingDialog(context),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.star_border,
+            size: 14,
+            color: TulipColors.coral,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            'Rate it',
+            style: TulipTextStyles.caption.copyWith(
+              color: TulipColors.coral,
+            ),
+          ),
+        ],
+      ),
     );
+  }
+
+  void _showRatingDialog(BuildContext context) async {
+    if (onRate == null) return;
+
+    final rating = await showRatingDialog(
+      context,
+      title: 'Rate "${item.title}"',
+      initialRating: item.userRating ?? 0,
+    );
+
+    if (rating != null) {
+      onRate!(rating);
+    }
   }
 }
 
