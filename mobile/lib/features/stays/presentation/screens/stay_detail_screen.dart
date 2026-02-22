@@ -7,11 +7,13 @@ import '../../../../shared/constants/tulip_text_styles.dart';
 import '../../../../shared/widgets/status_badge.dart';
 import '../../../../shared/widgets/loading_shimmer.dart';
 import '../../../../shared/widgets/cozy_card.dart';
+import '../../../../shared/widgets/cottage_segmented_tabs.dart';
 import '../providers/stays_provider.dart';
 import '../../data/models/stay_model.dart';
 import '../../../bucket_list/presentation/providers/bucket_list_provider.dart';
 import '../../../bucket_list/presentation/widgets/bucket_list_item_tile.dart';
 import '../../../bucket_list/data/models/bucket_list_item_model.dart';
+import '../../../weather/presentation/widgets/weather_card.dart';
 
 class StayDetailScreen extends ConsumerStatefulWidget {
   final int stayId;
@@ -153,22 +155,9 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
                       ),
                     )
                   : null,
-              bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(48),
-                child: Container(
-                  color: Colors.white,
-                  child: TabBar(
-                    controller: _tabController,
-                    labelColor: TulipColors.sage,
-                    unselectedLabelColor: TulipColors.brownLight,
-                    indicatorColor: TulipColors.sage,
-                    tabs: const [
-                      Tab(text: 'Overview'),
-                      Tab(text: 'Bucket List'),
-                      Tab(text: 'Comments'),
-                    ],
-                  ),
-                ),
+              bottom: CottageSegmentedTabs(
+                controller: _tabController,
+                labels: const ['Overview', 'Bucket List', 'Comments'],
               ),
             ),
           ];
@@ -296,6 +285,49 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
           // Weather section
           _buildWeatherSection(stay),
           const SizedBox(height: 16),
+
+          // Explore nearby places
+          if (stay.hasCoordinates)
+            GestureDetector(
+              onTap: () => context.push('/stays/${stay.id}/gallery?title=${Uri.encodeComponent(stay.title)}'),
+              child: CozyCard(
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: TulipColors.sageLight,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.explore_outlined,
+                        size: 24,
+                        color: TulipColors.sageDark,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Explore Nearby', style: TulipTextStyles.label),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Discover restaurants, cafes, and attractions',
+                            style: TulipTextStyles.caption,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right,
+                      color: TulipColors.brownLight,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          if (stay.hasCoordinates) const SizedBox(height: 16),
 
           // Price and booking info
           if (stay.priceTotalCents != null || stay.bookingUrl != null)
@@ -477,65 +509,7 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
         final weather = weatherData['weather'] as Map<String, dynamic>?;
         if (weather == null) return const SizedBox.shrink();
 
-        final low = weather['low'];
-        final high = weather['high'];
-        final conditions = weather['conditions'] as Map<String, dynamic>?;
-
-        return CozyCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.thermostat_outlined,
-                    size: 20,
-                    color: TulipColors.brownLight,
-                  ),
-                  const SizedBox(width: 8),
-                  Text('Expected Weather', style: TulipTextStyles.label),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  if (low != null && high != null) ...[
-                    Text(
-                      '${low.round()}\u00B0 - ${high.round()}\u00B0F',
-                      style: TulipTextStyles.heading3,
-                    ),
-                    const SizedBox(width: 16),
-                  ],
-                  if (conditions != null && conditions.isNotEmpty)
-                    Expanded(
-                      child: Wrap(
-                        spacing: 8,
-                        runSpacing: 4,
-                        children: conditions.entries.take(3).map((entry) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: TulipColors.lavenderLight,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              '${entry.key} (${entry.value}d)',
-                              style: TulipTextStyles.caption.copyWith(
-                                color: TulipColors.lavenderDark,
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                ],
-              ),
-            ],
-          ),
-        );
+        return WeatherCard(weatherData: weatherData);
       },
     );
   }
