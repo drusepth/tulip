@@ -83,8 +83,6 @@ class _CountdownHeroState extends State<CountdownHero> {
 
   Widget _buildCountdownHero() {
     final days = _timeUntilTrip.inDays;
-    final hours = _timeUntilTrip.inHours.remainder(24);
-    final minutes = _timeUntilTrip.inMinutes.remainder(60);
 
     // Use darker text on lighter background for better readability
     const textColor = Color(0xFF5D4037); // Warm brown
@@ -160,7 +158,7 @@ class _CountdownHeroState extends State<CountdownHero> {
             ),
             const SizedBox(height: 20),
 
-            // Countdown with better visual hierarchy
+            // Countdown - days only
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
@@ -171,31 +169,20 @@ class _CountdownHeroState extends State<CountdownHero> {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildCountdownUnit(days.toString(), 'days', textColor, textColorLight),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(
-                      '·',
-                      style: TextStyle(
-                        color: textColorLight,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w300,
-                      ),
+                  Text(
+                    '$days',
+                    style: TulipTextStyles.heading2.copyWith(
+                      color: textColor,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  _buildCountdownUnit(hours.toString(), 'hrs', textColor, textColorLight),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(
-                      '·',
-                      style: TextStyle(
-                        color: textColorLight,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w300,
-                      ),
+                  const SizedBox(width: 6),
+                  Text(
+                    days == 1 ? 'day away' : 'days away',
+                    style: TulipTextStyles.body.copyWith(
+                      color: textColorLight,
                     ),
                   ),
-                  _buildCountdownUnit(minutes.toString(), 'min', textColor, textColorLight),
                 ],
               ),
             ),
@@ -205,29 +192,6 @@ class _CountdownHeroState extends State<CountdownHero> {
     );
   }
 
-  Widget _buildCountdownUnit(String value, String label, Color valueColor, Color labelColor) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.baseline,
-      textBaseline: TextBaseline.alphabetic,
-      children: [
-        Text(
-          value,
-          style: TulipTextStyles.heading2.copyWith(
-            color: valueColor,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(width: 3),
-        Text(
-          label,
-          style: TulipTextStyles.bodySmall.copyWith(
-            color: labelColor,
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget _buildCurrentStayHero() {
     final stay = widget.currentStay!;
