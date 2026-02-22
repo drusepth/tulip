@@ -200,7 +200,7 @@ class __$$HighlightsDataImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$HighlightsDataImpl extends _HighlightsData {
   const _$HighlightsDataImpl({
-    required this.currentUserId,
+    this.currentUserId = 0,
     required this.stay,
     required this.stats,
     required final List<String> categories,
@@ -213,6 +213,7 @@ class _$HighlightsDataImpl extends _HighlightsData {
       _$$HighlightsDataImplFromJson(json);
 
   @override
+  @JsonKey()
   final int currentUserId;
   @override
   final StaySummary stay;
@@ -288,7 +289,7 @@ class _$HighlightsDataImpl extends _HighlightsData {
 
 abstract class _HighlightsData extends HighlightsData {
   const factory _HighlightsData({
-    required final int currentUserId,
+    final int currentUserId,
     required final StaySummary stay,
     required final HighlightsStats stats,
     required final List<String> categories,

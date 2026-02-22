@@ -5,6 +5,7 @@ import '../../../../shared/constants/tulip_colors.dart';
 import '../../../../shared/constants/tulip_text_styles.dart';
 import '../../../../shared/widgets/loading_shimmer.dart';
 import '../../../../shared/widgets/cozy_card.dart';
+import '../../../../shared/widgets/countdown_hero.dart';
 import '../../../stays/presentation/providers/stays_provider.dart';
 import '../../../stays/presentation/widgets/stay_card.dart';
 import '../../../stays/data/models/stay_model.dart';
@@ -116,8 +117,12 @@ class DashboardScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Welcome section
-          _buildWelcomeSection(allStays),
+          // Countdown hero section
+          CountdownHero(
+            nextTrip: upcomingStays.firstOrNull,
+            currentStay: currentStay,
+            onAddStay: () => context.push('/stays/new'),
+          ),
           const SizedBox(height: 24),
 
           // Current stay (if any)
@@ -219,43 +224,6 @@ class DashboardScreen extends ConsumerWidget {
           if (allStays.isNotEmpty) _buildStatsSummary(allStays),
         ],
       ),
-    );
-  }
-
-  Widget _buildWelcomeSection(List<Stay> stays) {
-    String greeting;
-    final hour = DateTime.now().hour;
-    if (hour < 12) {
-      greeting = 'Good morning';
-    } else if (hour < 17) {
-      greeting = 'Good afternoon';
-    } else {
-      greeting = 'Good evening';
-    }
-
-    final currentStay = stays.where((s) => s.isCurrent).firstOrNull;
-    final nextTrip = stays.where((s) => s.isUpcoming).firstOrNull;
-
-    String subtitle;
-    if (currentStay != null) {
-      subtitle = 'Enjoying your stay in ${currentStay.city}!';
-    } else if (nextTrip != null && nextTrip.daysUntilCheckIn != null) {
-      if (nextTrip.daysUntilCheckIn! <= 7) {
-        subtitle = 'Your trip to ${nextTrip.city} is coming up soon!';
-      } else {
-        subtitle = '${nextTrip.daysUntilCheckIn} days until ${nextTrip.city}';
-      }
-    } else {
-      subtitle = 'Plan your next cozy adventure';
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(greeting, style: TulipTextStyles.heading2),
-        const SizedBox(height: 4),
-        Text(subtitle, style: TulipTextStyles.bodySmall),
-      ],
     );
   }
 
