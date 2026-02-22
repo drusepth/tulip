@@ -5,8 +5,10 @@
 
 class Rack::Attack
   ### Configure Cache ###
-  # Use Rails cache for storing rate limit data
-  Rack::Attack.cache.store = Rails.cache
+  # Use a dedicated MemoryStore for rate limiting data.
+  # This avoids dependency on Rails.cache (which may use SolidCache requiring DB setup)
+  # and is appropriate since rate limiting data is ephemeral.
+  Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new
 
   ### Throttle Spammy Clients ###
   # If any single client IP is making tons of requests, then they're probably misbehaving.
