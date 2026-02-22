@@ -331,6 +331,9 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
             ),
           if (stay.hasCoordinates) const SizedBox(height: 16),
 
+          // Trip Highlights card
+          _buildHighlightsCard(stay),
+
           // Booking status card
           if (stay.booked && stay.bookingUrl != null)
             GestureDetector(
@@ -595,6 +598,62 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
     );
   }
 
+  Widget _buildHighlightsCard(Stay stay) {
+    final completedCount = ref.watch(bucketListCompletedCountProvider(stay.id));
+
+    // Only show if there are completed items
+    if (completedCount == 0) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () => context.push(
+            '/stays/${stay.id}/highlights?title=${Uri.encodeComponent(stay.title)}',
+          ),
+          child: CozyCard(
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: TulipColors.coralDark.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.auto_awesome,
+                    size: 24,
+                    color: TulipColors.coralDark,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Trip Highlights', style: TulipTextStyles.label),
+                      const SizedBox(height: 2),
+                      Text(
+                        '$completedCount completed ${completedCount == 1 ? 'item' : 'items'} with ratings',
+                        style: TulipTextStyles.caption,
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right,
+                  color: TulipColors.brownLight,
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
   Widget _buildBucketListTab(Stay stay) {
     final bucketListAsync = ref.watch(bucketListProvider(stay.id));
 
@@ -846,6 +905,16 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
                   _openBookingUrl(stay.bookingUrl!);
                 },
               ),
+            ListTile(
+              leading: const Icon(Icons.auto_awesome),
+              title: const Text('Trip Highlights'),
+              onTap: () {
+                Navigator.pop(context);
+                context.push(
+                  '/stays/${stay.id}/highlights?title=${Uri.encodeComponent(stay.title)}',
+                );
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.share_outlined),
               title: const Text('Share Stay'),

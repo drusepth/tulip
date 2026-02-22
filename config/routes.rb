@@ -18,8 +18,8 @@ Rails.application.routes.draw do
         member do
           get :weather
           get :gallery
-          get :highlights
         end
+        resource :highlights, only: [ :show ]
         resources :pois, only: [ :index ] do
           collection do
             post :fetch
