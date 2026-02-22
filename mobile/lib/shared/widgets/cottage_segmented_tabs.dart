@@ -45,9 +45,7 @@ class CottageSegmentedTabs extends StatelessWidget implements PreferredSizeWidge
                 child: Stack(
                   children: [
                     // Sliding indicator
-                    AnimatedPositioned(
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeInOut,
+                    Positioned(
                       left: animationValue * segmentWidth + 2,
                       top: 2,
                       bottom: 2,
