@@ -235,7 +235,7 @@ class ApiClient {
       case 500:
       case 502:
       case 503:
-        return ServerException(message);
+        return ServerException(message ?? 'Server error');
       default:
         return NetworkException(
           message ?? 'Request failed',
