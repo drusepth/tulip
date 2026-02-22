@@ -63,7 +63,7 @@ class _CommentFormState extends State<CommentForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -79,22 +79,25 @@ class _CommentFormState extends State<CommentForm> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Expanded(
-            child: TextField(
-              controller: _controller,
-              autofocus: widget.autofocus,
-              maxLines: 4,
-              minLines: 1,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: InputDecoration(
-                hintText: widget.placeholder ?? 'Write a comment...',
-                hintStyle: TulipTextStyles.body.copyWith(
-                  color: TulipColors.brownLighter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 24),
+              child: TextField(
+                controller: _controller,
+                autofocus: widget.autofocus,
+                maxLines: 4,
+                minLines: 1,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: InputDecoration(
+                  hintText: widget.placeholder ?? 'Write a comment...',
+                  hintStyle: TulipTextStyles.body.copyWith(
+                    color: TulipColors.brownLighter,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 4),
+                  isDense: true,
                 ),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.zero,
-                isDense: true,
+                style: TulipTextStyles.body,
               ),
-              style: TulipTextStyles.body,
             ),
           ),
           const SizedBox(width: 12),
@@ -151,6 +154,7 @@ class ReplyForm extends StatefulWidget {
 
 class _ReplyFormState extends State<ReplyForm> {
   final _controller = TextEditingController();
+  final _focusNode = FocusNode();
   bool _isSubmitting = false;
   bool _hasText = false;
 
@@ -158,6 +162,10 @@ class _ReplyFormState extends State<ReplyForm> {
   void initState() {
     super.initState();
     _controller.addListener(_onTextChanged);
+    // Request focus after the frame to ensure the widget is fully built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.requestFocus();
+    });
   }
 
   void _onTextChanged() {
@@ -171,6 +179,7 @@ class _ReplyFormState extends State<ReplyForm> {
   void dispose() {
     _controller.removeListener(_onTextChanged);
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -241,7 +250,7 @@ class _ReplyFormState extends State<ReplyForm> {
                   ),
                   child: TextField(
                     controller: _controller,
-                    autofocus: true,
+                    focusNode: _focusNode,
                     maxLines: 3,
                     minLines: 1,
                     textCapitalization: TextCapitalization.sentences,
