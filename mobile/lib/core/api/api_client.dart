@@ -106,12 +106,14 @@ class ApiClient {
     String path, {
     Map<String, dynamic>? queryParameters,
     Options? options,
+    CancelToken? cancelToken,
   }) async {
     try {
       return await _dio.get<T>(
         path,
         queryParameters: queryParameters,
         options: options,
+        cancelToken: cancelToken,
       );
     } on DioException catch (e) {
       throw _handleError(e);

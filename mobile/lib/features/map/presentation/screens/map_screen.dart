@@ -5,13 +5,19 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../shared/constants/tulip_colors.dart';
 import '../../../../shared/constants/tulip_text_styles.dart';
+import '../../../bucket_list/data/models/bucket_list_item_model.dart';
+import '../../../bucket_list/presentation/providers/bucket_list_provider.dart';
+import '../../../places/data/models/poi_model.dart';
 import '../../../stays/data/models/stay_model.dart';
 import '../../../stays/presentation/providers/stays_provider.dart';
 import '../../../transit/data/models/transit_route_model.dart';
 import '../../../transit/presentation/providers/transit_route_provider.dart';
 import '../providers/map_provider.dart';
+import '../providers/viewport_poi_provider.dart';
 import '../widgets/tulip_map.dart';
 import '../widgets/stay_marker.dart';
+import '../widgets/poi_marker.dart';
+import '../widgets/poi_popup.dart';
 import '../widgets/layer_toggle_panel.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
@@ -25,6 +31,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   final MapController _mapController = MapController();
   bool _showLayerPanel = false;
   bool _mapReady = false;
+  Set<String> _previousEnabledCategories = {};
 
   @override
   void initState() {
@@ -40,6 +47,66 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         _fitToStays();
       }
     });
+  }
+
+  void _onPositionChanged(MapPosition position, bool hasGesture) {
+    if (position.center == null || position.zoom == null) return;
+
+    final mapState = ref.read(mapStateProvider);
+    final mapStays = ref.read(mapStaysProvider);
+
+    // Notify viewport POI provider of the change
+    ref.read(viewportPoiProvider.notifier).onViewportChanged(
+          center: position.center!,
+          zoom: position.zoom!,
+          enabledCategories: mapState.enabledPoiCategories,
+          stays: mapStays,
+        );
+  }
+
+  /// Find the nearest stay to a given POI for bucket list context
+  Stay? _findNearestStay(Poi poi, List<Stay> stays) {
+    if (stays.isEmpty) return null;
+
+    Stay? nearest;
+    double minDistance = double.infinity;
+    const distance = Distance();
+
+    for (final stay in stays) {
+      if (!stay.hasCoordinates) continue;
+
+      final d = distance.as(
+        LengthUnit.Meter,
+        LatLng(poi.latitude, poi.longitude),
+        LatLng(stay.latitude!, stay.longitude!),
+      );
+
+      if (d < minDistance) {
+        minDistance = d;
+        nearest = stay;
+      }
+    }
+
+    return nearest;
+  }
+
+  /// Handle adding a POI to a stay's bucket list
+  Future<bool> _addPoiToBucketList(Poi poi, Stay stay) async {
+    try {
+      final request = BucketListItemRequest(
+        title: poi.name,
+        category: poi.category,
+        address: poi.address,
+        latitude: poi.latitude,
+        longitude: poi.longitude,
+        placeId: poi.placeId,
+      );
+
+      final item = await ref.read(bucketListProvider(stay.id).notifier).createItem(request);
+      return item != null;
+    } catch (e) {
+      return false;
+    }
   }
 
   void _fitToStays() {
@@ -112,7 +179,41 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     final mapStays = ref.watch(mapStaysProvider);
     final mapState = ref.watch(mapStateProvider);
     final selectedStay = ref.watch(selectedMapStayProvider);
+    final viewportPoiState = ref.watch(viewportPoiProvider);
     final transitPolylines = _buildTransitPolylines(mapStays, mapState.enabledTransitLayers);
+
+    // Handle category disabling
+    final currentCategories = mapState.enabledPoiCategories;
+    final disabledCategories = _previousEnabledCategories.difference(currentCategories);
+    for (final category in disabledCategories) {
+      // Use Future.microtask to avoid calling notifier during build
+      Future.microtask(() {
+        ref.read(viewportPoiProvider.notifier).onCategoryDisabled(category);
+      });
+    }
+    _previousEnabledCategories = Set.from(currentCategories);
+
+    // Combine stay markers with POI markers
+    final stayMarkers = StayMarkerBuilder.buildAll(
+      stays: mapStays,
+      onTap: (stay) {
+        ref.read(viewportPoiProvider.notifier).clearSelection();
+        ref.read(mapStateProvider.notifier).selectStay(stay.id);
+      },
+      selectedStayId: mapState.selectedStayId,
+    );
+
+    final poiMarkers = PoiMarkerBuilder.buildAll(
+      pois: viewportPoiState.poisForCategories(mapState.enabledPoiCategories),
+      onTap: (poi) {
+        ref.read(mapStateProvider.notifier).clearSelection();
+        ref.read(viewportPoiProvider.notifier).selectPoi(poi);
+      },
+      selectedPoiId: viewportPoiState.selectedPoi?.id,
+      enabledCategories: mapState.enabledPoiCategories,
+    );
+
+    final allMarkers = [...poiMarkers, ...stayMarkers]; // Stay markers on top
 
     return Scaffold(
       body: Stack(
@@ -139,18 +240,14 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             ),
             data: (_) => TulipMap(
               mapController: _mapController,
-              markers: StayMarkerBuilder.buildAll(
-                stays: mapStays,
-                onTap: (stay) {
-                  ref.read(mapStateProvider.notifier).selectStay(stay.id);
-                },
-                selectedStayId: mapState.selectedStayId,
-              ),
+              markers: allMarkers,
               polylines: transitPolylines,
               onMapReady: _onMapReady,
+              onPositionChanged: _onPositionChanged,
               onTap: (_, __) {
-                // Tap on map clears selection
+                // Tap on map clears all selections
                 ref.read(mapStateProvider.notifier).clearSelection();
+                ref.read(viewportPoiProvider.notifier).clearSelection();
               },
             ),
           ),
@@ -180,7 +277,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           // Right side controls
           Positioned(
             right: 16,
-            bottom: selectedStay != null ? 220 : 100,
+            bottom: (selectedStay != null || viewportPoiState.selectedPoi != null) ? 220 : 100,
             child: Column(
               children: [
                 MapControlButton(
@@ -228,6 +325,22 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 onClose: () {
                   ref.read(mapStateProvider.notifier).clearSelection();
                 },
+              ),
+            ),
+
+          // Selected POI popup
+          if (viewportPoiState.selectedPoi != null && selectedStay == null)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: PoiPopup(
+                poi: viewportPoiState.selectedPoi!,
+                nearestStay: _findNearestStay(viewportPoiState.selectedPoi!, mapStays),
+                onClose: () {
+                  ref.read(viewportPoiProvider.notifier).clearSelection();
+                },
+                onAddToBucketList: (stay) => _addPoiToBucketList(viewportPoiState.selectedPoi!, stay),
               ),
             ),
 

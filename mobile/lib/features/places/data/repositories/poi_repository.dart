@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/api/api_client.dart';
 import '../../../../core/api/endpoints.dart';
@@ -38,6 +39,7 @@ class PoiRepository {
     required double lng,
     double? radius,
     String? category,
+    CancelToken? cancelToken,
   }) async {
     final response = await _apiClient.get<Map<String, dynamic>>(
       Endpoints.mapPoisSearch,
@@ -47,6 +49,7 @@ class PoiRepository {
         if (radius != null) 'radius': radius,
         if (category != null) 'category': category,
       },
+      cancelToken: cancelToken,
     );
     final pois = response.data?['pois'] as List<dynamic>? ?? [];
     return pois.map((json) => Poi.fromJson(_convertKeys(json))).toList();
