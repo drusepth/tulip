@@ -26,15 +26,26 @@ class CommentForm extends StatefulWidget {
 class _CommentFormState extends State<CommentForm> {
   late TextEditingController _controller;
   bool _isSubmitting = false;
+  bool _hasText = false;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.initialText);
+    _hasText = _controller.text.trim().isNotEmpty;
+    _controller.addListener(_onTextChanged);
+  }
+
+  void _onTextChanged() {
+    final hasText = _controller.text.trim().isNotEmpty;
+    if (hasText != _hasText) {
+      setState(() => _hasText = hasText);
+    }
   }
 
   @override
   void dispose() {
+    _controller.removeListener(_onTextChanged);
     _controller.dispose();
     super.dispose();
   }
@@ -52,11 +63,17 @@ class _CommentFormState extends State<CommentForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: TulipColors.taupeLight),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: TulipColors.taupe.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -70,7 +87,7 @@ class _CommentFormState extends State<CommentForm> {
               textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(
                 hintText: widget.placeholder ?? 'Write a comment...',
-                hintStyle: TulipTextStyles.bodySmall.copyWith(
+                hintStyle: TulipTextStyles.body.copyWith(
                   color: TulipColors.brownLighter,
                 ),
                 border: InputBorder.none,
@@ -80,47 +97,34 @@ class _CommentFormState extends State<CommentForm> {
               style: TulipTextStyles.body,
             ),
           ),
-          const SizedBox(width: 8),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (widget.onCancel != null)
-                IconButton(
-                  icon: Icon(
-                    Icons.close,
-                    color: TulipColors.brownLight,
-                    size: 20,
-                  ),
-                  onPressed: widget.onCancel,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: 32,
-                    minHeight: 32,
-                  ),
-                ),
-              IconButton(
-                icon: _isSubmitting
-                    ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: TulipColors.sage,
+          const SizedBox(width: 12),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            child: Material(
+              color: _hasText ? TulipColors.sage : TulipColors.taupeLight,
+              borderRadius: BorderRadius.circular(20),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: _isSubmitting || !_hasText ? null : _submit,
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  child: _isSubmitting
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Icon(
+                          Icons.arrow_upward_rounded,
+                          color: Colors.white,
+                          size: 20,
                         ),
-                      )
-                    : Icon(
-                        Icons.send,
-                        color: TulipColors.sage,
-                        size: 20,
-                      ),
-                onPressed: _isSubmitting ? null : _submit,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(
-                  minWidth: 32,
-                  minHeight: 32,
                 ),
               ),
-            ],
+            ),
           ),
         ],
       ),
@@ -148,9 +152,24 @@ class ReplyForm extends StatefulWidget {
 class _ReplyFormState extends State<ReplyForm> {
   final _controller = TextEditingController();
   bool _isSubmitting = false;
+  bool _hasText = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_onTextChanged);
+  }
+
+  void _onTextChanged() {
+    final hasText = _controller.text.trim().isNotEmpty;
+    if (hasText != _hasText) {
+      setState(() => _hasText = hasText);
+    }
+  }
 
   @override
   void dispose() {
+    _controller.removeListener(_onTextChanged);
     _controller.dispose();
     super.dispose();
   }
@@ -166,12 +185,11 @@ class _ReplyFormState extends State<ReplyForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(left: 24, top: 8),
-      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.only(left: 48, top: 12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: TulipColors.cream,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: TulipColors.taupeLight),
+        color: TulipColors.sageLight.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,69 +197,91 @@ class _ReplyFormState extends State<ReplyForm> {
           Row(
             children: [
               Icon(
-                Icons.reply,
+                Icons.reply_rounded,
                 size: 14,
-                color: TulipColors.brownLight,
+                color: TulipColors.sage,
               ),
-              const SizedBox(width: 4),
-              Text(
-                'Replying to ${widget.replyingToName}',
-                style: TulipTextStyles.caption,
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  'Replying to ${widget.replyingToName}',
+                  style: TulipTextStyles.caption.copyWith(
+                    color: TulipColors.sageDark,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
-              const Spacer(),
               GestureDetector(
                 onTap: widget.onCancel,
-                child: Icon(
-                  Icons.close,
-                  size: 16,
-                  color: TulipColors.brownLight,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: TulipColors.taupeLight,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.close_rounded,
+                    size: 14,
+                    color: TulipColors.brownLight,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
-                child: TextField(
-                  controller: _controller,
-                  autofocus: true,
-                  maxLines: 3,
-                  minLines: 1,
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(
-                    hintText: 'Write a reply...',
-                    hintStyle: TulipTextStyles.bodySmall.copyWith(
-                      color: TulipColors.brownLighter,
-                    ),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.zero,
-                    isDense: true,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  style: TulipTextStyles.bodySmall,
+                  child: TextField(
+                    controller: _controller,
+                    autofocus: true,
+                    maxLines: 3,
+                    minLines: 1,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                      hintText: 'Write a reply...',
+                      hintStyle: TulipTextStyles.bodySmall.copyWith(
+                        color: TulipColors.brownLighter,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                      isDense: true,
+                    ),
+                    style: TulipTextStyles.bodySmall,
+                  ),
                 ),
               ),
-              IconButton(
-                icon: _isSubmitting
-                    ? SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: TulipColors.sage,
-                        ),
-                      )
-                    : Icon(
-                        Icons.send,
-                        color: TulipColors.sage,
-                        size: 18,
-                      ),
-                onPressed: _isSubmitting ? null : _submit,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(
-                  minWidth: 28,
-                  minHeight: 28,
+              const SizedBox(width: 8),
+              Material(
+                color: _hasText ? TulipColors.sage : TulipColors.taupeLight,
+                borderRadius: BorderRadius.circular(16),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: _isSubmitting || !_hasText ? null : _submit,
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    child: _isSubmitting
+                        ? SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Icon(
+                            Icons.arrow_upward_rounded,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                  ),
                 ),
               ),
             ],

@@ -6,8 +6,13 @@ import '../../../../shared/widgets/cozy_card.dart';
 /// Enhanced weather display widget with daily breakdown
 class WeatherCard extends StatelessWidget {
   final Map<String, dynamic> weatherData;
+  final VoidCallback? onTap;
 
-  const WeatherCard({super.key, required this.weatherData});
+  const WeatherCard({
+    super.key,
+    required this.weatherData,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,27 +30,37 @@ class WeatherCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Summary card
-        CozyCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.thermostat_outlined,
-                    size: 20,
-                    color: TulipColors.brownLight,
-                  ),
-                  const SizedBox(width: 8),
-                  Text('Expected Weather', style: TulipTextStyles.label),
-                  const Spacer(),
-                  if (dailyData.isNotEmpty)
-                    Text(
-                      '${dailyData.length} days',
-                      style: TulipTextStyles.caption,
+        GestureDetector(
+          onTap: onTap,
+          child: CozyCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.thermostat_outlined,
+                      size: 20,
+                      color: TulipColors.brownLight,
                     ),
-                ],
-              ),
+                    const SizedBox(width: 8),
+                    Text('Expected Weather', style: TulipTextStyles.label),
+                    const Spacer(),
+                    if (dailyData.isNotEmpty)
+                      Text(
+                        '${dailyData.length} days',
+                        style: TulipTextStyles.caption,
+                      ),
+                    if (onTap != null) ...[
+                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.chevron_right,
+                        size: 20,
+                        color: TulipColors.brownLight,
+                      ),
+                    ],
+                  ],
+                ),
               const SizedBox(height: 16),
 
               // Temperature summary
@@ -81,6 +96,7 @@ class WeatherCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
         ),
 
         // Daily forecast

@@ -77,15 +77,27 @@ class _CommentThreadState extends ConsumerState<CommentThread> {
             placeholder: 'Share your thoughts...',
             onSubmit: _addComment,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
           // Comment count
           if (comments.isNotEmpty) ...[
-            Text(
-              '${comments.length} ${comments.length == 1 ? 'comment' : 'comments'}',
-              style: TulipTextStyles.label,
+            Row(
+              children: [
+                Icon(
+                  Icons.forum_outlined,
+                  size: 18,
+                  color: TulipColors.brownLight,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '${comments.length} ${comments.length == 1 ? 'comment' : 'comments'}',
+                  style: TulipTextStyles.label.copyWith(
+                    color: TulipColors.brownLight,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
           ],
 
           // Comments
@@ -99,7 +111,7 @@ class _CommentThreadState extends ConsumerState<CommentThread> {
               )));
 
               return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.only(bottom: 16),
                 child: Column(
                   children: [
                     CommentTile(

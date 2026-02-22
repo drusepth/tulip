@@ -16,6 +16,7 @@ import '../features/collaboration/presentation/screens/invite_accept_screen.dart
 import '../features/collaboration/presentation/screens/collaborators_screen.dart';
 import '../features/places/presentation/screens/place_detail_screen.dart';
 import '../features/places/presentation/screens/gallery_screen.dart';
+import '../features/weather/presentation/screens/weather_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -91,6 +92,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       // Stay routes (outside shell for full screen)
+      // Note: More specific routes must come before parameterized routes
       GoRoute(
         path: '/stays',
         name: 'stays',
@@ -100,14 +102,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/stays/new',
         name: 'stay-new',
         builder: (context, state) => const StayFormScreen(),
-      ),
-      GoRoute(
-        path: '/stays/:id',
-        name: 'stay-detail',
-        builder: (context, state) {
-          final id = int.parse(state.pathParameters['id']!);
-          return StayDetailScreen(stayId: id);
-        },
       ),
       GoRoute(
         path: '/stays/:id/edit',
@@ -127,6 +121,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: '/stays/:id/weather',
+        name: 'stay-weather',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          final stayTitle = state.uri.queryParameters['title'];
+          return WeatherScreen(stayId: id, stayTitle: stayTitle);
+        },
+      ),
+      GoRoute(
         path: '/stays/:id/collaborators',
         name: 'stay-collaborators',
         builder: (context, state) {
@@ -138,6 +141,15 @@ final routerProvider = Provider<GoRouter>((ref) {
             stayTitle: stayTitle,
             isOwner: isOwner,
           );
+        },
+      ),
+      // This must come after more specific /stays/:id/* routes
+      GoRoute(
+        path: '/stays/:id',
+        name: 'stay-detail',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return StayDetailScreen(stayId: id);
         },
       ),
 

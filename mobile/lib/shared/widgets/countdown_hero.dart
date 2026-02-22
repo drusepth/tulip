@@ -86,99 +86,122 @@ class _CountdownHeroState extends State<CountdownHero> {
     final hours = _timeUntilTrip.inHours.remainder(24);
     final minutes = _timeUntilTrip.inMinutes.remainder(60);
 
-    return CozyCard(
-      backgroundColor: TulipColors.cream,
+    return GestureDetector(
       onTap: () => context.push('/stays/${widget.nextTrip!.id}'),
-      child: Column(
-        children: [
-          // Subtle label at top
-          Text(
-            'Next Trip',
-            style: TulipTextStyles.caption.copyWith(
-              color: TulipColors.brownLight,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              TulipColors.coral,
+              TulipColors.rose,
+            ],
+          ),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: TulipColors.coral.withValues(alpha: 0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
-          ),
-          const SizedBox(height: 12),
+          ],
+        ),
+        child: Column(
+          children: [
+            // Subtle label at top
+            Text(
+              'Next Trip',
+              style: TulipTextStyles.caption.copyWith(
+                color: Colors.white.withValues(alpha: 0.8),
+              ),
+            ),
+            const SizedBox(height: 12),
 
-          // Prominent destination with icon
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.flight_takeoff,
-                size: 20,
-                color: TulipColors.sage,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                widget.nextTrip!.location,
-                style: TulipTextStyles.heading1.copyWith(
-                  fontSize: 28,
-                  color: TulipColors.brown,
+            // Prominent destination with icon
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.flight_takeoff,
+                  size: 20,
+                  color: Colors.white,
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    widget.nextTrip!.location,
+                    style: TulipTextStyles.heading1.copyWith(
+                      fontSize: 28,
+                      color: Colors.white,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
 
-          // Clean inline countdown without boxes
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '$days',
-                style: TulipTextStyles.body.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: TulipColors.brown,
+            // Clean inline countdown without boxes
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '$days',
+                  style: TulipTextStyles.body.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              Text(
-                ' days',
-                style: TulipTextStyles.body.copyWith(
-                  color: TulipColors.brownLight,
+                Text(
+                  ' days',
+                  style: TulipTextStyles.body.copyWith(
+                    color: Colors.white.withValues(alpha: 0.85),
+                  ),
                 ),
-              ),
-              Text(
-                ' · ',
-                style: TulipTextStyles.body.copyWith(
-                  color: TulipColors.brownLighter,
+                Text(
+                  ' · ',
+                  style: TulipTextStyles.body.copyWith(
+                    color: Colors.white.withValues(alpha: 0.6),
+                  ),
                 ),
-              ),
-              Text(
-                '$hours',
-                style: TulipTextStyles.body.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: TulipColors.brown,
+                Text(
+                  '$hours',
+                  style: TulipTextStyles.body.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              Text(
-                ' hrs',
-                style: TulipTextStyles.body.copyWith(
-                  color: TulipColors.brownLight,
+                Text(
+                  ' hrs',
+                  style: TulipTextStyles.body.copyWith(
+                    color: Colors.white.withValues(alpha: 0.85),
+                  ),
                 ),
-              ),
-              Text(
-                ' · ',
-                style: TulipTextStyles.body.copyWith(
-                  color: TulipColors.brownLighter,
+                Text(
+                  ' · ',
+                  style: TulipTextStyles.body.copyWith(
+                    color: Colors.white.withValues(alpha: 0.6),
+                  ),
                 ),
-              ),
-              Text(
-                '$minutes',
-                style: TulipTextStyles.body.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: TulipColors.brown,
+                Text(
+                  '$minutes',
+                  style: TulipTextStyles.body.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              Text(
-                ' min',
-                style: TulipTextStyles.body.copyWith(
-                  color: TulipColors.brownLight,
+                Text(
+                  ' min',
+                  style: TulipTextStyles.body.copyWith(
+                    color: Colors.white.withValues(alpha: 0.85),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

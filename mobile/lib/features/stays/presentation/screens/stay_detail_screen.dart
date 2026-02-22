@@ -585,7 +585,12 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
         final weather = weatherData['weather'] as Map<String, dynamic>?;
         if (weather == null) return const SizedBox.shrink();
 
-        return WeatherCard(weatherData: weatherData);
+        return WeatherCard(
+          weatherData: weatherData,
+          onTap: () => context.push(
+            '/stays/${stay.id}/weather?title=${Uri.encodeComponent(stay.title)}',
+          ),
+        );
       },
     );
   }
