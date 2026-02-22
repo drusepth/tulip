@@ -3,15 +3,17 @@ import 'package:shimmer/shimmer.dart';
 import '../constants/tulip_colors.dart';
 
 class LoadingShimmer extends StatelessWidget {
-  final double width;
-  final double height;
+  final double? width;
+  final double? height;
   final double borderRadius;
+  final Widget? child;
 
   const LoadingShimmer({
     super.key,
-    this.width = double.infinity,
-    required this.height,
+    this.width,
+    this.height,
     this.borderRadius = 8,
+    this.child,
   });
 
   @override
@@ -19,9 +21,9 @@ class LoadingShimmer extends StatelessWidget {
     return Shimmer.fromColors(
       baseColor: TulipColors.taupeLight,
       highlightColor: TulipColors.cream,
-      child: Container(
-        width: width,
-        height: height,
+      child: child ?? Container(
+        width: width ?? double.infinity,
+        height: height ?? 100,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(borderRadius),
