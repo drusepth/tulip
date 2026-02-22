@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../shared/constants/tulip_colors.dart';
 import '../../../../shared/constants/tulip_text_styles.dart';
 import '../../../../shared/widgets/status_badge.dart';
@@ -330,8 +331,70 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
             ),
           if (stay.hasCoordinates) const SizedBox(height: 16),
 
-          // Price and booking info
-          if (stay.priceTotalCents != null || stay.bookingUrl != null)
+          // Booking status card
+          if (stay.booked && stay.bookingUrl != null)
+            GestureDetector(
+              onTap: () => _openBookingUrl(stay.bookingUrl!),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      TulipColors.sageLight,
+                      TulipColors.sage.withValues(alpha: 0.3),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: TulipColors.sage.withValues(alpha: 0.5)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: TulipColors.sage,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Booked!',
+                            style: TulipTextStyles.label.copyWith(
+                              color: TulipColors.sageDark,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          if (stay.priceFormatted != null)
+                            Text(
+                              stay.priceFormatted!,
+                              style: TulipTextStyles.caption.copyWith(
+                                color: TulipColors.sageDark,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.open_in_new,
+                      color: TulipColors.sageDark,
+                      size: 18,
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else if (stay.bookingUrl != null || stay.priceTotalCents != null)
             CozyCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -358,51 +421,48 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
                         ],
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    if (stay.bookingUrl != null || !stay.booked)
+                      const SizedBox(height: 12),
                   ],
                   if (stay.bookingUrl != null)
+                    GestureDetector(
+                      onTap: () => _openBookingUrl(stay.bookingUrl!),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.open_in_new,
+                            size: 18,
+                            color: TulipColors.sage,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'View Booking',
+                            style: TulipTextStyles.body.copyWith(
+                              color: TulipColors.sage,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (!stay.booked) ...[
+                    if (stay.bookingUrl != null) const SizedBox(height: 8),
                     Row(
                       children: [
                         Icon(
-                          Icons.link,
-                          size: 20,
-                          color: TulipColors.brownLight,
+                          Icons.schedule,
+                          size: 18,
+                          color: TulipColors.brownLighter,
                         ),
                         const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Booking link available',
-                            style: TulipTextStyles.bodySmall,
+                        Text(
+                          'Not yet booked',
+                          style: TulipTextStyles.bodySmall.copyWith(
+                            color: TulipColors.brownLighter,
                           ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            // TODO: Open booking URL
-                          },
-                          child: const Text('Open'),
                         ),
                       ],
                     ),
-                  Row(
-                    children: [
-                      Icon(
-                        stay.booked ? Icons.check_circle : Icons.schedule,
-                        size: 20,
-                        color: stay.booked
-                            ? TulipColors.sage
-                            : TulipColors.brownLight,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        stay.booked ? 'Booked' : 'Not yet booked',
-                        style: TulipTextStyles.body.copyWith(
-                          color: stay.booked
-                              ? TulipColors.sageDark
-                              : TulipColors.brownLight,
-                        ),
-                      ),
-                    ],
-                  ),
+                  ],
                 ],
               ),
             ),
@@ -778,7 +838,7 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
                 title: const Text('Open Booking Link'),
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: Open URL
+                  _openBookingUrl(stay.bookingUrl!);
                 },
               ),
             ListTile(
@@ -836,5 +896,12 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
         ],
       ),
     );
+  }
+
+  Future<void> _openBookingUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 }
