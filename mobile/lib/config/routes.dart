@@ -18,6 +18,7 @@ import '../features/places/presentation/screens/place_detail_screen.dart';
 import '../features/places/presentation/screens/gallery_screen.dart';
 import '../features/weather/presentation/screens/weather_screen.dart';
 import '../features/highlights/presentation/screens/highlights_screen.dart';
+import '../features/bucket_list/presentation/screens/bucket_list_map_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -137,6 +138,15 @@ final routerProvider = Provider<GoRouter>((ref) {
           final id = int.parse(state.pathParameters['id']!);
           final stayTitle = state.uri.queryParameters['title'];
           return HighlightsScreen(stayId: id, stayTitle: stayTitle);
+        },
+      ),
+      GoRoute(
+        path: '/stays/:id/bucket_list_map',
+        name: 'stay-bucket-list-map',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          final stayTitle = state.uri.queryParameters['title'];
+          return BucketListMapScreen(stayId: id, stayTitle: stayTitle);
         },
       ),
       GoRoute(

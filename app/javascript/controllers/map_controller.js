@@ -41,6 +41,22 @@ export default class extends Controller {
     // Listen for clicks on bucket list buttons in popups
     this.bucketListClickHandler = this.handleBucketListClick.bind(this)
     document.addEventListener('click', this.bucketListClickHandler)
+
+    // Check URL for layer parameter to auto-enable layers
+    this.checkUrlLayerParam()
+  }
+
+  checkUrlLayerParam() {
+    const urlParams = new URLSearchParams(window.location.search)
+    const layer = urlParams.get('layer')
+    if (layer === 'bucket-list') {
+      // Auto-enable bucket list layer
+      this.bucketListVisible = true
+      this.loadBucketListItems()
+      // Also update the toggle button state if it exists
+      const button = this.element.querySelector('[data-action="click->map#toggleBucketList"]')
+      if (button) button.classList.add('active')
+    }
   }
 
   async handleBucketListClick(event) {

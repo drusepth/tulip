@@ -720,6 +720,7 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
   Widget _buildBucketListContent(Stay stay, List<BucketListItem> items) {
     final incompleteItems = items.where((i) => !i.completed).toList();
     final completedItems = items.where((i) => i.completed).toList();
+    final itemsWithLocation = items.where((i) => i.hasLocation).toList();
 
     return RefreshIndicator(
       onRefresh: () => ref.read(bucketListProvider(stay.id).notifier).refresh(),
@@ -730,6 +731,22 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
           // Progress header
           _buildBucketListProgress(items),
           const SizedBox(height: 16),
+
+          // View on Map button
+          if (itemsWithLocation.isNotEmpty) ...[
+            OutlinedButton.icon(
+              onPressed: () => context.push(
+                '/stays/${stay.id}/bucket_list_map?title=${Uri.encodeComponent(stay.title)}',
+              ),
+              icon: const Icon(Icons.map_outlined),
+              label: const Text('View on Map'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: TulipColors.lavenderDark,
+                side: const BorderSide(color: TulipColors.lavender),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
 
           // Add item button
           if (stay.canEdit) ...[
