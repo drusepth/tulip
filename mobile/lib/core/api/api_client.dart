@@ -39,6 +39,7 @@ class ApiClient {
     final authEndpoints = [
       Endpoints.signIn,
       Endpoints.signUp,
+      Endpoints.refresh,
     ];
     if (!authEndpoints.contains(options.path)) {
       final accessToken = await _secureStorage.getAccessToken();
