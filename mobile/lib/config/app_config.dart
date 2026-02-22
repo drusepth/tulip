@@ -10,7 +10,7 @@ class AppConfig {
       case Environment.staging:
         return 'https://staging.tulip.app';
       case Environment.prod:
-        return 'https://api.tulip.app';
+        return 'https://tulip-planner-261067158343.herokuapp.com';
     }
   }
 
