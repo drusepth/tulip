@@ -44,6 +44,7 @@ dependencies:
   json_annotation: ^4.8.1
   freezed_annotation: ^2.4.1
   connectivity_plus: ^5.0.2
+  crypto: ^3.0.3
 
   # Deep Linking
   app_links: ^3.5.1

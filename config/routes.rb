@@ -10,12 +10,15 @@ Rails.application.routes.draw do
       # User Profile
       get "profile", to: "users#show"
       patch "profile", to: "users#update"
+      patch "profile/password", to: "users#update_password"
+      delete "profile", to: "users#destroy"
 
       # Stays
       resources :stays do
         member do
           get :weather
           get :gallery
+          get :highlights
         end
         resources :pois, only: [ :index ] do
           collection do

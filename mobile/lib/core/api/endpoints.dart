@@ -8,12 +8,14 @@ class Endpoints {
 
   // Profile
   static const String profile = '/api/v1/profile';
+  static const String profilePassword = '/api/v1/profile/password';
 
   // Stays
   static const String stays = '/api/v1/stays';
   static String stay(int id) => '/api/v1/stays/$id';
   static String stayWeather(int id) => '/api/v1/stays/$id/weather';
   static String stayGallery(int id) => '/api/v1/stays/$id/gallery';
+  static String stayHighlights(int id) => '/api/v1/stays/$id/highlights';
 
   // POIs
   static String stayPois(int stayId) => '/api/v1/stays/$stayId/pois';
