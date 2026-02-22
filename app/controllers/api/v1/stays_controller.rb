@@ -70,6 +70,7 @@ module Api
           lng: @stay.longitude,
           radius_km: DEFAULT_POI_RADIUS_KM
         ).where(category: gallery_categories)
+         .where.not(name: [ nil, "" ])
          .order(Arel.sql("CASE WHEN foursquare_photo_url IS NOT NULL THEN 0 ELSE 1 END"))
 
         favorite_place_ids = @stay.pois.favorites.pluck(:place_id).to_set
@@ -83,14 +84,14 @@ module Api
             address: place.address,
             latitude: place.latitude,
             longitude: place.longitude,
-            distance_meters: place.distance_from(@stay.latitude, @stay.longitude),
+            distanceMeters: place.distance_from(@stay.latitude, @stay.longitude),
             favorite: favorite_place_ids.include?(place.id),
-            in_bucket_list: bucket_list_place_ids.include?(place.id),
-            foursquare_photo_url: place.foursquare_photo_url,
-            foursquare_rating: place.foursquare_rating,
-            foursquare_price: place.foursquare_price
+            inBucketList: bucket_list_place_ids.include?(place.id),
+            foursquarePhotoUrl: place.foursquare_photo_url,
+            foursquareRating: place.foursquare_rating,
+            foursquarePrice: place.foursquare_price
           }
-        end.sort_by { |p| p[:distance_meters] || Float::INFINITY }
+        end.sort_by { |p| p[:distanceMeters] || Float::INFINITY }
 
         total_count = places_with_distance.size
         total_pages = (total_count.to_f / per_page).ceil
@@ -100,9 +101,9 @@ module Api
         render json: {
           places: page_places,
           page: page,
-          total_pages: total_pages,
-          total_count: total_count,
-          has_more: page < total_pages
+          totalPages: total_pages,
+          totalCount: total_count,
+          hasMore: page < total_pages
         }
       end
 
