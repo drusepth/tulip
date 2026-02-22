@@ -46,6 +46,8 @@ class TulipButton extends StatelessWidget {
   }
 
   Widget _buildChild() {
+    final effectiveTextColor = textColor ?? (isOutlined ? TulipColors.sage : Colors.white);
+
     if (isLoading) {
       return SizedBox(
         height: 20,
@@ -63,13 +65,13 @@ class TulipButton extends StatelessWidget {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 20),
+          Icon(icon, size: 20, color: effectiveTextColor),
           const SizedBox(width: 8),
-          Text(label, style: TulipTextStyles.button),
+          Text(label, style: TulipTextStyles.button.copyWith(color: effectiveTextColor)),
         ],
       );
     }
 
-    return Text(label, style: TulipTextStyles.button);
+    return Text(label, style: TulipTextStyles.button.copyWith(color: effectiveTextColor));
   }
 }
