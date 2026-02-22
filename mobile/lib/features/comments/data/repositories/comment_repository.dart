@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/api/api_client.dart';
 import '../models/comment_model.dart';
@@ -17,7 +18,17 @@ class CommentRepository {
       '/api/v1/stays/$stayId/comments',
     );
     final data = response.data ?? [];
-    return data.map((json) => Comment.fromJson(_convertKeys(json as Map<String, dynamic>))).toList();
+    return data.map((json) {
+      final rawJson = json as Map<String, dynamic>;
+      final convertedJson = _convertKeys(rawJson);
+      try {
+        return Comment.fromJson(convertedJson);
+      } catch (e) {
+        debugPrint('Failed to parse comment JSON: $convertedJson');
+        debugPrint('Parse error: $e');
+        rethrow;
+      }
+    }).toList();
   }
 
   /// Create a new comment
@@ -58,7 +69,7 @@ class CommentRepository {
 
       // Handle type coercion for numeric fields that may come as strings
       if (newKey == 'id' || newKey == 'parentId' || newKey == 'userId') {
-        newValue = _toInt(value);
+        newValue = _toInt(value, fieldName: newKey);
       }
 
       return MapEntry(newKey, newValue);
@@ -66,11 +77,18 @@ class CommentRepository {
   }
 
   /// Safely convert value to int
-  int? _toInt(dynamic value) {
+  int? _toInt(dynamic value, {String? fieldName}) {
     if (value == null) return null;
     if (value is int) return value;
     if (value is double) return value.round();
-    if (value is String) return int.tryParse(value);
+    if (value is String) {
+      final parsed = int.tryParse(value);
+      if (parsed == null && value.isNotEmpty) {
+        debugPrint('Warning: Could not parse "$value" as int for field $fieldName');
+      }
+      return parsed;
+    }
+    debugPrint('Warning: Unexpected type ${value.runtimeType} for field $fieldName: $value');
     return null;
   }
 

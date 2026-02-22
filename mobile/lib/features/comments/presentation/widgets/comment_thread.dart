@@ -45,6 +45,15 @@ class _CommentThreadState extends ConsumerState<CommentThread> {
           const SizedBox(height: 16),
           Text('Unable to load comments', style: TulipTextStyles.body),
           const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Text(
+              error.toString(),
+              style: TulipTextStyles.caption,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 8),
           TextButton(
             onPressed: () => ref.read(commentsProvider(widget.stayId).notifier).refresh(),
             child: const Text('Retry'),
