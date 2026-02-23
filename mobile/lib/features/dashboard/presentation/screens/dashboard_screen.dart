@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/auth/auth_provider.dart';
 import '../../../../shared/constants/tulip_colors.dart';
 import '../../../../shared/constants/tulip_text_styles.dart';
 import '../../../../shared/widgets/loading_shimmer.dart';
@@ -99,6 +100,15 @@ class DashboardScreen extends ConsumerWidget {
               onPressed: () => ref.read(staysProvider.notifier).refresh(),
               icon: const Icon(Icons.refresh),
               label: const Text('Retry'),
+            ),
+            const SizedBox(height: 12),
+            TextButton.icon(
+              onPressed: () => ref.read(authStateProvider.notifier).signOut(),
+              icon: Icon(Icons.logout, color: TulipColors.taupe),
+              label: Text(
+                'Log Out',
+                style: TextStyle(color: TulipColors.taupe),
+              ),
             ),
           ],
         ),
