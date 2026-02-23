@@ -58,6 +58,7 @@ class CollaboratorUser with _$CollaboratorUser {
     required int id,
     required String name,
     required String email,
+    String? avatarUrl,
   }) = _CollaboratorUser;
 
   factory CollaboratorUser.fromJson(Map<String, dynamic> json) =>

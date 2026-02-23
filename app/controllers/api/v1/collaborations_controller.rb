@@ -84,7 +84,8 @@ module Api
           user: collaboration.user ? {
             id: collaboration.user.id,
             name: collaboration.user.name,
-            email: collaboration.user.email
+            email: collaboration.user.email,
+            avatar_url: helpers.avatar_url(collaboration.user, size: 80)
           } : nil,
           created_at: collaboration.created_at
         }

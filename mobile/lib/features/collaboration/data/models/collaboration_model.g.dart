@@ -36,6 +36,7 @@ _$CollaboratorUserImpl _$$CollaboratorUserImplFromJson(
   id: (json['id'] as num).toInt(),
   name: json['name'] as String,
   email: json['email'] as String,
+  avatarUrl: json['avatarUrl'] as String?,
 );
 
 Map<String, dynamic> _$$CollaboratorUserImplToJson(
@@ -44,6 +45,7 @@ Map<String, dynamic> _$$CollaboratorUserImplToJson(
   'id': instance.id,
   'name': instance.name,
   'email': instance.email,
+  'avatarUrl': instance.avatarUrl,
 };
 
 _$CollaborationsResponseImpl _$$CollaborationsResponseImplFromJson(

@@ -52,10 +52,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
   }
 
-  String _getGravatarUrl(String email) {
+  String _getDiceBearAvatarUrl(String email, {int size = 200}) {
     final trimmedEmail = email.trim().toLowerCase();
     final hash = md5.convert(utf8.encode(trimmedEmail)).toString();
-    return 'https://www.gravatar.com/avatar/$hash?s=200&d=mp';
+    // Cottagecore background colors matching Rails AvatarHelper
+    const backgrounds = ['b8c9b8', 'd4a5a5', 'c9b8a8', 'c8bfd4', 'fdf8f3'];
+    final bgIndex = int.parse(hash.substring(0, 8), radix: 16) % backgrounds.length;
+    final bg = backgrounds[bgIndex];
+    return 'https://api.dicebear.com/7.x/lorelei/svg?seed=$hash&size=$size&backgroundColor=$bg';
   }
 
   Future<void> _handleSaveProfile() async {
@@ -202,21 +206,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
                   // Avatar Section
                   Center(
-                    child: Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 48,
-                          backgroundColor: TulipColors.sageLight,
-                          backgroundImage: NetworkImage(_getGravatarUrl(profile.email)),
-                          onBackgroundImageError: (_, __) {},
-                          child: null,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Gravatar',
-                          style: TulipTextStyles.caption,
-                        ),
-                      ],
+                    child: CircleAvatar(
+                      radius: 48,
+                      backgroundColor: TulipColors.sageLight,
+                      backgroundImage: NetworkImage(_getDiceBearAvatarUrl(profile.email)),
+                      onBackgroundImageError: (_, __) {},
+                      child: null,
                     ),
                   ),
                   const SizedBox(height: 24),

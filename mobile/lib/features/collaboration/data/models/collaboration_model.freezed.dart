@@ -341,6 +341,7 @@ mixin _$CollaboratorUser {
   int get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
+  String? get avatarUrl => throw _privateConstructorUsedError;
 
   /// Serializes this CollaboratorUser to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -359,7 +360,7 @@ abstract class $CollaboratorUserCopyWith<$Res> {
     $Res Function(CollaboratorUser) then,
   ) = _$CollaboratorUserCopyWithImpl<$Res, CollaboratorUser>;
   @useResult
-  $Res call({int id, String name, String email});
+  $Res call({int id, String name, String email, String? avatarUrl});
 }
 
 /// @nodoc
@@ -376,7 +377,12 @@ class _$CollaboratorUserCopyWithImpl<$Res, $Val extends CollaboratorUser>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? id = null, Object? name = null, Object? email = null}) {
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+    Object? email = null,
+    Object? avatarUrl = freezed,
+  }) {
     return _then(
       _value.copyWith(
             id: null == id
@@ -391,6 +397,10 @@ class _$CollaboratorUserCopyWithImpl<$Res, $Val extends CollaboratorUser>
                 ? _value.email
                 : email // ignore: cast_nullable_to_non_nullable
                       as String,
+            avatarUrl: freezed == avatarUrl
+                ? _value.avatarUrl
+                : avatarUrl // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -406,7 +416,7 @@ abstract class _$$CollaboratorUserImplCopyWith<$Res>
   ) = __$$CollaboratorUserImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, String name, String email});
+  $Res call({int id, String name, String email, String? avatarUrl});
 }
 
 /// @nodoc
@@ -422,7 +432,12 @@ class __$$CollaboratorUserImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? id = null, Object? name = null, Object? email = null}) {
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+    Object? email = null,
+    Object? avatarUrl = freezed,
+  }) {
     return _then(
       _$CollaboratorUserImpl(
         id: null == id
@@ -437,6 +452,10 @@ class __$$CollaboratorUserImplCopyWithImpl<$Res>
             ? _value.email
             : email // ignore: cast_nullable_to_non_nullable
                   as String,
+        avatarUrl: freezed == avatarUrl
+            ? _value.avatarUrl
+            : avatarUrl // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -449,6 +468,7 @@ class _$CollaboratorUserImpl implements _CollaboratorUser {
     required this.id,
     required this.name,
     required this.email,
+    this.avatarUrl,
   });
 
   factory _$CollaboratorUserImpl.fromJson(Map<String, dynamic> json) =>
@@ -460,10 +480,12 @@ class _$CollaboratorUserImpl implements _CollaboratorUser {
   final String name;
   @override
   final String email;
+  @override
+  final String? avatarUrl;
 
   @override
   String toString() {
-    return 'CollaboratorUser(id: $id, name: $name, email: $email)';
+    return 'CollaboratorUser(id: $id, name: $name, email: $email, avatarUrl: $avatarUrl)';
   }
 
   @override
@@ -473,12 +495,14 @@ class _$CollaboratorUserImpl implements _CollaboratorUser {
             other is _$CollaboratorUserImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.email, email) || other.email == email));
+            (identical(other.email, email) || other.email == email) &&
+            (identical(other.avatarUrl, avatarUrl) ||
+                other.avatarUrl == avatarUrl));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, email);
+  int get hashCode => Object.hash(runtimeType, id, name, email, avatarUrl);
 
   /// Create a copy of CollaboratorUser
   /// with the given fields replaced by the non-null parameter values.
@@ -502,6 +526,7 @@ abstract class _CollaboratorUser implements CollaboratorUser {
     required final int id,
     required final String name,
     required final String email,
+    final String? avatarUrl,
   }) = _$CollaboratorUserImpl;
 
   factory _CollaboratorUser.fromJson(Map<String, dynamic> json) =
@@ -513,6 +538,8 @@ abstract class _CollaboratorUser implements CollaboratorUser {
   String get name;
   @override
   String get email;
+  @override
+  String? get avatarUrl;
 
   /// Create a copy of CollaboratorUser
   /// with the given fields replaced by the non-null parameter values.
