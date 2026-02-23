@@ -49,6 +49,10 @@ class StaysController < ApplicationController
     end
     @weather = @stay.expected_weather
 
+    # Highlights data (completed bucket list items)
+    @highlights = @stay.bucket_list_items.completed.includes(:ratings).limit(3)
+    @highlights_count = @stay.bucket_list_items.completed.count
+
     # For collaboration display
     @is_owner = @stay.owner?(current_user)
     @can_edit = @stay.editable_by?(current_user)
