@@ -211,7 +211,11 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
               StatusBadge(status: stay.status),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 8),
+
+          // Collaborator avatar stack
+          _buildCollaboratorAvatarStack(stay),
+          const SizedBox(height: 16),
 
           // Date and duration card
           if (stay.checkIn != null && stay.checkOut != null)
@@ -498,10 +502,6 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
                 ],
               ),
             ),
-          const SizedBox(height: 16),
-
-          // Collaboration info with avatar stack
-          _buildCollaboratorsCard(stay),
           const SizedBox(height: 32),
         ],
       ),
@@ -563,12 +563,8 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
   }
 
   Widget _buildHighlightsCard(Stay stay) {
-    final completedCount = ref.watch(bucketListCompletedCountProvider(stay.id));
-
-    // Only show if there are completed items
-    if (completedCount == 0) {
-      return const SizedBox.shrink();
-    }
+    final completedCount = stay.bucketListCompletedCount;
+    final hasHighlights = completedCount > 0;
 
     return Column(
       children: [
@@ -599,7 +595,9 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
                       Text('Trip Highlights', style: TulipTextStyles.label),
                       const SizedBox(height: 2),
                       Text(
-                        '$completedCount completed ${completedCount == 1 ? 'item' : 'items'} with ratings',
+                        hasHighlights
+                            ? '$completedCount completed ${completedCount == 1 ? 'item' : 'items'} with ratings'
+                            : 'Your trip memories',
                         style: TulipTextStyles.caption,
                       ),
                     ],
@@ -618,69 +616,137 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
     );
   }
 
-  Widget _buildCollaboratorsCard(Stay stay) {
+  Widget _buildCollaboratorAvatarStack(Stay stay) {
     final collaborationsAsync = ref.watch(collaborationsProvider(stay.id));
 
     return GestureDetector(
       onTap: () => context.push(
         '/stays/${stay.id}/collaborators?title=${Uri.encodeComponent(stay.title)}&is_owner=${stay.isOwner}',
       ),
-      child: CozyCard(
-        child: Row(
-          children: [
-            // Avatar stack or icon
-            collaborationsAsync.when(
-              loading: () => _buildAvatarPlaceholder(),
-              error: (_, __) => _buildAvatarPlaceholder(),
-              data: (response) {
-                final accepted = response.accepted;
-                if (accepted.isEmpty) {
-                  return _buildAvatarPlaceholder();
-                }
-                return _buildAvatarStack(accepted);
-              },
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Travelers', style: TulipTextStyles.label),
-                  collaborationsAsync.when(
-                    loading: () => Text(
-                      'Loading...',
-                      style: TulipTextStyles.caption,
+      child: collaborationsAsync.when(
+        loading: () => const SizedBox.shrink(),
+        error: (_, __) => const SizedBox.shrink(),
+        data: (response) {
+          final accepted = response.accepted;
+          // Always show at least the owner, plus any collaborators
+          final totalCount = accepted.length + 1; // +1 for owner
+
+          if (totalCount <= 1 && stay.collaboratorCount == 0) {
+            // No collaborators, don't show avatar stack
+            return const SizedBox.shrink();
+          }
+
+          // Calculate stack width: first avatar is 28px, each additional overlaps by 18px
+          final displayedCollaborators = accepted.length.clamp(0, 4);
+          final hasOverflow = accepted.length > 4;
+          final totalAvatars = 1 + displayedCollaborators + (hasOverflow ? 1 : 0); // owner + collaborators + overflow
+          final stackWidth = 28.0 + (totalAvatars - 1) * 18.0;
+
+          return Row(
+            children: [
+              // Overlapping avatar stack
+              SizedBox(
+                height: 28,
+                width: stackWidth,
+                child: Stack(
+                  children: [
+                    // Owner avatar (always first, with sage ring)
+                    _buildHeaderAvatar(
+                      name: 'Owner',
+                      index: 0,
+                      offset: 0,
+                      ringColor: TulipColors.sage,
                     ),
-                    error: (_, __) => Text(
-                      stay.collaboratorCount > 0
-                          ? '${stay.collaboratorCount + 1} travelers'
-                          : 'Invite others to plan together',
-                      style: TulipTextStyles.caption,
-                    ),
-                    data: (response) {
-                      final total = response.accepted.length + 1; // +1 for owner
-                      final pending = response.pending.length;
-                      if (total == 1 && pending == 0) {
-                        return Text(
-                          'Invite others to plan together',
-                          style: TulipTextStyles.caption,
-                        );
-                      }
-                      String text = '$total ${total == 1 ? 'traveler' : 'travelers'}';
-                      if (pending > 0) {
-                        text += ' \u2022 $pending pending';
-                      }
-                      return Text(text, style: TulipTextStyles.caption);
-                    },
-                  ),
-                ],
+                    // Collaborator avatars
+                    for (int i = 0; i < accepted.length.clamp(0, 4); i++)
+                      _buildHeaderAvatar(
+                        name: accepted[i].displayName,
+                        index: i + 1,
+                        offset: (i + 1) * 18.0,
+                        ringColor: TulipColors.lavender,
+                      ),
+                    // Overflow indicator
+                    if (accepted.length > 4)
+                      Positioned(
+                        left: 5 * 18.0,
+                        child: Container(
+                          width: 28,
+                          height: 28,
+                          decoration: BoxDecoration(
+                            color: TulipColors.taupeLight,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '+${accepted.length - 4}',
+                              style: TulipTextStyles.caption.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 10,
+                                color: TulipColors.brown,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildHeaderAvatar({
+    required String name,
+    required int index,
+    required double offset,
+    required Color ringColor,
+  }) {
+    // Generate initials
+    String initials = '?';
+    if (name.contains('@')) {
+      initials = name[0].toUpperCase();
+    } else {
+      final parts = name.split(' ');
+      if (parts.length >= 2) {
+        initials = '${parts.first[0]}${parts.last[0]}'.toUpperCase();
+      } else if (name.isNotEmpty) {
+        initials = name[0].toUpperCase();
+      }
+    }
+
+    // Consistent color based on name
+    final colors = [
+      TulipColors.sage,
+      TulipColors.lavender,
+      TulipColors.rose,
+      TulipColors.coral,
+    ];
+    final colorIndex = name.hashCode.abs() % colors.length;
+    final bgColor = index == 0 ? TulipColors.sage : colors[colorIndex];
+
+    return Positioned(
+      left: offset,
+      child: Container(
+        width: 28,
+        height: 28,
+        decoration: BoxDecoration(
+          color: bgColor,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white, width: 2),
+        ),
+        child: Center(
+          child: Text(
+            initials,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 10,
             ),
-            Icon(
-              Icons.chevron_right,
-              color: TulipColors.brownLight,
-            ),
-          ],
+          ),
         ),
       ),
     );
