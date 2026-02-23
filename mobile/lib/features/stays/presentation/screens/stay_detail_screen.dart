@@ -16,6 +16,8 @@ import '../../../bucket_list/presentation/widgets/bucket_list_item_tile.dart';
 import '../../../bucket_list/data/models/bucket_list_item_model.dart';
 import '../../../weather/presentation/widgets/weather_card.dart';
 import '../../../comments/presentation/widgets/comment_thread.dart';
+import '../../../collaboration/presentation/providers/collaboration_provider.dart';
+import '../../../collaboration/data/models/collaboration_model.dart';
 
 class StayDetailScreen extends ConsumerStatefulWidget {
   final int stayId;
@@ -498,46 +500,8 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
             ),
           const SizedBox(height: 16),
 
-          // Collaboration info
-          GestureDetector(
-            onTap: () => context.push(
-              '/stays/${stay.id}/collaborators?title=${Uri.encodeComponent(stay.title)}&is_owner=${stay.isOwner}',
-            ),
-            child: CozyCard(
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.people_outline,
-                    size: 20,
-                    color: TulipColors.brownLight,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Collaborators', style: TulipTextStyles.label),
-                        if (stay.collaboratorCount > 0)
-                          Text(
-                            '${stay.collaboratorCount} ${stay.collaboratorCount == 1 ? 'person' : 'people'} sharing',
-                            style: TulipTextStyles.caption,
-                          )
-                        else
-                          Text(
-                            'Invite others to plan together',
-                            style: TulipTextStyles.caption,
-                          ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    Icons.chevron_right,
-                    color: TulipColors.brownLight,
-                  ),
-                ],
-              ),
-            ),
-          ),
+          // Collaboration info with avatar stack
+          _buildCollaboratorsCard(stay),
           const SizedBox(height: 32),
         ],
       ),
@@ -651,6 +615,184 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
         ),
         const SizedBox(height: 16),
       ],
+    );
+  }
+
+  Widget _buildCollaboratorsCard(Stay stay) {
+    final collaborationsAsync = ref.watch(collaborationsProvider(stay.id));
+
+    return GestureDetector(
+      onTap: () => context.push(
+        '/stays/${stay.id}/collaborators?title=${Uri.encodeComponent(stay.title)}&is_owner=${stay.isOwner}',
+      ),
+      child: CozyCard(
+        child: Row(
+          children: [
+            // Avatar stack or icon
+            collaborationsAsync.when(
+              loading: () => _buildAvatarPlaceholder(),
+              error: (_, __) => _buildAvatarPlaceholder(),
+              data: (response) {
+                final accepted = response.accepted;
+                if (accepted.isEmpty) {
+                  return _buildAvatarPlaceholder();
+                }
+                return _buildAvatarStack(accepted);
+              },
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Travelers', style: TulipTextStyles.label),
+                  collaborationsAsync.when(
+                    loading: () => Text(
+                      'Loading...',
+                      style: TulipTextStyles.caption,
+                    ),
+                    error: (_, __) => Text(
+                      stay.collaboratorCount > 0
+                          ? '${stay.collaboratorCount + 1} travelers'
+                          : 'Invite others to plan together',
+                      style: TulipTextStyles.caption,
+                    ),
+                    data: (response) {
+                      final total = response.accepted.length + 1; // +1 for owner
+                      final pending = response.pending.length;
+                      if (total == 1 && pending == 0) {
+                        return Text(
+                          'Invite others to plan together',
+                          style: TulipTextStyles.caption,
+                        );
+                      }
+                      String text = '$total ${total == 1 ? 'traveler' : 'travelers'}';
+                      if (pending > 0) {
+                        text += ' \u2022 $pending pending';
+                      }
+                      return Text(text, style: TulipTextStyles.caption);
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: TulipColors.brownLight,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAvatarPlaceholder() {
+    return Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        color: TulipColors.taupeLight,
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        Icons.people_outline,
+        size: 18,
+        color: TulipColors.brownLight,
+      ),
+    );
+  }
+
+  Widget _buildAvatarStack(List<Collaboration> collaborators) {
+    // Show max 4 avatars + overflow indicator
+    const maxAvatars = 4;
+    final displayCollaborators = collaborators.take(maxAvatars).toList();
+    final overflow = collaborators.length - maxAvatars;
+
+    return SizedBox(
+      width: 36.0 + (displayCollaborators.length - 1) * 20 + (overflow > 0 ? 20 : 0),
+      height: 36,
+      child: Stack(
+        children: [
+          // Collaborator avatars (stacked right to left so first is on top)
+          for (int i = displayCollaborators.length - 1; i >= 0; i--)
+            Positioned(
+              left: i * 20.0,
+              child: _buildCollaboratorAvatar(
+                displayCollaborators[i],
+                isFirst: i == 0,
+              ),
+            ),
+          // Overflow indicator
+          if (overflow > 0)
+            Positioned(
+              left: displayCollaborators.length * 20.0,
+              child: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: TulipColors.taupeLight,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2),
+                ),
+                child: Center(
+                  child: Text(
+                    '+$overflow',
+                    style: TulipTextStyles.caption.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: TulipColors.brown,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCollaboratorAvatar(Collaboration collaboration, {bool isFirst = false}) {
+    // Generate initials and color
+    final name = collaboration.displayName;
+    String initials = '?';
+    if (name.contains('@')) {
+      initials = name[0].toUpperCase();
+    } else {
+      final parts = name.split(' ');
+      if (parts.length >= 2) {
+        initials = '${parts.first[0]}${parts.last[0]}'.toUpperCase();
+      } else if (name.isNotEmpty) {
+        initials = name[0].toUpperCase();
+      }
+    }
+
+    // Consistent color based on name
+    final colors = [
+      TulipColors.sage,
+      TulipColors.lavender,
+      TulipColors.rose,
+      TulipColors.coral,
+    ];
+    final colorIndex = name.hashCode.abs() % colors.length;
+    final bgColor = isFirst ? TulipColors.sage : colors[colorIndex];
+
+    return Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        color: bgColor,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: 2),
+      ),
+      child: Center(
+        child: Text(
+          initials,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+            fontSize: 12,
+          ),
+        ),
+      ),
     );
   }
 
