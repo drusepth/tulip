@@ -41,7 +41,7 @@ module Api
 
         # Check if we have a fresh cache for this grid
         if SearchedGridCell.fresh_cache?(grid_key)
-          return render json: format_viewport_pois(ViewportPoi.by_grid_key(grid_key).includes(:place))
+          return render json: { pois: format_viewport_pois(ViewportPoi.by_grid_key(grid_key).includes(:place)) }
         end
 
         # Cache miss or stale - fetch from Overpass API using grid center
@@ -73,7 +73,7 @@ module Api
           end
         end
 
-        render json: format_viewport_pois(ViewportPoi.by_grid_key(grid_key).includes(:place))
+        render json: { pois: format_viewport_pois(ViewportPoi.by_grid_key(grid_key).includes(:place)) }
       end
 
       def bucket_list_items

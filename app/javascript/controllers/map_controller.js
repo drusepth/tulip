@@ -852,7 +852,7 @@ export default class extends Controller {
                   delete this.searchedGridCells[`${category}-${cell.gridKey}`]
                   return { pois: [], cell }
                 }
-                return r.json().then(pois => ({ pois, cell }))
+                return r.json().then(data => ({ pois: data.pois || [], cell }))
               })
               .catch(error => {
                 if (error.name === 'AbortError') throw error
