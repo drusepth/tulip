@@ -17,7 +17,6 @@ import '../../../bucket_list/data/models/bucket_list_item_model.dart';
 import '../../../weather/presentation/widgets/weather_card.dart';
 import '../../../comments/presentation/widgets/comment_thread.dart';
 import '../../../collaboration/presentation/providers/collaboration_provider.dart';
-import '../../../collaboration/data/models/collaboration_model.dart';
 
 class StayDetailScreen extends ConsumerStatefulWidget {
   final int stayId;
@@ -664,6 +663,7 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
                         index: i + 1,
                         offset: (i + 1) * 18.0,
                         ringColor: TulipColors.lavender,
+                        avatarUrl: accepted[i].user?.avatarUrl,
                       ),
                     // Overflow indicator
                     if (accepted.length > 4)
@@ -746,116 +746,6 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
               fontWeight: FontWeight.w600,
               fontSize: 10,
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAvatarPlaceholder() {
-    return Container(
-      width: 36,
-      height: 36,
-      decoration: BoxDecoration(
-        color: TulipColors.taupeLight,
-        shape: BoxShape.circle,
-      ),
-      child: Icon(
-        Icons.people_outline,
-        size: 18,
-        color: TulipColors.brownLight,
-      ),
-    );
-  }
-
-  Widget _buildAvatarStack(List<Collaboration> collaborators) {
-    // Show max 4 avatars + overflow indicator
-    const maxAvatars = 4;
-    final displayCollaborators = collaborators.take(maxAvatars).toList();
-    final overflow = collaborators.length - maxAvatars;
-
-    return SizedBox(
-      width: 36.0 + (displayCollaborators.length - 1) * 20 + (overflow > 0 ? 20 : 0),
-      height: 36,
-      child: Stack(
-        children: [
-          // Collaborator avatars (stacked right to left so first is on top)
-          for (int i = displayCollaborators.length - 1; i >= 0; i--)
-            Positioned(
-              left: i * 20.0,
-              child: _buildCollaboratorAvatar(
-                displayCollaborators[i],
-                isFirst: i == 0,
-              ),
-            ),
-          // Overflow indicator
-          if (overflow > 0)
-            Positioned(
-              left: displayCollaborators.length * 20.0,
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: TulipColors.taupeLight,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2),
-                ),
-                child: Center(
-                  child: Text(
-                    '+$overflow',
-                    style: TulipTextStyles.caption.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: TulipColors.brown,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCollaboratorAvatar(Collaboration collaboration, {bool isFirst = false}) {
-    // Generate initials and color
-    final name = collaboration.displayName;
-    String initials = '?';
-    if (name.contains('@')) {
-      initials = name[0].toUpperCase();
-    } else {
-      final parts = name.split(' ');
-      if (parts.length >= 2) {
-        initials = '${parts.first[0]}${parts.last[0]}'.toUpperCase();
-      } else if (name.isNotEmpty) {
-        initials = name[0].toUpperCase();
-      }
-    }
-
-    // Consistent color based on name
-    final colors = [
-      TulipColors.sage,
-      TulipColors.lavender,
-      TulipColors.rose,
-      TulipColors.coral,
-    ];
-    final colorIndex = name.hashCode.abs() % colors.length;
-    final bgColor = isFirst ? TulipColors.sage : colors[colorIndex];
-
-    return Container(
-      width: 36,
-      height: 36,
-      decoration: BoxDecoration(
-        color: bgColor,
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 2),
-      ),
-      child: Center(
-        child: Text(
-          initials,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-            fontSize: 12,
           ),
         ),
       ),
@@ -1195,7 +1085,7 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
               final success = await ref
                   .read(stayFormProvider.notifier)
                   .deleteStay(stay.id);
-              if (success && mounted) {
+              if (success && context.mounted) {
                 context.pop();
               }
             },
