@@ -383,13 +383,12 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          if (stay.priceFormatted != null)
-                            Text(
-                              stay.priceFormatted!,
-                              style: TulipTextStyles.caption.copyWith(
-                                color: TulipColors.sageDark,
-                              ),
+                          Text(
+                            'View booking on ${_formatStayType(stay.stayType)}',
+                            style: TulipTextStyles.caption.copyWith(
+                              color: TulipColors.sageDark,
                             ),
+                          ),
                         ],
                       ),
                     ),
@@ -704,8 +703,9 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
     required int index,
     required double offset,
     required Color ringColor,
+    String? avatarUrl,
   }) {
-    // Generate initials
+    // Generate initials for fallback
     String initials = '?';
     if (name.contains('@')) {
       initials = name[0].toUpperCase();
@@ -718,7 +718,7 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
       }
     }
 
-    // Consistent color based on name
+    // Consistent color based on name (used for fallback)
     final colors = [
       TulipColors.sage,
       TulipColors.lavender,
@@ -738,16 +738,45 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
           shape: BoxShape.circle,
           border: Border.all(color: Colors.white, width: 2),
         ),
-        child: Center(
-          child: Text(
-            initials,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-              fontSize: 10,
-            ),
-          ),
-        ),
+        child: avatarUrl != null
+            ? ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: avatarUrl,
+                  width: 24,
+                  height: 24,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Center(
+                    child: Text(
+                      initials,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Center(
+                    child: Text(
+                      initials,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : Center(
+                child: Text(
+                  initials,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 10,
+                  ),
+                ),
+              ),
       ),
     );
   }
@@ -1021,15 +1050,6 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
                 context.go('/map');
               },
             ),
-            if (stay.bookingUrl != null)
-              ListTile(
-                leading: const Icon(Icons.open_in_browser),
-                title: const Text('Open Booking Link'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _openBookingUrl(stay.bookingUrl!);
-                },
-              ),
             ListTile(
               leading: const Icon(Icons.auto_awesome),
               title: const Text('Trip Highlights'),
@@ -1048,6 +1068,15 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
                 // TODO: Share
               },
             ),
+            if (stay.bookingUrl != null)
+              ListTile(
+                leading: const Icon(Icons.open_in_browser),
+                title: const Text('Open Booking Link'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _openBookingUrl(stay.bookingUrl!);
+                },
+              ),
             if (stay.isOwner) ...[
               const Divider(),
               ListTile(
@@ -1102,5 +1131,11 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
+  }
+
+  String _formatStayType(String? stayType) {
+    if (stayType == null || stayType.isEmpty) return 'website';
+    // Capitalize first letter
+    return stayType[0].toUpperCase() + stayType.substring(1);
   }
 }
