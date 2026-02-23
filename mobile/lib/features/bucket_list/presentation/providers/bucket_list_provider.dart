@@ -62,6 +62,35 @@ class BucketListNotifier extends FamilyAsyncNotifier<List<BucketListItem>, int> 
     }
   }
 
+  /// Restore an item after deletion (for undo functionality)
+  Future<BucketListItem?> restoreItem(BucketListItem deletedItem) async {
+    final repository = ref.read(bucketListRepositoryProvider);
+    try {
+      // Re-create the item with the same data
+      final request = BucketListItemRequest(
+        title: deletedItem.title,
+        category: deletedItem.category,
+        notes: deletedItem.notes,
+        address: deletedItem.address,
+        latitude: deletedItem.latitude,
+        longitude: deletedItem.longitude,
+        placeId: deletedItem.placeId,
+      );
+      var newItem = await repository.createItem(arg, request);
+
+      // If the original item was completed, toggle the new one to match
+      if (deletedItem.completed) {
+        newItem = await repository.toggleItem(newItem.id);
+      }
+
+      final items = state.valueOrNull ?? [];
+      state = AsyncValue.data([...items, newItem]);
+      return newItem;
+    } catch (e) {
+      return null;
+    }
+  }
+
   /// Rate an item
   Future<void> rateItem(int itemId, int rating) async {
     final repository = ref.read(bucketListRepositoryProvider);

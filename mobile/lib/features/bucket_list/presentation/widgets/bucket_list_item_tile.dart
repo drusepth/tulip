@@ -9,6 +9,7 @@ class BucketListItemTile extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onToggle;
   final VoidCallback? onDelete;
+  final VoidCallback? onUndo;
   final ValueChanged<int>? onRate;
 
   const BucketListItemTile({
@@ -17,15 +18,42 @@ class BucketListItemTile extends StatelessWidget {
     this.onTap,
     this.onToggle,
     this.onDelete,
+    this.onUndo,
     this.onRate,
   });
+
+  void _handleDelete(BuildContext context) {
+    // Call onDelete to optimistically remove item from UI and delete from server
+    onDelete?.call();
+
+    // Show undo snackbar
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('"${item.title}" deleted'),
+        duration: const Duration(seconds: 5),
+        action: SnackBarAction(
+          label: 'Undo',
+          textColor: TulipColors.sage,
+          onPressed: () {
+            onUndo?.call();
+          },
+        ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        margin: const EdgeInsets.all(16),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Dismissible(
       key: Key('bucket_item_${item.id}'),
       direction: onDelete != null ? DismissDirection.endToStart : DismissDirection.none,
-      onDismissed: (_) => onDelete?.call(),
+      onDismissed: (_) => _handleDelete(context),
       background: Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),

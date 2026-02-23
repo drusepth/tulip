@@ -986,6 +986,11 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
                             .read(bucketListProvider(stay.id).notifier)
                             .deleteItem(item.id)
                         : null,
+                    onUndo: stay.canEdit
+                        ? () => ref
+                            .read(bucketListProvider(stay.id).notifier)
+                            .restoreItem(item)
+                        : null,
                   ),
                 )),
             const SizedBox(height: 16),
@@ -1006,6 +1011,11 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
                         ? () => ref
                             .read(bucketListProvider(stay.id).notifier)
                             .deleteItem(item.id)
+                        : null,
+                    onUndo: stay.canEdit
+                        ? () => ref
+                            .read(bucketListProvider(stay.id).notifier)
+                            .restoreItem(item)
                         : null,
                     onRate: (rating) => ref
                         .read(bucketListProvider(stay.id).notifier)
