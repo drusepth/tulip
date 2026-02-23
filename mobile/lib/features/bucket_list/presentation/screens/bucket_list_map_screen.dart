@@ -238,12 +238,12 @@ class _BucketListMapScreenState extends ConsumerState<BucketListMapScreen> {
                         children: [
                           _buildLegendItem(
                             color: TulipColors.rose,
-                            label: 'Pending',
+                            label: 'Want to go',
                           ),
                           const SizedBox(width: 16),
                           _buildLegendItem(
                             color: TulipColors.sage,
-                            label: 'Completed',
+                            label: 'Went',
                             showCheck: true,
                           ),
                         ],
@@ -376,7 +376,7 @@ class _BucketListMapScreenState extends ConsumerState<BucketListMapScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  item.completed ? 'Completed' : 'Pending',
+                  item.completed ? 'Went' : 'Want to go',
                   style: TulipTextStyles.caption.copyWith(
                     color:
                         item.completed ? TulipColors.sageDark : TulipColors.roseDark,
