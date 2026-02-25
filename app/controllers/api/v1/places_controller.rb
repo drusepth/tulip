@@ -35,11 +35,11 @@ module Api
           foursquare_rating: place.foursquare_rating,
           foursquare_price: place.foursquare_price,
           foursquare_photo_url: place.foursquare_photo_url,
-          foursquare_tips: place.foursquare_tips,
+          foursquare_tips: place.foursquare_tip.present? ? [place.foursquare_tip] : nil,
           wikidata_id: place.wikidata_id,
           wikipedia_url: place.wikipedia_url,
           wikipedia_extract: place.wikipedia_extract,
-          image_url: place.image_url
+          image_url: place.wikidata_image_url
         }
       end
     end
