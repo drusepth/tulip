@@ -65,11 +65,25 @@ class _CountdownHeroState extends State<CountdownHero> {
     }
   }
 
+  bool get _isStartingToday {
+    if (widget.nextTrip?.checkIn == null) return false;
+    final now = DateTime.now();
+    final checkIn = widget.nextTrip!.checkIn!;
+    return checkIn.year == now.year &&
+        checkIn.month == now.month &&
+        checkIn.day == now.day;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Currently on a trip
     if (widget.currentStay != null) {
       return _buildCurrentStayHero();
+    }
+
+    // Trip starts today — special treatment
+    if (widget.nextTrip != null && _isStartingToday) {
+      return _buildStartsTodayHero();
     }
 
     // Upcoming trip exists
@@ -192,6 +206,127 @@ class _CountdownHeroState extends State<CountdownHero> {
     );
   }
 
+
+  Widget _buildStartsTodayHero() {
+    return GestureDetector(
+      onTap: () => context.push('/stays/${widget.nextTrip!.id}'),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xFFF0E8FD), // Soft lavender
+              const Color(0xFFE4D8F5), // Deeper lavender
+              const Color(0xFFF5E1D8), // Touch of warm peach
+            ],
+          ),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: TulipColors.lavender.withValues(alpha: 0.5),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: TulipColors.lavender.withValues(alpha: 0.25),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            // "Today" pill with celebratory style
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              decoration: BoxDecoration(
+                color: TulipColors.sage,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.celebration,
+                    size: 16,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Today\'s the day!',
+                    style: TulipTextStyles.caption.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Destination
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.flight_takeoff,
+                  size: 22,
+                  color: TulipColors.lavenderDark,
+                ),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: Text(
+                    widget.nextTrip!.location,
+                    style: TulipTextStyles.heading1.copyWith(
+                      fontSize: 26,
+                      color: const Color(0xFF5D4037),
+                      fontWeight: FontWeight.w600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+
+            // "Your trip starts now" banner
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.8),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: TulipColors.sage.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.luggage,
+                    size: 20,
+                    color: TulipColors.sageDark,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Your trip starts today!',
+                    style: TulipTextStyles.body.copyWith(
+                      color: TulipColors.sageDark,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _buildCurrentStayHero() {
     final stay = widget.currentStay!;

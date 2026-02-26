@@ -168,7 +168,11 @@
                   Planned
                 </span>
               <% end %>
-              <span class="text-white text-sm">in <%= pluralize(@next_stay.days_until_check_in, 'day') %></span>
+              <% if @next_stay.days_until_check_in == 0 %>
+                <span class="text-white text-sm font-semibold">Starts today!</span>
+              <% else %>
+                <span class="text-white text-sm">in <%= pluralize(@next_stay.days_until_check_in, 'day') %></span>
+              <% end %>
             </div>
             <h2 class="text-2xl font-bold group-hover:underline"><%= @next_stay.title %></h2>
             <p class="text-white mt-1"><%= [@next_stay.city, @next_stay.country].compact.join(', ') %></p>
@@ -235,7 +239,7 @@
               <p class="text-white opacity-80 text-sm"><%= [stay.city, stay.country].compact.join(', ') %></p>
               <div class="mt-2 flex items-center justify-between text-xs text-white opacity-70">
                 <span><%= stay.check_in.strftime('%b %d') %> - <%= stay.check_out.strftime('%b %d') %></span>
-                <span>in <%= pluralize(stay.days_until_check_in, 'day') %></span>
+                <span><%= stay.days_until_check_in == 0 ? 'Today!' : "in #{pluralize(stay.days_until_check_in, 'day')}" %></span>
               </div>
             </div>
           </div>
