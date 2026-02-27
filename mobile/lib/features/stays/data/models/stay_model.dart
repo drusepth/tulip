@@ -65,14 +65,27 @@ class Stay with _$Stay {
     return '$currency ${perNight.toStringAsFixed(0)}/night';
   }
 
+  /// Compute status from dates (device local time) instead of trusting server
+  String get computedStatus {
+    if (checkIn == null || checkOut == null) return 'upcoming';
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final checkInDay = DateTime(checkIn!.year, checkIn!.month, checkIn!.day);
+    final checkOutDay = DateTime(checkOut!.year, checkOut!.month, checkOut!.day);
+
+    if (checkOutDay.isBefore(today)) return 'past';
+    if (!checkInDay.isAfter(today)) return 'current';
+    return 'upcoming';
+  }
+
   /// Check if stay is currently active
-  bool get isCurrent => status == 'current';
+  bool get isCurrent => computedStatus == 'current';
 
   /// Check if stay is upcoming
-  bool get isUpcoming => status == 'upcoming';
+  bool get isUpcoming => computedStatus == 'upcoming';
 
   /// Check if stay is past
-  bool get isPast => status == 'past';
+  bool get isPast => computedStatus == 'past';
 
   /// Check if stay has valid coordinates
   bool get hasCoordinates => latitude != null && longitude != null;

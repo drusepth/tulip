@@ -206,63 +206,164 @@ class _CountdownHeroState extends State<CountdownHero> {
 
     final progress = totalDays > 0 ? dayNumber / totalDays : 0.0;
 
-    return CozyCard(
-      backgroundColor: TulipColors.cream,
+    const textColor = Color(0xFF5D4037);
+    const textColorLight = Color(0xFF8D6E63);
+
+    final String motivationalText;
+    if (dayNumber == 1) {
+      motivationalText = 'Your adventure begins!';
+    } else if (dayNumber == totalDays) {
+      motivationalText = 'Savor your final day';
+    } else if (progress < 0.5) {
+      motivationalText = 'Enjoy every moment';
+    } else {
+      motivationalText = 'Make the most of it';
+    }
+
+    return GestureDetector(
       onTap: () => context.push('/stays/${stay.id}'),
-      child: Column(
-        children: [
-          Text(
-            _getGreeting(),
-            style: TulipTextStyles.heading2,
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.location_on,
-                color: TulipColors.rose,
-                size: 24,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                stay.location,
-                style: TulipTextStyles.heading3.copyWith(
-                  color: TulipColors.roseDark,
-                ),
-              ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFF0E4EF), // Warm lavender cream
+              Color(0xFFF0E0E0), // Soft rose
             ],
           ),
-          const SizedBox(height: 20),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            decoration: BoxDecoration(
-              color: TulipColors.roseLight,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: TulipColors.rose),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: TulipColors.lavender.withValues(alpha: 0.3),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: TulipColors.lavender.withValues(alpha: 0.15),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
             ),
-            child: Column(
-              children: [
-                Text(
-                  'Day $dayNumber of $totalDays',
-                  style: TulipTextStyles.heading2.copyWith(
+          ],
+        ),
+        child: Column(
+          children: [
+            // "You're Here!" pill badge with sparkle
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: TulipColors.rose.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.auto_awesome,
+                    size: 14,
                     color: TulipColors.roseDark,
                   ),
+                  const SizedBox(width: 4),
+                  Text(
+                    "You're here!",
+                    style: TulipTextStyles.caption.copyWith(
+                      color: TulipColors.roseDark,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Greeting
+            Text(
+              _getGreeting(),
+              style: TulipTextStyles.body.copyWith(
+                color: textColorLight,
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // Location
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.location_on,
+                  size: 22,
+                  color: TulipColors.rose,
                 ),
-                const SizedBox(height: 12),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: progress.clamp(0.0, 1.0),
-                    backgroundColor: TulipColors.cream,
-                    valueColor: AlwaysStoppedAnimation<Color>(TulipColors.rose),
-                    minHeight: 8,
+                const SizedBox(width: 10),
+                Flexible(
+                  child: Text(
+                    stay.location,
+                    style: TulipTextStyles.heading1.copyWith(
+                      fontSize: 26,
+                      color: textColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+            const SizedBox(height: 20),
+
+            // Day progress in frosted pill
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.7),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Day $dayNumber',
+                        style: TulipTextStyles.heading2.copyWith(
+                          color: textColor,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'of $totalDays',
+                        style: TulipTextStyles.body.copyWith(
+                          color: textColorLight,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: LinearProgressIndicator(
+                      value: progress.clamp(0.0, 1.0),
+                      backgroundColor: TulipColors.cream,
+                      valueColor: AlwaysStoppedAnimation<Color>(TulipColors.rose),
+                      minHeight: 10,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Motivational text
+            Text(
+              motivationalText,
+              style: TulipTextStyles.caption.copyWith(
+                color: TulipColors.roseDark,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
