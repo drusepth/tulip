@@ -57,6 +57,10 @@ Rails.application.routes.draw do
       get "map/pois/search", to: "map#pois_search"
       get "map/bucket_list_items", to: "map#bucket_list_items"
 
+      # Device tokens for push notifications
+      post "device_tokens", to: "device_tokens#create"
+      delete "device_tokens", to: "device_tokens#destroy"
+
       # Notifications
       resources :notifications, only: [ :index ] do
         member do

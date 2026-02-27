@@ -35,6 +35,8 @@ class AppNotification with _$AppNotification {
         return 'edit';
       case 'bucket_list_completed':
         return 'check_circle';
+      case 'trip_ended':
+        return 'star';
       default:
         return 'notifications';
     }

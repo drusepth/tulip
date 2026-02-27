@@ -6,6 +6,7 @@ class Notification < ApplicationRecord
     bucket_list_rated
     collaboration_invited
     collaboration_accepted
+    trip_ended
   ].freeze
 
   belongs_to :user
@@ -40,6 +41,8 @@ class Notification < ApplicationRecord
       "star"
     when "collaboration_invited", "collaboration_accepted"
       "users"
+    when "trip_ended"
+      "star"
     else
       "bell"
     end
@@ -55,6 +58,8 @@ class Notification < ApplicationRecord
       "coral"
     when "collaboration_invited", "collaboration_accepted"
       "rose"
+    when "trip_ended"
+      "coral"
     else
       "taupe"
     end
@@ -85,6 +90,9 @@ class Notification < ApplicationRecord
       actor_name = data["actor_name"] || "Someone"
       stay_title = data["stay_title"] || "a stay"
       "#{actor_name} joined #{stay_title}"
+    when "trip_ended"
+      stay_title = data["stay_title"] || "your trip"
+      "Your trip to #{stay_title} has ended! Rate the places you visited."
     else
       "You have a new notification"
     end
@@ -110,6 +118,10 @@ class Notification < ApplicationRecord
       stay_id = data["stay_id"]
       return nil unless stay_id
       Rails.application.routes.url_helpers.stay_path(stay_id)
+    when "trip_ended"
+      stay_id = data["stay_id"]
+      return nil unless stay_id
+      Rails.application.routes.url_helpers.stay_highlights_path(stay_id)
     else
       nil
     end

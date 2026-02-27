@@ -274,6 +274,8 @@ class _NotificationTile extends StatelessWidget {
         return Icons.edit_outlined;
       case 'bucket_list_completed':
         return Icons.check_circle_outline;
+      case 'trip_ended':
+        return Icons.star_outline;
       default:
         return Icons.notifications_outlined;
     }
@@ -288,6 +290,8 @@ class _NotificationTile extends StatelessWidget {
         return TulipColors.roseLight;
       case 'taupe':
         return TulipColors.taupeLight;
+      case 'coral':
+        return TulipColors.roseLight;
       default:
         return TulipColors.sageLight;
     }
@@ -302,6 +306,8 @@ class _NotificationTile extends StatelessWidget {
         return TulipColors.roseDark;
       case 'taupe':
         return TulipColors.taupeDark;
+      case 'coral':
+        return TulipColors.roseDark;
       default:
         return TulipColors.sageDark;
     }
