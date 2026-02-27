@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_22_062939) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_27_225738) do
   create_table "bucket_list_item_ratings", force: :cascade do |t|
     t.integer "bucket_list_item_id", null: false
     t.integer "user_id", null: false
@@ -57,6 +57,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_22_062939) do
     t.index ["commentable_type", "commentable_id", "created_at"], name: "index_comments_on_commentable_and_created_at"
     t.index ["parent_id"], name: "index_comments_on_parent_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "device_tokens", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "token", null: false
+    t.string "platform", null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["token"], name: "index_device_tokens_on_token"
+    t.index ["user_id", "token"], name: "index_device_tokens_on_user_id_and_token", unique: true
+    t.index ["user_id"], name: "index_device_tokens_on_user_id"
   end
 
   create_table "devise_api_tokens", force: :cascade do |t|
@@ -247,6 +259,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_22_062939) do
   add_foreign_key "comments", "bucket_list_item_ratings"
   add_foreign_key "comments", "comments", column: "parent_id"
   add_foreign_key "comments", "users"
+  add_foreign_key "device_tokens", "users"
   add_foreign_key "notifications", "users"
   add_foreign_key "pois", "places"
   add_foreign_key "pois", "stays"
