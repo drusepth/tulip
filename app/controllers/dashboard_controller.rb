@@ -5,9 +5,6 @@ class DashboardController < ApplicationController
 
     user_stays = current_user.accessible_stays
 
-    # Update statuses for the user's stays (only those with dates)
-    update_statuses!(user_stays.with_dates)
-
     # Alerts (only shown when action needed)
     @gaps = user_stays.find_gaps
     @booking_alert = booking_alert(user_stays)
@@ -29,13 +26,6 @@ class DashboardController < ApplicationController
   end
 
   private
-
-  def update_statuses!(stays)
-    today = Date.current
-    stays.where("check_out < ?", today).update_all(status: "past")
-    stays.where("check_in <= ? AND check_out >= ?", today, today).update_all(status: "current")
-    stays.where("check_in > ?", today).update_all(status: "upcoming")
-  end
 
   def current_stay(stays)
     today = Date.current

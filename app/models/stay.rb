@@ -47,7 +47,6 @@ class Stay < ApplicationRecord
   validates :title, presence: true
   validates :city, presence: true
   validates :stay_type, inclusion: { in: STAY_TYPES }, if: :booked?
-  validates :status, inclusion: { in: STATUSES }
   validates :currency, inclusion: { in: CURRENCIES }
   # Dates are optional for "wishlist" trips, but required when booked
   validates :check_in, presence: true, if: :booked?
@@ -61,18 +60,31 @@ class Stay < ApplicationRecord
   geocoded_by :full_address
   after_validation :geocode, if: :should_geocode?
 
-  before_save :update_status
   after_commit :enqueue_poi_fetch, on: [ :create, :update ], if: :should_fetch_pois?
   after_save :clear_cached_location_data, if: :location_changed?
 
   scope :with_dates, -> { where.not(check_in: nil).where.not(check_out: nil) }
   scope :wishlist, -> { where(check_in: nil).or(where(check_out: nil)) }
-  scope :upcoming, -> { with_dates.where(status: "upcoming").order(:check_in) }
-  scope :current, -> { with_dates.where(status: "current") }
-  scope :past, -> { with_dates.where(status: "past").order(check_out: :desc) }
+  scope :upcoming, -> { with_dates.where("check_in > ?", Date.current).order(:check_in) }
+  scope :current, -> { with_dates.where("check_in <= ? AND check_out >= ?", Date.current, Date.current) }
+  scope :past, -> { with_dates.where("check_out < ?", Date.current).order(check_out: :desc) }
   scope :chronological, -> { with_dates.order(:check_in) }
   scope :booked, -> { where(booked: true) }
   scope :planned, -> { where(booked: false) }
+
+  # Compute status from dates instead of relying on stored column
+  def status
+    return "upcoming" unless has_dates?
+
+    today = Date.current
+    if check_out < today
+      "past"
+    elsif check_in <= today
+      "current"
+    else
+      "upcoming"
+    end
+  end
 
   def full_address
     [ address, city, country ].compact.join(", ")
@@ -123,13 +135,6 @@ class Stay < ApplicationRecord
 
   def self.next_upcoming
     upcoming.first
-  end
-
-  def self.update_all_statuses!
-    today = Date.current
-    where("check_out < ?", today).update_all(status: "past")
-    where("check_in <= ? AND check_out >= ?", today, today).update_all(status: "current")
-    where("check_in > ?", today).update_all(status: "upcoming")
   end
 
   # Find gaps between stays. Works on any relation (e.g., current_user.stays.find_gaps)
@@ -268,23 +273,6 @@ class Stay < ApplicationRecord
     pois.destroy_all
     transit_routes.destroy_all
     update_columns(weather_data: nil, weather_fetched_at: nil) if weather_data.present?
-  end
-
-  def update_status
-    # Wishlist stays without dates are always "upcoming"
-    unless has_dates?
-      self.status = "upcoming"
-      return
-    end
-
-    today = Date.current
-    self.status = if check_out < today
-                    "past"
-    elsif check_in <= today && check_out >= today
-                    "current"
-    else
-                    "upcoming"
-    end
   end
 
   def should_fetch_pois?
