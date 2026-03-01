@@ -65,28 +65,14 @@ class WeatherCard extends StatelessWidget {
 
               // Temperature summary
               Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  // Average temperature - highlighted
+                  if (average != null)
+                    _buildHighlightedTemp(average.toString()),
                   if (low != null && high != null) ...[
-                    _buildTempDisplay(
-                      low.toString(),
-                      'Low',
-                      TulipColors.lavender,
-                    ),
-                    const SizedBox(width: 24),
-                    _buildTempDisplay(
-                      high.toString(),
-                      'High',
-                      TulipColors.coral,
-                    ),
-                    if (average != null) ...[
-                      const SizedBox(width: 24),
-                      _buildTempDisplay(
-                        average.toString(),
-                        'Avg',
-                        TulipColors.sage,
-                      ),
-                    ],
+                    const SizedBox(width: 20),
+                    _buildTempRange(low.toString(), high.toString()),
                   ],
                   const Spacer(),
                   // Weather conditions summary
@@ -118,27 +104,86 @@ class WeatherCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTempDisplay(String temp, String label, Color color) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildHighlightedTemp(String temp) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.baseline,
+      textBaseline: TextBaseline.alphabetic,
       children: [
         Text(
-          label,
-          style: TulipTextStyles.caption,
+          temp,
+          style: TextStyle(
+            fontSize: 48,
+            fontWeight: FontWeight.bold,
+            color: TulipColors.sage,
+            height: 1,
+          ),
         ),
-        Row(
+        const SizedBox(width: 2),
+        Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              temp,
-              style: TulipTextStyles.heading2.copyWith(
-                color: color,
+              '\u00B0F',
+              style: TulipTextStyles.body.copyWith(
+                color: TulipColors.sage,
+                fontWeight: FontWeight.w600,
               ),
             ),
             Text(
-              '\u00B0F',
-              style: TulipTextStyles.bodySmall.copyWith(
-                color: color,
+              'avg',
+              style: TulipTextStyles.caption.copyWith(
+                color: TulipColors.sageDark,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTempRange(String low, String high) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            SizedBox(
+              width: 32,
+              child: Text(
+                'Low',
+                style: TulipTextStyles.caption,
+              ),
+            ),
+            Text(
+              '$low\u00B0',
+              style: TulipTextStyles.body.copyWith(
+                color: TulipColors.lavender,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            SizedBox(
+              width: 32,
+              child: Text(
+                'High',
+                style: TulipTextStyles.caption,
+              ),
+            ),
+            Text(
+              '$high\u00B0',
+              style: TulipTextStyles.body.copyWith(
+                color: TulipColors.coral,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
@@ -220,11 +265,19 @@ class _DailyWeatherTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final date = day['date'] as String?;
-    final high = day['high'];
-    final low = day['low'];
+    final high = day['high'] as num?;
+    final low = day['low'] as num?;
     final condition = day['condition'] as String? ?? 'Sunny';
-    final precipMm = day['precipitation_mm'];
-    final windSpeed = day['wind_speed'];
+
+    // Calculate average temperature
+    String avgTemp = '--';
+    if (high != null && low != null) {
+      avgTemp = ((high + low) / 2).round().toString();
+    } else if (high != null) {
+      avgTemp = high.round().toString();
+    } else if (low != null) {
+      avgTemp = low.round().toString();
+    }
 
     // Parse date to get day name
     String dayLabel = '';
@@ -239,7 +292,7 @@ class _DailyWeatherTile extends StatelessWidget {
     }
 
     return Container(
-      width: 80,
+      width: 72,
       margin: EdgeInsets.only(left: isFirst ? 0 : 8),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -247,7 +300,7 @@ class _DailyWeatherTile extends StatelessWidget {
         border: Border.all(color: TulipColors.taupeLight),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -266,69 +319,18 @@ class _DailyWeatherTile extends StatelessWidget {
             // Weather icon
             Icon(
               _getConditionIcon(condition),
-              size: 28,
+              size: 24,
               color: _getConditionColor(condition),
             ),
 
-            // Temperature
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '${high ?? '--'}\u00B0',
-                  style: TulipTextStyles.body.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '${low ?? '--'}\u00B0',
-                  style: TulipTextStyles.caption,
-                ),
-              ],
+            // Average temperature
+            Text(
+              '$avgTemp\u00B0',
+              style: TulipTextStyles.heading3.copyWith(
+                color: TulipColors.sage,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-
-            // Extra info (precipitation or wind)
-            if (precipMm != null && precipMm > 0)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.water_drop,
-                    size: 10,
-                    color: TulipColors.lavender,
-                  ),
-                  const SizedBox(width: 2),
-                  Text(
-                    '${precipMm}mm',
-                    style: TulipTextStyles.caption.copyWith(
-                      fontSize: 10,
-                    ),
-                  ),
-                ],
-              )
-            else if (windSpeed != null && windSpeed > 15)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.air,
-                    size: 10,
-                    color: TulipColors.sage,
-                  ),
-                  const SizedBox(width: 2),
-                  Text(
-                    '${windSpeed}mph',
-                    style: TulipTextStyles.caption.copyWith(
-                      fontSize: 10,
-                    ),
-                  ),
-                ],
-              )
-            else
-              const SizedBox(height: 14),
           ],
         ),
       ),
