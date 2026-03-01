@@ -14,6 +14,7 @@ import '../../data/models/stay_model.dart';
 import '../../../bucket_list/presentation/providers/bucket_list_provider.dart';
 import '../../../bucket_list/presentation/widgets/bucket_list_item_tile.dart';
 import '../../../bucket_list/data/models/bucket_list_item_model.dart';
+import '../../../bucket_list/presentation/widgets/add_bucket_list_item_sheet.dart';
 import '../../../weather/presentation/widgets/weather_card.dart';
 import '../../../comments/presentation/widgets/comment_thread.dart';
 
@@ -856,38 +857,13 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
   }
 
   void _showAddBucketListItemDialog(Stay stay) {
-    final titleController = TextEditingController();
-
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add Bucket List Item'),
-        content: TextField(
-          controller: titleController,
-          decoration: const InputDecoration(
-            hintText: 'What do you want to do?',
-            border: OutlineInputBorder(),
-          ),
-          autofocus: true,
-          textCapitalization: TextCapitalization.sentences,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              if (titleController.text.trim().isEmpty) return;
-              Navigator.pop(context);
-              await ref.read(bucketListProvider(stay.id).notifier).createItem(
-                    BucketListItemRequest(title: titleController.text.trim()),
-                  );
-            },
-            child: const Text('Add'),
-          ),
-        ],
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
+      builder: (context) => AddBucketListItemSheet(stayId: stay.id),
     );
   }
 
