@@ -994,36 +994,324 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
 
   void _showAddBucketListItemDialog(Stay stay) {
     final titleController = TextEditingController();
+    final addressController = TextEditingController();
+    final notesController = TextEditingController();
+    String? selectedCategory;
+    bool showMoreOptions = false;
 
-    showDialog(
+    final categories = [
+      ('restaurant', 'Restaurant', Icons.restaurant),
+      ('cafe', 'Cafe', Icons.local_cafe),
+      ('bar', 'Bar', Icons.local_bar),
+      ('attraction', 'Attraction', Icons.attractions),
+      ('shopping', 'Shopping', Icons.shopping_bag),
+      ('outdoors', 'Outdoors', Icons.park),
+      ('entertainment', 'Entertainment', Icons.movie),
+      ('other', 'Other', Icons.more_horiz),
+    ];
+
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add Bucket List Item'),
-        content: TextField(
-          controller: titleController,
-          decoration: const InputDecoration(
-            hintText: 'What do you want to do?',
-            border: OutlineInputBorder(),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
-          autofocus: true,
-          textCapitalization: TextCapitalization.sentences,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Handle bar
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: TulipColors.taupeLight,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Header
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: TulipColors.lavenderLight,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.checklist,
+                          color: TulipColors.lavenderDark,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Add to Bucket List',
+                        style: TulipTextStyles.heading3,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Title field
+                  Text('What do you want to do?', style: TulipTextStyles.label),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: titleController,
+                    autofocus: true,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                      hintText: 'e.g. Visit the local market',
+                      hintStyle: TextStyle(color: TulipColors.brownLighter),
+                      filled: true,
+                      fillColor: TulipColors.cream,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: TulipColors.taupeLight),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: TulipColors.taupeLight),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: TulipColors.sage, width: 2),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Category selection
+                  Text('Category', style: TulipTextStyles.label),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: categories.map((cat) {
+                      final isSelected = selectedCategory == cat.$1;
+                      return GestureDetector(
+                        onTap: () => setModalState(() {
+                          selectedCategory = isSelected ? null : cat.$1;
+                        }),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? TulipColors.sage
+                                : TulipColors.cream,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: isSelected
+                                  ? TulipColors.sage
+                                  : TulipColors.taupeLight,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                cat.$3,
+                                size: 16,
+                                color: isSelected
+                                    ? Colors.white
+                                    : TulipColors.brownLight,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                cat.$2,
+                                style: TulipTextStyles.caption.copyWith(
+                                  color: isSelected
+                                      ? Colors.white
+                                      : TulipColors.brown,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // More options toggle
+                  GestureDetector(
+                    onTap: () => setModalState(() {
+                      showMoreOptions = !showMoreOptions;
+                    }),
+                    child: Row(
+                      children: [
+                        Icon(
+                          showMoreOptions
+                              ? Icons.keyboard_arrow_down
+                              : Icons.keyboard_arrow_right,
+                          size: 20,
+                          color: TulipColors.brownLight,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          showMoreOptions ? 'Less options' : 'More options',
+                          style: TulipTextStyles.caption.copyWith(
+                            color: TulipColors.brownLight,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Extra fields
+                  if (showMoreOptions) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.only(left: 12),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          left: BorderSide(
+                            color: TulipColors.taupeLight,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Location', style: TulipTextStyles.caption),
+                          const SizedBox(height: 6),
+                          TextField(
+                            controller: addressController,
+                            decoration: InputDecoration(
+                              hintText: 'Where is it?',
+                              hintStyle: TextStyle(color: TulipColors.brownLighter),
+                              prefixIcon: Icon(
+                                Icons.location_on_outlined,
+                                color: TulipColors.brownLight,
+                                size: 20,
+                              ),
+                              filled: true,
+                              fillColor: TulipColors.cream,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 12,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text('Notes', style: TulipTextStyles.caption),
+                          const SizedBox(height: 6),
+                          TextField(
+                            controller: notesController,
+                            maxLines: 2,
+                            decoration: InputDecoration(
+                              hintText: 'Any details to remember...',
+                              hintStyle: TextStyle(color: TulipColors.brownLighter),
+                              filled: true,
+                              fillColor: TulipColors.cream,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.all(12),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 24),
+
+                  // Action buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.pop(context),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            side: BorderSide(color: TulipColors.taupe),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(color: TulipColors.brown),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        flex: 2,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            if (titleController.text.trim().isEmpty) return;
+                            Navigator.pop(context);
+                            await ref
+                                .read(bucketListProvider(stay.id).notifier)
+                                .createItem(
+                                  BucketListItemRequest(
+                                    title: titleController.text.trim(),
+                                    category: selectedCategory,
+                                    address: addressController.text.trim().isEmpty
+                                        ? null
+                                        : addressController.text.trim(),
+                                    notes: notesController.text.trim().isEmpty
+                                        ? null
+                                        : notesController.text.trim(),
+                                  ),
+                                );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: TulipColors.sage,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.add, size: 20),
+                              const SizedBox(width: 8),
+                              const Text('Add to List'),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              if (titleController.text.trim().isEmpty) return;
-              Navigator.pop(context);
-              await ref.read(bucketListProvider(stay.id).notifier).createItem(
-                    BucketListItemRequest(title: titleController.text.trim()),
-                  );
-            },
-            child: const Text('Add'),
-          ),
-        ],
       ),
     );
   }
