@@ -52,6 +52,9 @@ Rails.application.routes.draw do
         resources :comments, only: [ :index, :create ], controller: "place_comments"
       end
 
+      # Scratch-off map
+      get "scratch_map", to: "scratch_map#index"
+
       # Map endpoints
       get "map/stays", to: "map#stays"
       get "map/pois/search", to: "map#pois_search"
@@ -126,6 +129,7 @@ Rails.application.routes.draw do
   get "invites/:token", to: "stay_collaborations#accept", as: :accept_invite
 
   get "map", to: "stays#index", as: :map
+  get "explored", to: "scratch_map#show", as: :explored
   get "timeline", to: "timeline#index", as: :timeline
   get "destinations", to: "destinations#index", as: :destinations
 

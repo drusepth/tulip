@@ -89,6 +89,13 @@
                 </svg>
                 <span class="hidden md:inline text-sm">Travel Map</span>
               <% end %>
+              <%= link_to explored_path, class: "flex items-center gap-1 p-2.5 md:py-1.5 md:px-3 text-brown-light hover:text-brown hover:bg-sage-light rounded-xl transition-colors", title: "Explored" do %>
+                <svg class="w-6 h-6 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.893 13.393l-1.135-1.135a2.252 2.252 0 01-.421-.585l-1.08-2.16a.414.414 0 00-.663-.107.827.827 0 01-.812.21l-1.273-.363a.89.89 0 00-.738.135l-.833.602a.896.896 0 01-1.065-.054l-2.592-2.072a.897.897 0 00-1.156.036L7.2 9.586a.896.896 0 01-.567.227H5.647a.897.897 0 00-.883.738l-.27 1.474a.896.896 0 01-.606.672l-.668.215A.897.897 0 003 13.77v1.36a.896.896 0 00.397.745l1.063.702c.206.136.378.32.502.536l.775 1.357a.896.896 0 00.776.454h1.1a.896.896 0 00.727-.372l.962-1.343a.897.897 0 01.727-.372h.557a.896.896 0 00.723-.365l.295-.397a.896.896 0 01.513-.344l2.1-.53a.896.896 0 00.607-.517l.577-1.387a.896.896 0 01.412-.44l.985-.524a.896.896 0 00.455-.55l.272-.96a.896.896 0 00-.166-.776z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="hidden md:inline text-sm">Explored</span>
+              <% end %>
             </div>
 
             <!-- Right side -->
@@ -145,6 +152,14 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"/>
             </svg>
             <span class="text-xs">Map</span>
+          <% end %>
+
+          <%= link_to explored_path, class: "mobile-nav-item flex flex-col items-center justify-center gap-0.5 text-brown-light hover:text-sage-dark transition-colors #{'mobile-nav-active' if current_page?(explored_path)}" do %>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.893 13.393l-1.135-1.135a2.252 2.252 0 01-.421-.585l-1.08-2.16a.414.414 0 00-.663-.107.827.827 0 01-.812.21l-1.273-.363a.89.89 0 00-.738.135l-.833.602a.896.896 0 01-1.065-.054l-2.592-2.072a.897.897 0 00-1.156.036L7.2 9.586a.896.896 0 01-.567.227H5.647a.897.897 0 00-.883.738l-.27 1.474a.896.896 0 01-.606.672l-.668.215A.897.897 0 003 13.77v1.36a.896.896 0 00.397.745l1.063.702c.206.136.378.32.502.536l.775 1.357a.896.896 0 00.776.454h1.1a.896.896 0 00.727-.372l.962-1.343a.897.897 0 01.727-.372h.557a.896.896 0 00.723-.365l.295-.397a.896.896 0 01.513-.344l2.1-.53a.896.896 0 00.607-.517l.577-1.387a.896.896 0 01.412-.44l.985-.524a.896.896 0 00.455-.55l.272-.96a.896.896 0 00-.166-.776z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="text-xs">Explored</span>
           <% end %>
 
           <%= link_to new_stay_path, class: "mobile-nav-item-primary flex flex-col items-center justify-center" do %>
