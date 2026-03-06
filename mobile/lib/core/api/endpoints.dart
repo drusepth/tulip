@@ -71,4 +71,7 @@ class Endpoints {
 
   // Destinations
   static const String destinations = '/api/v1/destinations';
+
+  // Scratch-off Map
+  static const String scratchMap = '/api/v1/scratch_map';
 }
