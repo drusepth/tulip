@@ -1,0 +1,723 @@
+# Tenant Rights by US State
+# Quick reference for travelers staying over 30 days
+#
+# Each state entry includes:
+#   name: Full state name
+#   slug: URL-friendly identifier
+#   summary: One-line overview
+#   tenant_threshold_days: Number of days after which guest becomes tenant (if codified)
+#   sections: Categorized legal reference info
+
+alabama:
+  name: Alabama
+  slug: alabama
+  summary: Alabama has minimal tenant protections; no statewide rent control and limited security deposit rules.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Staying 30+ days or signing a lease generally establishes tenancy. Alabama does not have a specific statute defining when a guest becomes a tenant, but courts look at intent, duration, and whether rent is paid.
+    security_deposits: No statutory limit on security deposit amount. Landlord must return within 60 days after move-out with an itemized list of deductions.
+    notice_to_terminate: Month-to-month tenancies require 30 days' written notice. Week-to-week requires 7 days' notice.
+    rent_control: No statewide rent control. Landlords can raise rent with proper notice at end of lease term.
+    eviction_protections: Landlord must provide written notice before filing eviction. 7 days' notice for nonpayment of rent. 14 days' notice for lease violations.
+    habitability: Landlord must maintain premises in habitable condition, but Alabama's implied warranty of habitability is narrower than most states.
+    key_statutes: Alabama Uniform Residential Landlord and Tenant Act (Ala. Code Title 35, Chapter 9A)
+
+alaska:
+  name: Alaska
+  slug: alaska
+  summary: Alaska provides moderate tenant protections with clear security deposit limits and habitability requirements.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Occupancy with the owner's consent for 30+ days, payment of rent, or a written agreement typically establishes tenancy.
+    security_deposits: Limited to 2 months' rent (or 1 month for units renting under $2,000/month). Must be returned within 14 days if tenant provides forwarding address, 30 days otherwise.
+    notice_to_terminate: Month-to-month requires 30 days' notice. Landlord must give 30 days' notice to raise rent.
+    rent_control: No statewide rent control.
+    eviction_protections: 7 days' notice for nonpayment. 10 days to cure lease violations, then additional 20 days if not cured. No "self-help" evictions.
+    habitability: Strong implied warranty of habitability. Landlord must maintain essential services (heat, water, electricity). Tenant may pursue "repair and deduct" remedies.
+    key_statutes: Alaska Uniform Residential Landlord and Tenant Act (AS 34.03)
+
+arizona:
+  name: Arizona
+  slug: arizona
+  summary: Arizona has well-defined landlord-tenant law with strong habitability standards and structured eviction procedures.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: A person becomes a tenant upon signing a rental agreement or establishing a regular pattern of paying rent. Stays of 30+ days with the owner's consent generally create tenancy.
+    security_deposits: Limited to 1.5 months' rent. Must be returned within 14 business days with itemized deductions.
+    notice_to_terminate: Month-to-month requires 30 days' notice. Week-to-week requires 10 days' notice.
+    rent_control: State law prohibits cities from enacting rent control (ARS 33-1329).
+    eviction_protections: 5 days' notice for nonpayment. 10 days to cure health/safety violations, 5 if material and irreparable. No "self-help" evictions permitted.
+    habitability: Strong implied warranty. Landlords must maintain fit and habitable premises including working plumbing, heating, and pest control.
+    key_statutes: Arizona Residential Landlord and Tenant Act (ARS Title 33, Chapter 10)
+
+arkansas:
+  name: Arkansas
+  slug: arkansas
+  summary: Arkansas is one of the least tenant-friendly states, with no implied warranty of habitability and few renter protections.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: No specific statutory threshold. Courts look at intent, duration, and rent payment. Regular occupancy for 30+ days with rent payment typically establishes tenancy.
+    security_deposits: Limited to 2 months' rent. Must be returned within 60 days of lease termination.
+    notice_to_terminate: Month-to-month tenancies require 30 days' notice. No statutory notice period for rent increases.
+    rent_control: No rent control provisions.
+    eviction_protections: Landlord can pursue criminal eviction (failure to vacate is a misdemeanor). 3 days' notice for nonpayment before filing unlawful detainer.
+    habitability: No implied warranty of habitability. One of the only states without this protection. Tenant takes premises "as is" unless lease states otherwise.
+    key_statutes: Arkansas landlord-tenant law is primarily in Ark. Code Ann. Title 18, Chapter 17
+
+california:
+  name: California
+  slug: california
+  summary: California offers the strongest tenant protections in the country, including statewide rent control, just cause eviction, and robust habitability standards.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: A guest who stays 30+ consecutive days is generally considered a tenant, even without a written lease or paying rent. Hotels/motels classify guests as tenants after 30 days.
+    security_deposits: Limited to 1 month's rent (as of July 2024). Must be returned within 21 days with itemized deductions.
+    notice_to_terminate: Month-to-month requires 30 days' notice (60 days if tenant has lived there 1+ year). Must have "just cause" for eviction after 12 months of occupancy under AB 1482.
+    rent_control: Statewide rent cap of 5% + local CPI (max 10%) annually under the Tenant Protection Act (AB 1482). Many cities have additional local rent control ordinances.
+    eviction_protections: Just cause eviction required after 12 months. 3 days' notice for nonpayment. 3 days to cure or quit for lease violations. Relocation assistance required for no-fault evictions.
+    habitability: Strong implied warranty of habitability. Landlords must provide weatherproofing, plumbing, heating, electricity, sanitation, and maintain structural integrity. "Repair and deduct" and rent withholding remedies available.
+    key_statutes: California Civil Code Sections 1940-1954.06, Tenant Protection Act (AB 1482)
+
+colorado:
+  name: Colorado
+  slug: colorado
+  summary: Colorado has modernized tenant protections in recent years with new limits on fees and stronger habitability requirements.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Occupancy for 30+ days with consent, payment of rent, or a rental agreement establishes tenancy.
+    security_deposits: No statutory limit on amount. Must be returned within 60 days (or 72 hours if lease specifies hazardous conditions). Itemized statement required.
+    notice_to_terminate: Month-to-month with less than 1 year occupancy requires 21 days. 1-3 years requires 28 days. 3+ years requires 90 days for landlord notice.
+    rent_control: State law prohibits local rent control (preemption). Recent efforts to repeal preemption have been debated.
+    eviction_protections: 10 days' notice for nonpayment. Must be served by sheriff. No "self-help" evictions. Tenant has right to cure many violations.
+    habitability: Implied warranty of habitability codified. Landlord must maintain premises in condition fit for human habitation. Tenant remedies include rent withholding and repair-and-deduct.
+    key_statutes: Colorado Revised Statutes Title 38, Article 12
+
+connecticut:
+  name: Connecticut
+  slug: connecticut
+  summary: Connecticut offers strong tenant protections including security deposit limits, fair housing enforcement, and restrictions on eviction.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: A person who occupies a dwelling with the owner's consent and pays rent is a tenant. Connecticut courts recognize tenancy after 30 days of occupancy.
+    security_deposits: Limited to 2 months' rent (1 month for tenants 62+). Must be returned within 30 days with interest. Must be held in escrow.
+    notice_to_terminate: Month-to-month requires 3 days' notice only (one of the shortest in the nation), but case law often requires reasonable notice.
+    rent_control: Some municipalities (notably Stamford) have had rent stabilization ordinances. No statewide rent control.
+    eviction_protections: Landlord must have "good cause" in many situations. 3 days' notice for nonpayment. Right to cure within the notice period. Strong anti-retaliation protections.
+    habitability: Strong implied warranty of habitability and housing code enforcement. Tenant may withhold rent or "repair and deduct" if landlord fails to maintain.
+    key_statutes: Connecticut General Statutes Title 47a
+
+delaware:
+  name: Delaware
+  slug: delaware
+  summary: Delaware has a comprehensive landlord-tenant code with moderate protections for renters.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Delaware law defines a tenant as any person entitled to occupy a dwelling under a rental agreement. Stays of 30+ days with rent payment establish tenancy.
+    security_deposits: Limited to 1 month's rent (no deposit for month-to-month leases of 1 year+). Must be returned within 20 days.
+    notice_to_terminate: Month-to-month requires 60 days' notice from either party. One of the longest notice periods.
+    rent_control: No rent control provisions.
+    eviction_protections: 5 days' notice for nonpayment. Tenant has right to cure. Summary possession proceedings through Justice of the Peace courts.
+    habitability: Implied warranty of habitability. Landlord must comply with housing and building codes. Tenant may pursue remedies including rent escrow.
+    key_statutes: Delaware Residential Landlord-Tenant Code (Title 25, Chapter 55)
+
+florida:
+  name: Florida
+  slug: florida
+  summary: Florida has specific statutes for landlord-tenant relations but generally favors landlords with quick eviction processes.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Florida considers occupants tenants once they establish residency (receiving mail, 30+ day stays, or paying rent). Hotels classify guests as tenants after 30 days.
+    security_deposits: No statutory limit on amount. Must be returned within 15-60 days depending on whether deductions are claimed. Must be held in a separate account or posted as surety bond.
+    notice_to_terminate: Month-to-month requires 15 days' notice. Annual leases require 60 days. Quarter-to-quarter requires 30 days.
+    rent_control: State law prohibits rent control except in housing emergencies declared by the governor.
+    eviction_protections: 3 days' notice for nonpayment (excluding weekends and holidays). 7 days for lease violations with no right to cure. Fast eviction process.
+    habitability: Implied warranty of habitability. Landlord must comply with building codes and maintain structural components, plumbing, and reasonable pest control.
+    key_statutes: Florida Residential Landlord and Tenant Act (F.S. Chapter 83, Part II)
+
+georgia:
+  name: Georgia
+  slug: georgia
+  summary: Georgia has limited statutory tenant protections and no statewide security deposit limit.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Georgia has no specific statute. Courts determine tenant status based on circumstances including duration (typically 30+ days), payment of consideration, and intent.
+    security_deposits: No statutory limit on amount. Landlords with 10+ units must place deposit in escrow and provide written list of existing damages. Must be returned within 30 days.
+    notice_to_terminate: Month-to-month requires 60 days' notice from either party. No statutory notice for rent increases.
+    rent_control: No rent control. State preempts local rent control ordinances.
+    eviction_protections: Landlord can demand possession immediately after lease expires. No statutory cure period. Eviction through dispossessory proceedings.
+    habitability: Implied warranty of habitability exists through case law. Landlord must maintain premises in compliance with housing codes.
+    key_statutes: Georgia Code Title 44, Chapter 7 (Landlord and Tenant)
+
+hawaii:
+  name: Hawaii
+  slug: hawaii
+  summary: Hawaii provides solid tenant protections with security deposit limits and required disclosures.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy is established by rental agreement (oral or written) or regular payment of rent. Hawaii's transient accommodations tax applies for stays under 180 days, adding complexity for mid-length stays.
+    security_deposits: Limited to 1 month's rent. Must be returned within 14 days.
+    notice_to_terminate: Month-to-month requires 45 days' notice from landlord, 28 days from tenant.
+    rent_control: No statewide rent control, but local ordinances may apply.
+    eviction_protections: 5 days' notice for nonpayment. 10 days to cure lease violations. Landlord cannot lock out or shut off utilities.
+    habitability: Implied warranty of habitability. Landlord must comply with housing codes and maintain essential services.
+    key_statutes: Hawaii Residential Landlord-Tenant Code (HRS Chapter 521)
+
+idaho:
+  name: Idaho
+  slug: idaho
+  summary: Idaho has minimal tenant protections with no security deposit limits and limited habitability standards.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Idaho does not define a specific threshold. Tenancy is generally established through a rental agreement or consistent rent payments over 30+ days.
+    security_deposits: No statutory limit on amount. Must be returned within 21 days (or 30 days if lease specifies). Itemized deductions not required by statute.
+    notice_to_terminate: Month-to-month requires 30 days' notice from either party. No statutory notice for rent increases.
+    rent_control: No rent control. State law does not address local rent control authority.
+    eviction_protections: 3 days' notice for nonpayment. 3 days for lease violations with no right to cure. Quick eviction process.
+    habitability: Limited implied warranty of habitability. Landlord must maintain in compliance with housing codes if applicable. No statutory "repair and deduct" remedy.
+    key_statutes: Idaho Code Title 6, Chapter 3 (Forcible Entry and Detainer); Title 55, Chapter 2
+
+illinois:
+  name: Illinois
+  slug: illinois
+  summary: Illinois provides moderate to strong tenant protections, with Chicago offering additional renter rights beyond state law.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement or occupancy with payment of rent. 30+ day stays with consent and rent payment create tenancy.
+    security_deposits: No statewide limit (Chicago limits to 1.5 months). Must be returned within 30-45 days with interest (if 25+ units). Itemized statement required.
+    notice_to_terminate: Month-to-month requires 30 days' notice.
+    rent_control: State Rent Control Preemption Act prohibits local rent control, but Chicago and Cook County have made recent pushes to repeal.
+    eviction_protections: 5 days' notice for nonpayment. 10 days for lease violations. No "self-help" evictions. Court order required.
+    habitability: Implied warranty of habitability. "Repair and deduct" available in some jurisdictions. Chicago RLTO provides enhanced protections.
+    key_statutes: 735 ILCS 5/9 (Eviction); 765 ILCS 710 (Security Deposit Return Act); Chicago RLTO for Chicago residents
+
+indiana:
+  name: Indiana
+  slug: indiana
+  summary: Indiana has basic landlord-tenant statutes with limited tenant protections beyond security deposit rules.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by agreement or regular rent payment. No specific statutory day threshold.
+    security_deposits: No statutory limit on amount. Must be returned within 45 days. Itemized list of damages required.
+    notice_to_terminate: Month-to-month requires 30 days' notice from either party. No statutory notice for rent increases.
+    rent_control: No rent control provisions.
+    eviction_protections: 10 days' notice for nonpayment. Right to cure within notice period. Court order required for eviction.
+    habitability: Implied warranty of habitability. Landlord must provide habitable premises and comply with housing codes. Tenant has limited self-help remedies.
+    key_statutes: Indiana Code Title 32, Article 31 (Landlord-Tenant Relations)
+
+iowa:
+  name: Iowa
+  slug: iowa
+  summary: Iowa has a comprehensive landlord-tenant act with moderate protections including security deposit limits.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. Iowa Uniform Residential Landlord and Tenant Act applies to most residential tenancies.
+    security_deposits: Limited to 2 months' rent. Must be returned within 30 days with itemized statement of deductions.
+    notice_to_terminate: Month-to-month requires 30 days' notice. Year-to-year requires 30 days' notice.
+    rent_control: No rent control provisions.
+    eviction_protections: 3 days' notice for nonpayment. 7 days to cure lease violations. No "self-help" evictions.
+    habitability: Implied warranty of habitability. Landlord must maintain safe and sanitary premises. "Repair and deduct" remedy available (up to 1 month's rent).
+    key_statutes: Iowa Uniform Residential Landlord and Tenant Act (Iowa Code Chapter 562A)
+
+kansas:
+  name: Kansas
+  slug: kansas
+  summary: Kansas has a residential landlord-tenant act with basic protections and security deposit limits.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement or regular occupancy with rent payment. Kansas follows common law principles for determining tenant status.
+    security_deposits: Limited to 1 month's rent (unfurnished) or 1.5 months (furnished). Must be returned within 30 days.
+    notice_to_terminate: Month-to-month requires 30 days' notice. Year-to-year requires 30 days before end of year.
+    rent_control: No rent control provisions.
+    eviction_protections: 3 days' notice for nonpayment (10 days for some mobile home tenants). 14 days to cure lease violations, then 30 days to vacate.
+    habitability: Implied warranty of habitability. Landlord must maintain premises and comply with housing codes. Tenant may pursue remedies including rent withholding.
+    key_statutes: Kansas Residential Landlord and Tenant Act (K.S.A. Chapter 58, Article 25)
+
+kentucky:
+  name: Kentucky
+  slug: kentucky
+  summary: Kentucky has the Uniform Residential Landlord and Tenant Act with moderate protections.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. The URLTA applies to most residential tenancies in Kentucky.
+    security_deposits: No statutory limit on amount. Must be returned within 30-60 days depending on whether damages are claimed. Itemized list required.
+    notice_to_terminate: Month-to-month requires 30 days' notice.
+    rent_control: No rent control provisions.
+    eviction_protections: 7 days' notice for nonpayment. 14 days to cure lease violations (then 30 days to vacate). Court order required.
+    habitability: Implied warranty of habitability. Landlord must comply with building and housing codes and maintain essential services.
+    key_statutes: Kentucky Uniform Residential Landlord and Tenant Act (KRS Chapter 383)
+
+louisiana:
+  name: Louisiana
+  slug: louisiana
+  summary: Louisiana follows a civil law tradition with unique landlord-tenant provisions derived from French law.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Louisiana's civil law defines a lease as a contract where one party provides use of a thing for a price. Regular occupancy with rent payment establishes tenancy.
+    security_deposits: No statutory limit on amount. Must be returned within 30 days with itemized statement.
+    notice_to_terminate: Month-to-month requires 10 days' notice before the end of the month (effectively giving until end of next month). No specific form required.
+    rent_control: No rent control provisions.
+    eviction_protections: 5 days' notice for nonpayment. Eviction through judicial process only. No right to cure for lease violations in most cases.
+    habitability: Landlord has duty to deliver and maintain premises in condition fit for intended use. Less extensive than common law implied warranty states.
+    key_statutes: Louisiana Civil Code Articles 2668-2729; Louisiana Revised Statutes Title 9
+
+maine:
+  name: Maine
+  slug: maine
+  summary: Maine has strong tenant protections including just cause eviction requirements in some circumstances.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement or occupancy with consent and payment of rent. 30+ day stays with consent generally create tenancy.
+    security_deposits: Limited to 2 months' rent. Must be returned within 30 days (21 days if abandonment). Must be held in an identifiable account.
+    notice_to_terminate: Month-to-month requires 30 days' notice. Tenant at will requires 30 days.
+    rent_control: Portland enacted rent control in 2020 (limited to some units). No statewide rent control.
+    eviction_protections: 7 days' notice for nonpayment. 7 days to cure lease violations. Strong anti-retaliation protections. Court process required.
+    habitability: Implied warranty of habitability. Landlord must maintain safe, fit, and habitable premises. "Repair and deduct" and rent escrow available.
+    key_statutes: Maine Revised Statutes Title 14, Chapter 710 (Tenancies)
+
+maryland:
+  name: Maryland
+  slug: maryland
+  summary: Maryland provides moderate tenant protections with specific rules varying by county.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. Maryland law applies to most residential tenancies. Occupancy for 30+ days with consent and rent payment creates tenancy.
+    security_deposits: Limited to 2 months' rent. Must be returned within 45 days with itemized deductions. Must be held in a federally insured institution.
+    notice_to_terminate: Month-to-month requires 1 month's notice (at least 30 days before end of month). Week-to-week requires 1 week.
+    rent_control: Some jurisdictions (Montgomery County, Prince George's County, Takoma Park) have rent stabilization. No statewide rent control.
+    eviction_protections: Failure to pay rent allows immediate filing (no notice period required, but tenant can pay and stay until judgment). Lease violations require notice. Court process required.
+    habitability: Implied warranty of habitability. Strong tenant remedies including rent escrow through District Court.
+    key_statutes: Maryland Real Property Code Title 8 (Landlord and Tenant)
+
+massachusetts:
+  name: Massachusetts
+  slug: massachusetts
+  summary: Massachusetts is one of the most tenant-friendly states with strict security deposit rules and strong habitability enforcement.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy at will or under lease. Occupancy with consent and rent payment establishes tenancy. Massachusetts is very protective of occupants' rights.
+    security_deposits: Limited to 1 month's rent. Must be held in separate interest-bearing account. Detailed receipt and annual interest payments required. Violations can result in triple damages to tenant.
+    notice_to_terminate: Tenancy at will requires 30 days' notice or 1 full rental period (whichever is longer).
+    rent_control: Boston's rent control was eliminated by statewide referendum in 1994. No current rent control, but legislative efforts continue.
+    eviction_protections: 14 days' notice for nonpayment. Court process required. Strong anti-retaliation protections. Winter eviction restrictions in some circumstances.
+    habitability: Very strong implied warranty of habitability through the State Sanitary Code. Tenant may withhold rent, "repair and deduct," or seek injunctive relief.
+    key_statutes: Massachusetts General Laws Chapter 186 (Estates for Years and at Will); MGL Chapter 239 (Summary Process)
+
+michigan:
+  name: Michigan
+  slug: michigan
+  summary: Michigan has moderate tenant protections with strict security deposit rules and clear eviction procedures.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement or occupancy with consent and rent payment. 30+ days of regular occupancy typically creates tenancy.
+    security_deposits: Limited to 1.5 months' rent. Must be deposited in a regulated financial institution. Landlord must provide written notice of deposit location within 14 days.
+    notice_to_terminate: Month-to-month generally follows lease terms. A written demand for possession is required. No statutory notice period for periodic tenancy termination.
+    rent_control: No rent control provisions.
+    eviction_protections: 7 days' notice for nonpayment. Court process required through summary proceedings. Tenant has right to redemption.
+    habitability: Implied warranty of habitability under case law. Landlord must comply with housing codes and maintain essential services.
+    key_statutes: Michigan Compiled Laws Chapter 554 (Landlord-Tenant Relationships); MCL 600.5701-5759 (Summary Proceedings)
+
+minnesota:
+  name: Minnesota
+  slug: minnesota
+  summary: Minnesota provides moderate to strong tenant protections with specific security deposit rules and habitability standards.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. Minnesota statutes apply to most residential rental agreements. Regular occupancy with rent payment creates tenancy.
+    security_deposits: No statutory limit on amount. Must be returned within 21 days with itemized deductions. Interest required for deposits held 12+ months. Must include written notice of tenant's rights.
+    notice_to_terminate: Month-to-month requires one full rental period notice (typically 30 days). Landlord must give written notice.
+    rent_control: Minneapolis and St. Paul have enacted rent stabilization. No statewide rent control.
+    eviction_protections: 14 days' notice for nonpayment. Court process required. Strong anti-retaliation protections. Expungement of eviction records available.
+    habitability: Implied warranty of habitability. Landlord must maintain premises and comply with housing codes. Tenant remedies include rent escrow.
+    key_statutes: Minnesota Statutes Chapter 504B (Landlord and Tenant)
+
+mississippi:
+  name: Mississippi
+  slug: mississippi
+  summary: Mississippi has minimal statutory tenant protections and largely relies on common law principles.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Mississippi has no comprehensive landlord-tenant statute. Tenancy determined by common law principles including duration, rent payment, and agreement.
+    security_deposits: No statutory limit. No statutory requirement for when deposit must be returned. Landlord-tenant agreement governs.
+    notice_to_terminate: Month-to-month requires 30 days' notice. Year-to-year requires notice before end of year.
+    rent_control: No rent control provisions.
+    eviction_protections: 3 days' notice for nonpayment. Limited tenant protections. Court order required but process is fast.
+    habitability: Limited implied warranty of habitability through case law. No comprehensive statutory habitability requirements.
+    key_statutes: Mississippi Code Title 89, Chapter 8 (Landlord and Tenant)
+
+missouri:
+  name: Missouri
+  slug: missouri
+  summary: Missouri has a landlord-tenant act with basic protections and reasonable security deposit rules.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement or occupancy with consent and rent payment. Regular occupancy for 30+ days typically creates tenancy.
+    security_deposits: Limited to 2 months' rent. Must be returned within 30 days with itemized deductions.
+    notice_to_terminate: Month-to-month requires 1 month's notice (one full rental period). No statutory notice for rent increases.
+    rent_control: No rent control provisions. State law does not address local authority.
+    eviction_protections: Landlord must provide written notice before filing. Court process required. Tenant has right to cure in some circumstances.
+    habitability: Implied warranty of habitability. Landlord must maintain premises in reasonable repair and comply with housing codes.
+    key_statutes: Missouri Revised Statutes Chapter 441 (Landlord and Tenant); RSMO 535 (Unlawful Detainer)
+
+montana:
+  name: Montana
+  slug: montana
+  summary: Montana has a residential landlord-tenant act with moderate protections and clear security deposit rules.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement (oral or written). Montana's RLTA applies to most residential tenancies.
+    security_deposits: No statutory limit on amount. Must be returned within 30 days (10 days if lease or tenant specifies). Itemized statement required.
+    notice_to_terminate: Month-to-month requires 30 days' notice. Year-to-year requires 30 days before end of year.
+    rent_control: No rent control provisions.
+    eviction_protections: 3 days' notice for nonpayment. 14 days to cure lease violations, then 30 days to vacate. No "self-help" evictions.
+    habitability: Implied warranty of habitability. Landlord must maintain premises and comply with housing codes. Tenant may use "repair and deduct" (up to 1 month's rent).
+    key_statutes: Montana Residential Landlord and Tenant Act (MCA Title 70, Chapter 24)
+
+nebraska:
+  name: Nebraska
+  slug: nebraska
+  summary: Nebraska has the Uniform Residential Landlord and Tenant Act with moderate protections.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement under Nebraska's URLTA. Regular occupancy with consent and rent payment creates tenancy.
+    security_deposits: Limited to 1 month's rent (unfurnished) or 1.5 months (furnished). Must be returned within 14 days.
+    notice_to_terminate: Month-to-month requires 30 days' notice. Week-to-week requires 7 days.
+    rent_control: No rent control provisions.
+    eviction_protections: 3 days' notice (7 in Omaha) for nonpayment. 14 days to cure lease violations, then 30 days to vacate. Court process required.
+    habitability: Implied warranty of habitability. Landlord must maintain premises and comply with housing codes. "Repair and deduct" remedy available.
+    key_statutes: Nebraska Uniform Residential Landlord and Tenant Act (Neb. Rev. Stat. Sections 76-1401 to 76-1449)
+
+nevada:
+  name: Nevada
+  slug: nevada
+  summary: Nevada has strong tenant protections with security deposit limits, required disclosures, and recent eviction reform.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. Nevada defines tenant broadly to include any person entitled to occupy a dwelling unit. 30+ days creates tenancy rights.
+    security_deposits: Limited to 3 months' rent. Must be returned within 30 days. Itemized statement required.
+    notice_to_terminate: Month-to-month requires 30 days' notice from landlord, 30 days from tenant.
+    rent_control: No statewide rent control. State preemption prohibits local rent control.
+    eviction_protections: 7 judicial days' notice for nonpayment. 5 days to cure lease violations. Court order required. Summary eviction process.
+    habitability: Implied warranty of habitability. Landlord must maintain premises in habitable condition. Tenant may pursue remedies including rent escrow.
+    key_statutes: Nevada Revised Statutes Chapter 118A (Landlord and Tenant)
+
+new_hampshire:
+  name: New Hampshire
+  slug: new-hampshire
+  summary: New Hampshire has moderate tenant protections with clear security deposit rules and eviction procedures.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. New Hampshire defines tenancy broadly. Occupancy with consent and rent payment for 30+ days creates tenancy.
+    security_deposits: Limited to 1 month's rent or $100 (whichever is greater). Must be returned within 30 days. Must be held in a separate account and receipted.
+    notice_to_terminate: Month-to-month requires 30 days' notice. Landlord must provide written notice.
+    rent_control: No rent control provisions.
+    eviction_protections: 7 days' notice for nonpayment. 30 days for other reasons. Court process required. Anti-retaliation protections.
+    habitability: Implied warranty of habitability. Landlord must maintain premises and comply with housing codes. Tenant may petition housing standards enforcement.
+    key_statutes: New Hampshire RSA Chapter 540 (Actions Against Tenants); RSA 540-A (Prohibited Practices)
+
+new_jersey:
+  name: New Jersey
+  slug: new-jersey
+  summary: New Jersey is one of the most tenant-friendly states with strong anti-eviction protections and mandatory just cause requirements.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by occupancy with consent and rent payment. New Jersey is very protective of tenant rights.
+    security_deposits: Limited to 1.5 months' rent. Must be held in interest-bearing account. Annual interest payments to tenant. Must be returned within 30 days.
+    notice_to_terminate: No "at will" termination for landlords. Landlord must have one of the statutory "good causes" to evict. Tenant may terminate month-to-month with 30 days' notice.
+    rent_control: Many municipalities have rent control ordinances. No statewide rent control but widespread local adoption.
+    eviction_protections: Anti-Eviction Act requires good cause for all evictions. 30 days' notice for most grounds. Strong protections for elderly and disabled tenants. Court process required.
+    habitability: Strong implied warranty of habitability. Landlord must maintain premises and comply with housing codes. Multiple tenant remedies including rent withholding.
+    key_statutes: New Jersey Anti-Eviction Act (N.J.S.A. 2A:18-61.1 et seq.); Security Deposit Act (N.J.S.A. 46:8-19 et seq.)
+
+new_mexico:
+  name: New Mexico
+  slug: new-mexico
+  summary: New Mexico has a comprehensive landlord-tenant act with moderate protections and clear security deposit rules.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement (written required for leases over 1 year). Regular occupancy with rent payment creates tenancy.
+    security_deposits: Limited to 1 month's rent (unfurnished, lease under 1 year). Must be returned within 30 days with itemized deductions.
+    notice_to_terminate: Month-to-month requires 30 days' notice. Week-to-week requires 7 days.
+    rent_control: No rent control provisions.
+    eviction_protections: 3 days' notice for nonpayment. 7 days to cure lease violations. Court process required. No "self-help" evictions.
+    habitability: Implied warranty of habitability. Landlord must maintain premises in fit and habitable condition. "Repair and deduct" available (up to 1 month's rent or $300).
+    key_statutes: New Mexico Owner-Resident Relations Act (NMSA Chapter 47, Article 8)
+
+new_york:
+  name: New York
+  slug: new-york
+  summary: New York has among the strongest tenant protections in the nation, especially in New York City with rent stabilization and extensive eviction safeguards.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by occupancy with consent. In NYC, hotel/motel guests become permanent tenants after 30 consecutive days. Strong protections for all occupants.
+    security_deposits: Limited to 1 month's rent (statewide, as of 2019). Must be returned within 14 days with itemized deductions. Must be held in interest-bearing account.
+    notice_to_terminate: Depends on tenancy length. Under 1 year, 30 days. 1-2 years, 60 days. 2+ years, 90 days. Must have good cause in NYC for most units.
+    rent_control: NYC has extensive rent stabilization covering ~1 million units. Statewide HSTPA (2019) strengthened rent regulation. Other municipalities may adopt rent guidelines.
+    eviction_protections: 14 days' notice for nonpayment. Good cause eviction law (2024) protects most tenants statewide. Court process required. Strong anti-retaliation and anti-harassment protections.
+    habitability: Very strong implied warranty of habitability. Landlord must maintain safe and livable conditions. Tenant may withhold rent, "repair and deduct," or seek HP proceedings in Housing Court (NYC).
+    key_statutes: NY Real Property Law Article 7; NY Real Property Actions and Proceedings Law Article 7; Housing Stability and Tenant Protection Act (HSTPA) 2019
+
+north_carolina:
+  name: North Carolina
+  slug: north-carolina
+  summary: North Carolina has moderate landlord-tenant statutes with reasonable security deposit limits but limited tenant remedies.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. North Carolina's Residential Rental Agreements Act applies. Regular occupancy with rent payment creates tenancy.
+    security_deposits: Limited to 2 months' rent (1.5 months for month-to-month). Must be returned within 30 days. Must be held in a trust account or insured with a bond.
+    notice_to_terminate: Month-to-month requires 7 days' notice (one of the shortest). Year-to-year requires 30 days.
+    rent_control: No rent control provisions.
+    eviction_protections: 10 days' notice for nonpayment. Summary ejectment through small claims court. Limited right to cure.
+    habitability: Implied warranty of habitability. Landlord must comply with housing codes and maintain premises. Tenant remedies include court action but no statutory "repair and deduct."
+    key_statutes: North Carolina Residential Rental Agreements Act (N.C.G.S. Chapter 42)
+
+north_dakota:
+  name: North Dakota
+  slug: north-dakota
+  summary: North Dakota has the Uniform Residential Landlord and Tenant Act with basic tenant protections.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement under North Dakota's URLTA. Regular occupancy with rent payment creates tenancy.
+    security_deposits: Limited to 1 month's rent (or amount of 1 month's rent plus pet deposit). Must be returned within 30 days.
+    notice_to_terminate: Month-to-month requires 30 days' notice. No notice required if lease has definite end date.
+    rent_control: No rent control provisions.
+    eviction_protections: 3 days' notice for nonpayment. Court process required. Eviction action must be filed in district court.
+    habitability: Implied warranty of habitability under URLTA. Landlord must maintain premises and comply with housing codes. "Repair and deduct" available.
+    key_statutes: North Dakota Uniform Residential Landlord and Tenant Act (N.D.C.C. Chapter 47-16)
+
+ohio:
+  name: Ohio
+  slug: ohio
+  summary: Ohio has a comprehensive landlord-tenant act with moderate protections and clear security deposit rules.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. Ohio's landlord-tenant act applies to most residential tenancies. Regular occupancy with rent payment creates tenancy.
+    security_deposits: No statutory limit on amount. Must be returned within 30 days with itemized deductions. Interest required on deposits held 6+ months (if 5%+ of rent).
+    notice_to_terminate: Month-to-month requires 30 days' notice. Week-to-week requires 7 days.
+    rent_control: No rent control provisions. State preempts local rent control.
+    eviction_protections: 3 days' notice for nonpayment (no right to cure). Court process required through forcible entry and detainer. Second cause of action allowed.
+    habitability: Implied warranty of habitability. Landlord must maintain premises and comply with housing codes. Tenant may pursue remedies including rent escrow.
+    key_statutes: Ohio Revised Code Chapter 5321 (Landlords and Tenants)
+
+oklahoma:
+  name: Oklahoma
+  slug: oklahoma
+  summary: Oklahoma has the Residential Landlord Tenant Act with basic protections and moderate security deposit rules.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. Oklahoma's RLTA applies to most residential tenancies. Regular occupancy with rent payment creates tenancy.
+    security_deposits: No statutory limit on amount. Must be returned within 45 days (30 days if tenant provides forwarding address) with itemized deductions.
+    notice_to_terminate: Month-to-month requires 30 days' notice. Week-to-week requires 7 days.
+    rent_control: No rent control provisions.
+    eviction_protections: 5 days' notice for nonpayment. 15 days to cure lease violations. Court process required through Forcible Entry and Detainer.
+    habitability: Implied warranty of habitability. Landlord must maintain premises in habitable condition and comply with housing codes.
+    key_statutes: Oklahoma Residential Landlord and Tenant Act (41 O.S. Sections 101-136)
+
+oregon:
+  name: Oregon
+  slug: oregon
+  summary: Oregon has strong tenant protections including statewide rent control and mandatory relocation assistance.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement or occupancy with consent. Oregon broadly defines tenant to include most occupants. 30+ day occupancy creates tenancy.
+    security_deposits: No statutory limit on amount (but must be reasonable). Must be returned within 31 days with itemized accounting.
+    notice_to_terminate: No-cause terminations require 90 days' notice for tenants with 1+ year tenancy. 30 days for tenancies under 1 year. Just cause required in Portland.
+    rent_control: Statewide rent increase cap of 7% + CPI annually (SB 608, 2019). First state to enact statewide rent control. Applies to units 15+ years old.
+    eviction_protections: 72 hours (or 144 hours) notice for nonpayment. 30 days to cure certain violations. Relocation assistance required for no-fault terminations (1 month's rent). Court process required.
+    habitability: Strong implied warranty of habitability. Landlord must maintain safe and habitable premises. Multiple tenant remedies including rent reduction, "repair and deduct," and lease termination.
+    key_statutes: Oregon Residential Landlord and Tenant Act (ORS Chapter 90)
+
+pennsylvania:
+  name: Pennsylvania
+  slug: pennsylvania
+  summary: Pennsylvania has moderate tenant protections with specific rules for Philadelphia under its Fair Housing ordinances.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. Pennsylvania law applies to most residential tenancies. Regular occupancy with rent payment creates tenancy.
+    security_deposits: Limited to 2 months' rent in first year, 1 month thereafter. Must be returned within 30 days. Interest required after 2 years (in escrow account).
+    notice_to_terminate: Month-to-month requires 15 days' notice (30 days for leases of 1+ year).
+    rent_control: Philadelphia has fair rent provisions. No statewide rent control.
+    eviction_protections: 10 days' notice for nonpayment. Court process required. Philadelphia has additional protections including mandatory diversion programs.
+    habitability: Implied warranty of habitability. Landlord must comply with housing codes and maintain premises. Tenant may use rent escrow.
+    key_statutes: Pennsylvania Landlord and Tenant Act (68 Pa.C.S. Chapter 2); Philadelphia Code Chapter 9-800
+
+rhode_island:
+  name: Rhode Island
+  slug: rhode-island
+  summary: Rhode Island has moderate to strong tenant protections with clear security deposit rules and anti-retaliation measures.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. Rhode Island law applies broadly to residential tenancies. Regular occupancy with rent payment creates tenancy.
+    security_deposits: Limited to 1 month's rent. Must be returned within 20 days. Must be held in a separate account.
+    notice_to_terminate: Month-to-month requires 30 days' notice.
+    rent_control: No statewide rent control, but some local ordinances may apply.
+    eviction_protections: 5 days' notice for nonpayment. Court process required. Strong anti-retaliation protections (up to 6 months after tenant complaint).
+    habitability: Implied warranty of habitability. Landlord must maintain safe and habitable premises. Tenant may pursue rent escrow and "repair and deduct."
+    key_statutes: Rhode Island General Laws Title 34, Chapter 18 (Residential Landlord and Tenant Act)
+
+south_carolina:
+  name: South Carolina
+  slug: south-carolina
+  summary: South Carolina has the Residential Landlord and Tenant Act with basic protections.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. South Carolina's RLTA applies to most residential tenancies. Regular occupancy with rent payment creates tenancy.
+    security_deposits: No statutory limit on amount. Must be returned within 30 days with itemized deductions.
+    notice_to_terminate: Month-to-month requires 30 days' notice.
+    rent_control: No rent control provisions.
+    eviction_protections: 5 days' notice for nonpayment. 14 days to cure lease violations. Court process required through magistrate court.
+    habitability: Implied warranty of habitability. Landlord must maintain premises and comply with housing codes. Tenant may pursue remedies including rent escrow.
+    key_statutes: South Carolina Residential Landlord and Tenant Act (S.C. Code Title 27, Chapter 40)
+
+south_dakota:
+  name: South Dakota
+  slug: south-dakota
+  summary: South Dakota has minimal statutory tenant protections with basic security deposit and eviction rules.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. Regular occupancy with rent payment creates tenancy. No specific statutory day threshold.
+    security_deposits: Limited to 1 month's rent (2 months if "special conditions" warrant it). Must be returned within 14 days (45 days if damage).
+    notice_to_terminate: Month-to-month requires 30 days' notice (1 full calendar month). Year-to-year requires 30 days before end of year.
+    rent_control: No rent control provisions.
+    eviction_protections: 3 days' notice for nonpayment. Court process required. Forcible entry and detainer action in circuit court.
+    habitability: Limited implied warranty of habitability. Landlord must comply with housing codes where applicable. Limited tenant remedies.
+    key_statutes: South Dakota Codified Laws Title 43, Chapter 32 (Landlord and Tenant)
+
+tennessee:
+  name: Tennessee
+  slug: tennessee
+  summary: Tennessee has the Uniform Residential Landlord and Tenant Act with moderate protections in participating jurisdictions.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. Tennessee's URLTA applies in jurisdictions that have adopted it. Regular occupancy with rent payment creates tenancy.
+    security_deposits: No statutory limit on amount. Must be returned within 30 days (or 10 days if premises are in a county with 75,000+ population). Itemized list required if deductions taken.
+    notice_to_terminate: Month-to-month requires 30 days' notice. No notice required for definite-term leases.
+    rent_control: No rent control provisions. State preempts local rent control.
+    eviction_protections: 14 days' notice for nonpayment (with right to cure). 14 days to cure lease violations. Court process required through general sessions court.
+    habitability: Implied warranty of habitability (in URLTA jurisdictions). Landlord must maintain premises and comply with housing codes. Limited remedies outside URLTA areas.
+    key_statutes: Tennessee Uniform Residential Landlord and Tenant Act (T.C.A. Title 66, Chapter 28)
+
+texas:
+  name: Texas
+  slug: texas
+  summary: Texas has a property code governing landlord-tenant relations with moderate protections and specific security deposit rules.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement (oral or written). Regular occupancy with rent payment creates tenancy. Texas broadly defines "tenant."
+    security_deposits: No statutory limit on amount. Must be returned within 30 days with itemized deductions. Refund sent to forwarding address provided by tenant.
+    notice_to_terminate: Month-to-month requires 30 days' notice (unless lease specifies otherwise). Landlord must give written notice.
+    rent_control: State law prohibits local rent control (Texas Property Code 214.902).
+    eviction_protections: 3 days' notice to vacate for nonpayment (unless lease specifies shorter). Court process through Justice Court. Appeal to county court for trial de novo.
+    habitability: Implied warranty of habitability for conditions materially affecting health and safety. Tenant must give notice and allow reasonable time for repair. "Repair and deduct" available with conditions.
+    key_statutes: Texas Property Code Title 8, Chapter 92 (Residential Tenancies)
+
+utah:
+  name: Utah
+  slug: utah
+  summary: Utah has the Fit Premises Act with basic tenant protections and relatively fast eviction procedures.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. Utah broadly defines tenant. Regular occupancy with rent payment creates tenancy.
+    security_deposits: No statutory limit on amount. Must be returned within 30 days with itemized deductions. Tenant must provide forwarding address.
+    notice_to_terminate: Month-to-month requires 15 days' notice.
+    rent_control: No rent control provisions. State preempts local rent control.
+    eviction_protections: 3 days' notice for nonpayment (with right to cure by paying). Court process required. Unlawful detainer action.
+    habitability: Fit Premises Act requires landlord to maintain premises in reasonable condition. Tenant may pursue court remedies but no statutory "repair and deduct."
+    key_statutes: Utah Fit Premises Act (Utah Code Title 57, Chapter 22); Utah Code Title 78B, Chapter 6 (Eviction)
+
+vermont:
+  name: Vermont
+  slug: vermont
+  summary: Vermont has strong tenant protections with detailed security deposit rules and anti-retaliation measures.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. Vermont's Residential Rental Agreements Act applies broadly. Regular occupancy with consent and rent payment creates tenancy.
+    security_deposits: No statutory limit on amount. Must be returned within 14 days. Itemized statement required.
+    notice_to_terminate: Month-to-month requires 60 days' notice from landlord (one of the longest). 30 days from tenant.
+    rent_control: No statewide rent control. Burlington has explored rent stabilization.
+    eviction_protections: 14 days' notice for nonpayment. Court process required. Strong anti-retaliation protections.
+    habitability: Strong implied warranty of habitability. Landlord must comply with housing codes and maintain habitable conditions. Tenant may withhold rent or pursue "repair and deduct."
+    key_statutes: Vermont Residential Rental Agreements Act (9 V.S.A. Chapter 137)
+
+virginia:
+  name: Virginia
+  slug: virginia
+  summary: Virginia has the Residential Landlord and Tenant Act with moderate protections that were strengthened in recent years.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. Virginia's RLTA applies to most residential tenancies. Regular occupancy with rent payment creates tenancy.
+    security_deposits: Limited to 2 months' rent. Must be returned within 45 days with itemized deductions.
+    notice_to_terminate: Month-to-month requires 30 days' notice from either party.
+    rent_control: No rent control provisions. State preempts local rent control.
+    eviction_protections: 5 days' pay or quit notice for nonpayment. 30 days to cure lease violations. Court process required. Right of redemption on first nonpayment.
+    habitability: Implied warranty of habitability. Landlord must maintain premises and comply with housing codes. Tenant may pursue rent escrow or "repair and deduct."
+    key_statutes: Virginia Residential Landlord and Tenant Act (Va. Code Title 55.1, Chapter 12)
+
+washington:
+  name: Washington
+  slug: washington
+  summary: Washington has strong tenant protections including statewide just cause eviction requirements and mandatory relocation assistance.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement or occupancy with consent. Washington broadly defines tenant. 30+ days of occupancy typically creates tenancy.
+    security_deposits: No statutory limit on amount. Must be returned within 21 days with itemized deductions. Must be held in a trust account at a WA financial institution.
+    notice_to_terminate: 60 days' notice for month-to-month termination by landlord. Must have just cause (as of 2021). 20 days from tenant.
+    rent_control: No statewide rent control. State preempts local rent control, though Seattle has pushed for exceptions.
+    eviction_protections: 14 days' notice for nonpayment. Just cause eviction required statewide (SB 5160, 2021). Court process required. Right to cure. Strong anti-retaliation.
+    habitability: Strong implied warranty of habitability. Landlord must maintain safe and habitable premises. "Repair and deduct" and rent withholding available. Seattle has additional protections.
+    key_statutes: Washington Residential Landlord-Tenant Act (RCW 59.18)
+
+west_virginia:
+  name: West Virginia
+  slug: west-virginia
+  summary: West Virginia has limited statutory tenant protections with basic security deposit and eviction rules.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. Regular occupancy with rent payment creates tenancy. No specific statutory day threshold.
+    security_deposits: No statutory limit on amount. Must be returned within 60 days. No requirement for itemized deductions by statute.
+    notice_to_terminate: Month-to-month requires 30 days' notice (one full rental period).
+    rent_control: No rent control provisions.
+    eviction_protections: Landlord must file in magistrate court. No statutory notice period for nonpayment in some circumstances. Court process required.
+    habitability: Limited implied warranty of habitability. No comprehensive statutory framework. Landlord must comply with housing codes where applicable.
+    key_statutes: West Virginia Code Chapter 37, Article 6 (Landlord and Tenant)
+
+wisconsin:
+  name: Wisconsin
+  slug: wisconsin
+  summary: Wisconsin has a detailed landlord-tenant statute (ATCP 134) with specific rules on deposits, disclosures, and habitability.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. Wisconsin's residential rental practices rule (ATCP 134) applies broadly. Regular occupancy with rent payment creates tenancy.
+    security_deposits: No statutory limit on amount. Must be returned within 21 days. Itemized statement required. Must disclose all existing defects at move-in.
+    notice_to_terminate: Month-to-month requires 28 days' notice. Year-to-year requires 30 days before end of year.
+    rent_control: State law prohibits local rent control (Wis. Stat. 66.1015).
+    eviction_protections: 5 days' notice for nonpayment. 14 days to cure lease violations. Court process required. Tenant has right to trial.
+    habitability: Implied warranty of habitability under ATCP 134. Landlord must maintain premises in reasonable repair and comply with housing codes. Tenant may pursue rent abatement.
+    key_statutes: Wisconsin ATCP 134 (Residential Rental Practices); Wis. Stat. Chapter 704 (Landlord and Tenant)
+
+wyoming:
+  name: Wyoming
+  slug: wyoming
+  summary: Wyoming has minimal statutory tenant protections, relying largely on common law and contract principles.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established by rental agreement. Wyoming has no comprehensive landlord-tenant act. Common law and contract terms govern. Regular occupancy with rent payment creates tenancy.
+    security_deposits: No statutory limit on amount. Must be returned within 30 days (or 15 days for non-refundable deposits). Itemized statement required.
+    notice_to_terminate: No statutory notice period specified for periodic tenancies. Common practice is 30 days' notice for month-to-month.
+    rent_control: No rent control provisions.
+    eviction_protections: 3 days' notice for nonpayment. Court process required through forcible entry and detainer. Limited tenant protections.
+    habitability: No statutory implied warranty of habitability. Landlord obligations determined by lease terms and local codes only.
+    key_statutes: Wyoming Statutes Title 1, Chapter 21 (Forcible Entry and Detainer); Title 34, Chapter 2 (Landlord and Tenant)
+
+district_of_columbia:
+  name: District of Columbia
+  slug: district-of-columbia
+  summary: D.C. has among the strongest tenant protections in the nation with rent control, just cause eviction, and extensive rights.
+  tenant_threshold_days: 30
+  sections:
+    when_you_become_a_tenant: Tenancy established broadly. D.C. defines tenant to include any person occupying a rental unit. 30+ day occupancy with consent creates tenancy.
+    security_deposits: Limited to 1 month's rent. Must be returned within 45 days. Must be held in interest-bearing account with annual statements.
+    notice_to_terminate: 30 days' notice for month-to-month. Just cause required for eviction of any tenant.
+    rent_control: Strong rent control program covering most units built before 1976. Annual rent increases limited to CPI or 10% (whichever is lower).
+    eviction_protections: 30 days' notice for nonpayment. Just cause eviction required for all tenants. Court process required. Very strong anti-retaliation and anti-harassment protections.
+    habitability: Very strong implied warranty of habitability. Landlord must maintain premises and comply with housing regulations. Multiple tenant remedies including rent withholding and court-supervised repairs.
+    key_statutes: D.C. Rental Housing Act; D.C. Code Title 42, Chapter 35 (Landlord and Tenant)

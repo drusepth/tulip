@@ -238,6 +238,17 @@ class Stay < ApplicationRecord
     !has_dates?
   end
 
+  # Stay is 30+ days (may trigger tenant rights)
+  def long_stay?
+    duration_days >= 30
+  end
+
+  # URL slug for this stay's state tenant rights page
+  def tenant_rights_slug
+    return nil unless state.present? && country&.upcase&.include?("US")
+    state.downcase.strip.gsub(/\s+/, "-")
+  end
+
   private
 
   def set_default_title
