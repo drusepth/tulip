@@ -85,11 +85,6 @@ ThemeData tulipTheme() {
       type: BottomNavigationBarType.fixed,
       elevation: 8,
     ),
-    floatingActionButtonTheme: FloatingActionButtonThemeData(
-      backgroundColor: TulipColors.sage,
-      foregroundColor: Colors.white,
-      shape: CircleBorder(),
-    ),
     chipTheme: ChipThemeData(
       backgroundColor: TulipColors.sageLight,
       labelStyle: TextStyle(color: TulipColors.brown),

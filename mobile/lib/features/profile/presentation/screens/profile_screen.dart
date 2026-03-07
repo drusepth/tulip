@@ -144,6 +144,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.add_circle_outline),
+          tooltip: 'New Stay',
+          onPressed: () => context.push('/stays/new'),
+        ),
         title: Text('Profile Settings', style: TulipTextStyles.heading3),
       ),
       body: profileAsync.when(

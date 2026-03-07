@@ -23,6 +23,11 @@ class DashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.add_circle, color: TulipColors.sage),
+          tooltip: 'New Stay',
+          onPressed: () => context.push('/stays/new'),
+        ),
         title: Text('Tulip', style: TulipTextStyles.heading2),
         actions: [
           IconButton(
@@ -195,6 +200,8 @@ class DashboardScreen extends ConsumerWidget {
                   icon: Icons.add_location_alt_outlined,
                   label: 'New Stay',
                   onTap: () => context.push('/stays/new'),
+                  backgroundColor: TulipColors.sageLight,
+                  borderColor: TulipColors.sage,
                 ),
               ),
               const SizedBox(width: 12),
@@ -347,15 +354,17 @@ class DashboardScreen extends ConsumerWidget {
     required IconData icon,
     required String label,
     required VoidCallback onTap,
+    Color? backgroundColor,
+    Color? borderColor,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: backgroundColor ?? Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: TulipColors.taupeLight),
+          border: Border.all(color: borderColor ?? TulipColors.taupeLight),
         ),
         child: Column(
           children: [
