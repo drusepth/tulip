@@ -52,6 +52,9 @@ Rails.application.routes.draw do
         resources :comments, only: [ :index, :create ], controller: "place_comments"
       end
 
+      # Scratch-off map
+      get "scratch_map", to: "scratch_map#index"
+
       # Map endpoints
       get "map/stays", to: "map#stays"
       get "map/pois/search", to: "map#pois_search"
@@ -72,6 +75,10 @@ Rails.application.routes.draw do
 
       # Destinations
       get "destinations", to: "destinations#index"
+
+      # Public tenant rights (no auth required)
+      get "tenant-rights", to: "tenant_rights#index"
+      get "tenant-rights/:state_slug", to: "tenant_rights#show"
     end
   end
 
@@ -122,10 +129,14 @@ Rails.application.routes.draw do
     resource :highlights, only: [ :show ]
   end
 
+  # Public tenant rights pages (SEO-friendly, no auth required)
+  resources :tenant_rights, only: [ :index, :show ], param: :state_slug, path: "tenant-rights"
+
   # Magic link for accepting collaboration invites
   get "invites/:token", to: "stay_collaborations#accept", as: :accept_invite
 
   get "map", to: "stays#index", as: :map
+  get "explored", to: "scratch_map#show", as: :explored
   get "timeline", to: "timeline#index", as: :timeline
   get "destinations", to: "destinations#index", as: :destinations
 

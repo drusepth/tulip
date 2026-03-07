@@ -2475,3 +2475,38 @@ kbd {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ========================================
+   Scratch-Off Map
+   ======================================== */
+.scratch-badge {
+  background: transparent;
+  border: none;
+}
+
+.scratch-badge-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-brown);
+  color: var(--color-cream);
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.scratch-panel {
+  border-top-left-radius: 1.25rem;
+  border-top-right-radius: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .scratch-panel {
+    border-radius: 0;
+    border-left: 1px solid var(--color-taupe-light);
+  }
+}
