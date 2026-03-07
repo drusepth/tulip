@@ -24,8 +24,8 @@
             </svg>
           </div>
           <div>
-            <h2 class="text-xl font-semibold text-brown">Rate Your Memories</h2>
-            <p class="text-sm text-brown-light"><%= pluralize(@unrated_items.count, "experience") %> waiting for your review</p>
+            <h2 class="text-xl font-semibold text-brown">Rate Your Experiences</h2>
+            <p class="text-sm text-brown-light"><%= pluralize(@unrated_items.count, "memory") %> waiting for your review</p>
           </div>
         </div>
       </div>
@@ -52,7 +52,7 @@
         </button>
 
         <!-- Slides -->
-        <div class="px-6 sm:px-12">
+        <div class="px-6 sm:px-12 overflow-hidden">
           <% @unrated_items.each_with_index do |item, index| %>
             <% photo_url = item.place&.foursquare_photo_url.presence || item.place&.wikidata_image_url.presence %>
             <div class="<%= 'hidden' unless index == 0 %>"

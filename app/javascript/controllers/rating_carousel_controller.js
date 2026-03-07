@@ -1,46 +1,82 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["slide", "dot", "counter", "prevBtn", "nextBtn"]
+  static targets = ["slide", "slidesContainer", "dot", "counter", "prevBtn", "nextBtn"]
   static values = {
     index: { type: Number, default: 0 }
   }
 
   connect() {
-    this.updateDisplay()
+    this.updateDisplay(false) // No animation on initial load
   }
 
   prev() {
     if (this.indexValue > 0) {
       this.indexValue--
-      this.updateDisplay()
+      this.updateDisplay(true, 'left')
     }
   }
 
   next() {
     if (this.indexValue < this.slideTargets.length - 1) {
       this.indexValue++
-      this.updateDisplay()
+      this.updateDisplay(true, 'right')
     }
   }
 
   goToSlide(event) {
     const index = parseInt(event.currentTarget.dataset.index)
-    if (index >= 0 && index < this.slideTargets.length) {
+    if (index >= 0 && index < this.slideTargets.length && index !== this.indexValue) {
+      const direction = index > this.indexValue ? 'right' : 'left'
       this.indexValue = index
-      this.updateDisplay()
+      this.updateDisplay(true, direction)
     }
   }
 
-  updateDisplay() {
+  updateDisplay(animate = false, direction = 'right') {
     const totalSlides = this.slideTargets.length
 
-    // Show/hide slides
+    // Animate slides
     this.slideTargets.forEach((slide, i) => {
       if (i === this.indexValue) {
+        // Show the current slide with animation
         slide.classList.remove("hidden")
+
+        if (animate) {
+          // Set initial position based on direction
+          slide.style.transform = direction === 'right' ? 'translateX(100%)' : 'translateX(-100%)'
+          slide.style.opacity = '0'
+
+          // Force reflow to ensure the initial state is applied
+          slide.offsetHeight
+
+          // Animate to center
+          slide.style.transition = 'transform 300ms ease-out, opacity 300ms ease-out'
+          slide.style.transform = 'translateX(0)'
+          slide.style.opacity = '1'
+        } else {
+          slide.style.transform = 'translateX(0)'
+          slide.style.opacity = '1'
+          slide.style.transition = 'none'
+        }
       } else {
-        slide.classList.add("hidden")
+        // Hide other slides
+        if (animate && !slide.classList.contains('hidden')) {
+          // Animate out
+          slide.style.transition = 'transform 300ms ease-out, opacity 300ms ease-out'
+          slide.style.transform = direction === 'right' ? 'translateX(-100%)' : 'translateX(100%)'
+          slide.style.opacity = '0'
+
+          // Hide after animation completes
+          setTimeout(() => {
+            slide.classList.add("hidden")
+            slide.style.transform = ''
+            slide.style.opacity = ''
+            slide.style.transition = ''
+          }, 300)
+        } else {
+          slide.classList.add("hidden")
+        }
       }
     })
 
@@ -86,6 +122,6 @@ export default class extends Controller {
     if (this.indexValue >= totalSlides && totalSlides > 0) {
       this.indexValue = totalSlides - 1
     }
-    this.updateDisplay()
+    this.updateDisplay(false)
   }
 }
