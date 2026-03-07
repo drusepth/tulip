@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../shared/constants/tulip_colors.dart';
 import '../../../../shared/constants/tulip_text_styles.dart';
+import '../../../../shared/widgets/animated_widgets.dart';
 import '../providers/highlights_provider.dart';
 import '../widgets/stats_section.dart';
 import '../widgets/unrated_carousel.dart';
@@ -24,25 +25,47 @@ class HighlightsScreen extends ConsumerWidget {
     final highlightsAsync = ref.watch(highlightsProvider(stayId));
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.8),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.arrow_back, size: 20),
+          ),
           onPressed: () => context.pop(),
         ),
         title: Text(
           'Trip Highlights',
           style: TulipTextStyles.heading3,
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
+        scrolledUnderElevation: 0,
       ),
-      backgroundColor: TulipColors.cream,
-      body: highlightsAsync.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: TulipColors.sage),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: [0.0, 0.3, 1.0],
+            colors: [
+              Color(0xFFFFF5EE), // Warm peach tint at top
+              TulipColors.cream,
+              Color(0xFFF5F0EB), // Slightly warmer cream at bottom
+            ],
+          ),
         ),
-        error: (error, stack) => _buildError(context, ref, error),
-        data: (highlights) => _buildContent(context, ref, highlights),
+        child: highlightsAsync.when(
+          loading: () => const Center(
+            child: CircularProgressIndicator(color: TulipColors.sage),
+          ),
+          error: (error, stack) => _buildError(context, ref, error),
+          data: (highlights) => _buildContent(context, ref, highlights),
+        ),
       ),
     );
   }
@@ -97,40 +120,47 @@ class HighlightsScreen extends ConsumerWidget {
       color: TulipColors.sage,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
+            // Warm header area with extra top padding for app bar
             _buildHeader(highlights),
-            const SizedBox(height: 24),
 
             // Stats section
-            StatsSection(stats: highlights.stats),
-            const SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: StatsSection(stats: highlights.stats),
+            ),
+            const SizedBox(height: 28),
 
             // Unrated items carousel
             if (unratedItems.isNotEmpty) ...[
-              UnratedCarousel(
-                items: unratedItems,
-                currentUserId: highlights.currentUserId,
-                onRate: (itemId, rating) async {
-                  await rateHighlightItem(ref, stayId, itemId, rating);
-                },
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: UnratedCarousel(
+                  items: unratedItems,
+                  currentUserId: highlights.currentUserId,
+                  onRate: (itemId, rating) async {
+                    await rateHighlightItem(ref, stayId, itemId, rating);
+                  },
+                ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
             ],
 
             // Rated items section
             if (ratedItems.isNotEmpty)
-              RatedSection(
-                items: ratedItems,
-                currentUserId: highlights.currentUserId,
-                onRate: (itemId, rating) async {
-                  await rateHighlightItem(ref, stayId, itemId, rating);
-                },
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: RatedSection(
+                  items: ratedItems,
+                  currentUserId: highlights.currentUserId,
+                  onRate: (itemId, rating) async {
+                    await rateHighlightItem(ref, stayId, itemId, rating);
+                  },
+                ),
               ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 40),
           ],
         ),
       ),
@@ -141,64 +171,117 @@ class HighlightsScreen extends ConsumerWidget {
     final stay = highlights.stay;
     final title = stayTitle ?? stay.title;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TulipTextStyles.heading2,
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(20, 100, 20, 24),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFFFFF5EE),
+            TulipColors.rose.withValues(alpha: 0.15),
+            TulipColors.lavender.withValues(alpha: 0.1),
+          ],
         ),
-        const SizedBox(height: 4),
-        Row(
+      ),
+      child: SlideUp(
+        duration: const Duration(milliseconds: 500),
+        offset: 20,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(
-              Icons.check_circle,
-              size: 16,
-              color: TulipColors.sage,
-            ),
-            const SizedBox(width: 6),
+            // Stay title
             Text(
-              '${highlights.totalItems} completed ${highlights.totalItems == 1 ? 'item' : 'items'}',
-              style: TulipTextStyles.bodySmall.copyWith(
-                color: TulipColors.sage,
+              title,
+              style: TulipTextStyles.heading1.copyWith(
+                fontSize: 28,
+                height: 1.2,
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Completion badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: TulipColors.sage.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: TulipColors.sage.withValues(alpha: 0.3),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.check_circle,
+                    size: 16,
+                    color: TulipColors.sageDark,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    '${highlights.totalItems} completed ${highlights.totalItems == 1 ? 'item' : 'items'}',
+                    style: TulipTextStyles.bodySmall.copyWith(
+                      color: TulipColors.sageDark,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 
   Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.auto_awesome_outlined,
-              size: 64,
-              color: TulipColors.brownLighter,
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    TulipColors.lavender.withValues(alpha: 0.3),
+                    TulipColors.rose.withValues(alpha: 0.3),
+                  ],
+                ),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.auto_awesome_outlined,
+                size: 36,
+                color: TulipColors.brownLight,
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             Text(
               'No highlights yet',
-              style: TulipTextStyles.heading3,
+              style: TulipTextStyles.heading2,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              'Complete items from your bucket list to see them here.',
+              'Complete items from your bucket list\nto see them here.',
               style: TulipTextStyles.bodySmall,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
             OutlinedButton(
               onPressed: () => context.pop(),
               style: OutlinedButton.styleFrom(
                 foregroundColor: TulipColors.sage,
                 side: const BorderSide(color: TulipColors.sage),
+                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
               ),
               child: const Text('Go Back'),
             ),

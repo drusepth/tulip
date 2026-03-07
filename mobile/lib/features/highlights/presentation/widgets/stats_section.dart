@@ -59,33 +59,30 @@ class StatsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Rating Overview', style: TulipTextStyles.label),
-        const SizedBox(height: 12),
-
         // Hero card for trip average
         if (stats.tripAverage != null)
           SlideUp(
-            duration: const Duration(milliseconds: 400),
-            offset: 20,
+            duration: const Duration(milliseconds: 500),
+            offset: 24,
             child: _TripAverageHeroCard(
               rating: stats.tripAverage!,
               totalRatings: totalRatings,
             ),
           ),
 
-        // Divider with label (if we have both hero and individual stats)
+        // Botanical divider
         if (stats.tripAverage != null && individualStats.isNotEmpty) ...[
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
           SlideUp(
             duration: const Duration(milliseconds: 300),
             delay: const Duration(milliseconds: 200),
             offset: 15,
-            child: const _DividerWithLabel(),
+            child: const _BotanicalDivider(),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
         ],
 
-        // Individual ratings grid
+        // Individual ratings
         if (individualStats.isNotEmpty)
           _buildIndividualRatingsGrid(individualStats),
       ],
@@ -93,8 +90,8 @@ class StatsSection extends StatelessWidget {
   }
 
   Widget _buildIndividualRatingsGrid(List<_IndividualStatData> individuals) {
-    // Border colors to cycle through for variety
-    const borderColors = [
+    // Accent colors for variety
+    const accentColors = [
       TulipColors.sage,
       TulipColors.lavender,
       TulipColors.rose,
@@ -104,19 +101,19 @@ class StatsSection extends StatelessWidget {
     final cards = <Widget>[];
     for (int i = 0; i < individuals.length; i++) {
       final stat = individuals[i];
-      final delay = Duration(milliseconds: 100 + (75 * i));
-      final borderColor = borderColors[i % borderColors.length];
+      final delay = Duration(milliseconds: 150 + (100 * i));
+      final accentColor = accentColors[i % accentColors.length];
 
       cards.add(
         SlideUp(
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 400),
           delay: delay,
-          offset: 15,
+          offset: 20,
           child: _IndividualRatingCard(
             name: stat.name,
             rating: stat.average,
             ratingCount: stat.count,
-            borderColor: borderColor,
+            accentColor: accentColor,
             isCurrentUser: stat.isCurrentUser,
             avatarUrl: stat.avatarUrl,
           ),
@@ -126,17 +123,15 @@ class StatsSection extends StatelessWidget {
 
     // Layout logic based on count
     if (cards.length == 1) {
-      // Single card - centered with constrained width
       return Center(
         child: FractionallySizedBox(
-          widthFactor: 0.6,
+          widthFactor: 0.55,
           child: cards[0],
         ),
       );
     }
 
     if (cards.length == 2) {
-      // Two cards side by side
       return Row(
         children: [
           Expanded(child: cards[0]),
@@ -147,7 +142,6 @@ class StatsSection extends StatelessWidget {
     }
 
     if (cards.length == 3) {
-      // First row: 2 cards, second row: 1 centered
       return Column(
         children: [
           Row(
@@ -182,7 +176,6 @@ class StatsSection extends StatelessWidget {
           ),
         );
       } else {
-        // Odd card at end - center it
         rows.add(
           Center(
             child: FractionallySizedBox(
@@ -218,7 +211,7 @@ class _IndividualStatData {
   });
 }
 
-/// Hero card for the trip average rating
+/// Hero card for the trip average rating - layered gradient with glass panel
 class _TripAverageHeroCard extends StatelessWidget {
   final double rating;
   final int totalRatings;
@@ -232,129 +225,229 @@ class _TripAverageHeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
       decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
+          stops: [0.0, 0.4, 0.7, 1.0],
           colors: [
-            Color(0xFFFFF5F0), // Warm cream
-            Color(0xFFFDF0E8), // Soft peach
-            Color(0xFFF8E8E0), // Warm blush
+            Color(0xFFF9E4D8), // Warm peach
+            Color(0xFFF2D5C4), // Deeper peach
+            Color(0xFFEDD0C8), // Rose-peach
+            Color(0xFFE8CCBD), // Warm taupe-rose
           ],
-        ),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: TulipColors.coral.withValues(alpha: 0.4),
-          width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: TulipColors.coral.withValues(alpha: 0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: const Color(0xFFE8B4A0).withValues(alpha: 0.35),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
           ),
           BoxShadow(
-            color: TulipColors.coral.withValues(alpha: 0.1),
-            blurRadius: 40,
-            offset: const Offset(0, 16),
+            color: const Color(0xFFD4A594).withValues(alpha: 0.15),
+            blurRadius: 48,
+            offset: const Offset(0, 24),
           ),
         ],
       ),
-      child: Stack(
-        children: [
-          // Decorative sparkle icons in corners
-          Positioned(
-            top: 0,
-            left: 0,
-            child: Icon(
-              Icons.auto_awesome,
-              size: 16,
-              color: TulipColors.coral.withValues(alpha: 0.25),
-            ),
-          ),
-          Positioned(
-            top: 0,
-            right: 0,
-            child: Icon(
-              Icons.auto_awesome,
-              size: 12,
-              color: TulipColors.coral.withValues(alpha: 0.2),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            right: 8,
-            child: Icon(
-              Icons.auto_awesome,
-              size: 14,
-              color: TulipColors.coral.withValues(alpha: 0.15),
-            ),
-          ),
-
-          // Main content
-          Column(
-            children: [
-              // Label
-              Text(
-                'OUR TRIP TOGETHER',
-                style: TulipTextStyles.caption.copyWith(
-                  color: TulipColors.coralDark,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.5,
-                  fontSize: 11,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: Stack(
+          children: [
+            // Subtle radial highlight
+            Positioned(
+              top: -40,
+              right: -20,
+              child: Container(
+                width: 160,
+                height: 160,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      Colors.white.withValues(alpha: 0.25),
+                      Colors.white.withValues(alpha: 0.0),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
+            ),
 
-              // Large rating display
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    rating.toStringAsFixed(1),
-                    style: TulipTextStyles.heading1.copyWith(
-                      fontSize: 48,
-                      fontWeight: FontWeight.w600,
-                      color: TulipColors.coral,
-                      height: 1,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Icon(
-                      Icons.star_rounded,
-                      size: 32,
-                      color: TulipColors.coral,
-                    ),
-                  ),
-                ],
+            // Decorative leaf/petal shapes
+            Positioned(
+              top: 16,
+              left: 16,
+              child: _LeafIcon(
+                size: 20,
+                color: Colors.white.withValues(alpha: 0.4),
+                rotation: -0.3,
               ),
-              const SizedBox(height: 12),
+            ),
+            Positioned(
+              top: 12,
+              right: 20,
+              child: _LeafIcon(
+                size: 16,
+                color: Colors.white.withValues(alpha: 0.3),
+                rotation: 0.5,
+              ),
+            ),
+            Positioned(
+              bottom: 16,
+              left: 28,
+              child: _LeafIcon(
+                size: 14,
+                color: Colors.white.withValues(alpha: 0.25),
+                rotation: -0.8,
+              ),
+            ),
+            Positioned(
+              bottom: 20,
+              right: 16,
+              child: _LeafIcon(
+                size: 18,
+                color: Colors.white.withValues(alpha: 0.3),
+                rotation: 0.2,
+              ),
+            ),
 
-              // Subtitle
-              Text(
-                totalRatings == 1
-                    ? 'from 1 shared moment'
-                    : 'from $totalRatings shared moments',
-                style: TulipTextStyles.bodySmall.copyWith(
-                  color: TulipColors.brownLight,
-                  fontStyle: FontStyle.italic,
+            // Glass inner panel
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.35),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.5),
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    // Label
+                    Text(
+                      'OUR TRIP TOGETHER',
+                      style: TulipTextStyles.caption.copyWith(
+                        color: TulipColors.coralDark,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 2.0,
+                        fontSize: 11,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Star arc with rating
+                    _buildStarRatingDisplay(),
+                    const SizedBox(height: 16),
+
+                    // Subtitle
+                    Text(
+                      totalRatings == 1
+                          ? 'from 1 shared moment'
+                          : 'from $totalRatings shared moments',
+                      style: TulipTextStyles.bodySmall.copyWith(
+                        color: TulipColors.brownLight,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStarRatingDisplay() {
+    final fullStars = rating.floor();
+    final hasHalfStar = (rating - fullStars) >= 0.3;
+    final emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+    return Column(
+      children: [
+        // Rating number
+        Text(
+          rating.toStringAsFixed(1),
+          style: TulipTextStyles.heading1.copyWith(
+            fontSize: 52,
+            fontWeight: FontWeight.w700,
+            color: TulipColors.coralDark,
+            height: 1,
           ),
-        ],
+        ),
+        const SizedBox(height: 10),
+        // Star row
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (int i = 0; i < fullStars; i++)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: Icon(
+                  Icons.star_rounded,
+                  size: 22,
+                  color: TulipColors.coral,
+                ),
+              ),
+            if (hasHalfStar)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: Icon(
+                  Icons.star_half_rounded,
+                  size: 22,
+                  color: TulipColors.coral,
+                ),
+              ),
+            for (int i = 0; i < emptyStars; i++)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: Icon(
+                  Icons.star_outline_rounded,
+                  size: 22,
+                  color: TulipColors.coral.withValues(alpha: 0.4),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// Decorative leaf icon
+class _LeafIcon extends StatelessWidget {
+  final double size;
+  final Color color;
+  final double rotation;
+
+  const _LeafIcon({
+    required this.size,
+    required this.color,
+    this.rotation = 0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.rotate(
+      angle: rotation,
+      child: Icon(
+        Icons.eco_outlined,
+        size: size,
+        color: color,
       ),
     );
   }
 }
 
-/// Decorative divider with center label
-class _DividerWithLabel extends StatelessWidget {
-  const _DividerWithLabel();
+/// Botanical divider with leaf motif
+class _BotanicalDivider extends StatelessWidget {
+  const _BotanicalDivider();
 
   @override
   Widget build(BuildContext context) {
@@ -367,20 +460,44 @@ class _DividerWithLabel extends StatelessWidget {
               gradient: LinearGradient(
                 colors: [
                   Colors.transparent,
-                  TulipColors.taupe.withValues(alpha: 0.5),
+                  TulipColors.sage.withValues(alpha: 0.4),
                 ],
               ),
             ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'Individual Reflections',
-            style: TulipTextStyles.caption.copyWith(
-              fontStyle: FontStyle.italic,
-              color: TulipColors.brownLighter,
-            ),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Transform.rotate(
+                angle: -0.3,
+                child: Icon(
+                  Icons.eco,
+                  size: 14,
+                  color: TulipColors.sage.withValues(alpha: 0.5),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'Individual Reflections',
+                style: TulipTextStyles.caption.copyWith(
+                  fontStyle: FontStyle.italic,
+                  color: TulipColors.brownLighter,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Transform.rotate(
+                angle: 0.3,
+                child: Icon(
+                  Icons.eco,
+                  size: 14,
+                  color: TulipColors.sage.withValues(alpha: 0.5),
+                ),
+              ),
+            ],
           ),
         ),
         Expanded(
@@ -389,7 +506,7 @@ class _DividerWithLabel extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  TulipColors.taupe.withValues(alpha: 0.5),
+                  TulipColors.sage.withValues(alpha: 0.4),
                   Colors.transparent,
                 ],
               ),
@@ -401,12 +518,12 @@ class _DividerWithLabel extends StatelessWidget {
   }
 }
 
-/// Individual rating card for user or collaborator
+/// Individual rating card with accent color and visual star bar
 class _IndividualRatingCard extends StatelessWidget {
   final String name;
   final double rating;
   final int ratingCount;
-  final Color borderColor;
+  final Color accentColor;
   final bool isCurrentUser;
   final String? avatarUrl;
 
@@ -414,31 +531,26 @@ class _IndividualRatingCard extends StatelessWidget {
     required this.name,
     required this.rating,
     required this.ratingCount,
-    required this.borderColor,
+    required this.accentColor,
     required this.isCurrentUser,
     this.avatarUrl,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Avatar gradient colors based on user type
-    final avatarGradient = isCurrentUser
-        ? [TulipColors.sage, TulipColors.sageDark]
-        : [TulipColors.lavender, TulipColors.lavenderDark];
-
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: borderColor.withValues(alpha: 0.5),
+          color: accentColor.withValues(alpha: 0.3),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: borderColor.withValues(alpha: 0.1),
-            blurRadius: 8,
+            color: accentColor.withValues(alpha: 0.08),
+            blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],
@@ -446,48 +558,35 @@ class _IndividualRatingCard extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Avatar and name row
-          Row(
-            children: [
-              // Avatar
-              _buildAvatar(avatarGradient),
-              const SizedBox(width: 10),
-              // Name
-              Expanded(
-                child: Text(
-                  name,
-                  style: TulipTextStyles.label.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: TulipColors.brown,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
+          // Avatar
+          _buildAvatar(),
+          const SizedBox(height: 10),
+          // Name
+          Text(
+            name,
+            style: TulipTextStyles.label.copyWith(
+              fontWeight: FontWeight.w600,
+              color: TulipColors.brown,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
 
-          // Rating display
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                rating.toStringAsFixed(1),
-                style: TulipTextStyles.heading2.copyWith(
-                  color: TulipColors.coral,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(width: 4),
-              Icon(
-                Icons.star_rounded,
-                size: 20,
-                color: TulipColors.coral,
-              ),
-            ],
+          // Rating with star bar
+          Text(
+            rating.toStringAsFixed(1),
+            style: TulipTextStyles.heading2.copyWith(
+              color: TulipColors.coral,
+              fontWeight: FontWeight.w700,
+              fontSize: 26,
+            ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
+          // Visual star bar
+          _buildStarBar(),
+          const SizedBox(height: 8),
 
           // Rating count
           Text(
@@ -501,42 +600,88 @@ class _IndividualRatingCard extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar(List<Color> gradient) {
+  Widget _buildStarBar() {
+    final fullStars = rating.floor();
+    final fraction = rating - fullStars;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(5, (index) {
+        Color starColor;
+        IconData icon;
+        if (index < fullStars) {
+          starColor = TulipColors.coral;
+          icon = Icons.star_rounded;
+        } else if (index == fullStars && fraction >= 0.3) {
+          starColor = TulipColors.coral;
+          icon = Icons.star_half_rounded;
+        } else {
+          starColor = TulipColors.coral.withValues(alpha: 0.25);
+          icon = Icons.star_outline_rounded;
+        }
+        return Icon(icon, size: 16, color: starColor);
+      }),
+    );
+  }
+
+  Widget _buildAvatar() {
     if (avatarUrl != null) {
-      return CircleAvatar(
-        radius: 16,
-        backgroundImage: NetworkImage(avatarUrl!),
-        backgroundColor: TulipColors.taupeLight,
+      return Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: accentColor.withValues(alpha: 0.4),
+            width: 2,
+          ),
+        ),
+        child: CircleAvatar(
+          radius: 20,
+          backgroundImage: NetworkImage(avatarUrl!),
+          backgroundColor: TulipColors.taupeLight,
+        ),
       );
     }
 
-    // Gradient avatar with icon or initial
+    // Gradient avatar with accent ring
+    final avatarGradient = isCurrentUser
+        ? [TulipColors.sage, TulipColors.sageDark]
+        : [TulipColors.lavender, TulipColors.lavenderDark];
+
     return Container(
-      width: 32,
-      height: 32,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: gradient,
+        border: Border.all(
+          color: accentColor.withValues(alpha: 0.3),
+          width: 2,
         ),
       ),
-      child: Center(
-        child: isCurrentUser
-            ? const Icon(
-                Icons.person,
-                size: 18,
-                color: Colors.white,
-              )
-            : Text(
-                name.isNotEmpty ? name[0].toUpperCase() : '?',
-                style: TulipTextStyles.label.copyWith(
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: avatarGradient,
+          ),
+        ),
+        child: Center(
+          child: isCurrentUser
+              ? const Icon(
+                  Icons.person,
+                  size: 20,
                   color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
+                )
+              : Text(
+                  name.isNotEmpty ? name[0].toUpperCase() : '?',
+                  style: TulipTextStyles.label.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }
