@@ -26,6 +26,22 @@ class HighlightsData with _$HighlightsData {
 
   /// Check if there are any ratings
   bool get hasRatings => stats.tripAverage != null;
+
+  /// Get items unrated by the current user
+  List<HighlightItem> getUnratedItems() {
+    return itemsByCategory.values
+        .expand((items) => items)
+        .where((item) => !item.ratings.any((r) => r.userId == currentUserId))
+        .toList();
+  }
+
+  /// Get items rated by the current user
+  List<HighlightItem> getRatedItems() {
+    return itemsByCategory.values
+        .expand((items) => items)
+        .where((item) => item.ratings.any((r) => r.userId == currentUserId))
+        .toList();
+  }
 }
 
 @freezed

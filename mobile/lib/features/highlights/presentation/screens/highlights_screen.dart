@@ -5,8 +5,8 @@ import '../../../../shared/constants/tulip_colors.dart';
 import '../../../../shared/constants/tulip_text_styles.dart';
 import '../providers/highlights_provider.dart';
 import '../widgets/stats_section.dart';
-import '../widgets/category_filter.dart';
-import '../widgets/highlight_item_card.dart';
+import '../widgets/unrated_carousel.dart';
+import '../widgets/rated_section.dart';
 
 /// Screen displaying trip highlights - completed bucket list items with ratings
 class HighlightsScreen extends ConsumerWidget {
@@ -87,8 +87,8 @@ class HighlightsScreen extends ConsumerWidget {
       return _buildEmptyState(context);
     }
 
-    final selectedCategory = ref.watch(highlightsCategoryFilterProvider(stayId));
-    final filteredItems = ref.watch(filteredHighlightsProvider(stayId));
+    final unratedItems = highlights.getUnratedItems();
+    final ratedItems = highlights.getRatedItems();
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -107,24 +107,29 @@ class HighlightsScreen extends ConsumerWidget {
 
             // Stats section
             StatsSection(stats: highlights.stats),
-            if (highlights.hasRatings) const SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-            // Category filter
-            if (highlights.categories.isNotEmpty) ...[
-              Text('Filter by Category', style: TulipTextStyles.label),
-              const SizedBox(height: 12),
-              CategoryFilter(
-                categories: highlights.categories,
-                selectedCategory: selectedCategory,
-                onCategorySelected: (category) {
-                  ref.read(highlightsCategoryFilterProvider(stayId).notifier).state = category;
+            // Unrated items carousel
+            if (unratedItems.isNotEmpty) ...[
+              UnratedCarousel(
+                items: unratedItems,
+                currentUserId: highlights.currentUserId,
+                onRate: (itemId, rating) async {
+                  await rateHighlightItem(ref, stayId, itemId, rating);
                 },
               ),
               const SizedBox(height: 24),
             ],
 
-            // Items by category
-            _buildItemsByCategory(context, ref, highlights.currentUserId, filteredItems),
+            // Rated items section
+            if (ratedItems.isNotEmpty)
+              RatedSection(
+                items: ratedItems,
+                currentUserId: highlights.currentUserId,
+                onRate: (itemId, rating) async {
+                  await rateHighlightItem(ref, stayId, itemId, rating);
+                },
+              ),
             const SizedBox(height: 32),
           ],
         ),
@@ -161,50 +166,6 @@ class HighlightsScreen extends ConsumerWidget {
           ],
         ),
       ],
-    );
-  }
-
-  Widget _buildItemsByCategory(BuildContext context, WidgetRef ref, int currentUserId, Map<String, dynamic> itemsByCategory) {
-    if (itemsByCategory.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Text(
-            'No items in this category',
-            style: TulipTextStyles.bodySmall,
-          ),
-        ),
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: itemsByCategory.entries.map((entry) {
-        final category = entry.key;
-        final items = entry.value as List<dynamic>;
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              _formatCategory(category),
-              style: TulipTextStyles.label,
-            ),
-            const SizedBox(height: 8),
-            ...items.map((item) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: HighlightItemCard(
-                    item: item,
-                    currentUserId: currentUserId,
-                    onRate: (itemId, rating) async {
-                      await rateHighlightItem(ref, stayId, itemId, rating);
-                    },
-                  ),
-                )),
-            const SizedBox(height: 12),
-          ],
-        );
-      }).toList(),
     );
   }
 
@@ -245,15 +206,5 @@ class HighlightsScreen extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  String _formatCategory(String category) {
-    if (category.isEmpty) return 'Other';
-    return category
-        .replaceAll('_', ' ')
-        .split(' ')
-        .map((word) =>
-            word.isNotEmpty ? '${word[0].toUpperCase()}${word.substring(1)}' : '')
-        .join(' ');
   }
 }
