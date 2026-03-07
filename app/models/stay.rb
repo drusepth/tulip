@@ -4,6 +4,23 @@ class Stay < ApplicationRecord
   CURRENCIES = %w[USD EUR GBP JPY AUD CAD CHF CNY INR MXN].freeze
   BOOKING_ALERT_MONTHS_THRESHOLD = 4
 
+  # US state abbreviation to full name mapping for tenant rights lookup
+  US_STATE_ABBREVIATIONS = {
+    "AL" => "Alabama", "AK" => "Alaska", "AZ" => "Arizona", "AR" => "Arkansas",
+    "CA" => "California", "CO" => "Colorado", "CT" => "Connecticut", "DE" => "Delaware",
+    "FL" => "Florida", "GA" => "Georgia", "HI" => "Hawaii", "ID" => "Idaho",
+    "IL" => "Illinois", "IN" => "Indiana", "IA" => "Iowa", "KS" => "Kansas",
+    "KY" => "Kentucky", "LA" => "Louisiana", "ME" => "Maine", "MD" => "Maryland",
+    "MA" => "Massachusetts", "MI" => "Michigan", "MN" => "Minnesota", "MS" => "Mississippi",
+    "MO" => "Missouri", "MT" => "Montana", "NE" => "Nebraska", "NV" => "Nevada",
+    "NH" => "New Hampshire", "NJ" => "New Jersey", "NM" => "New Mexico", "NY" => "New York",
+    "NC" => "North Carolina", "ND" => "North Dakota", "OH" => "Ohio", "OK" => "Oklahoma",
+    "OR" => "Oregon", "PA" => "Pennsylvania", "RI" => "Rhode Island", "SC" => "South Carolina",
+    "SD" => "South Dakota", "TN" => "Tennessee", "TX" => "Texas", "UT" => "Utah",
+    "VT" => "Vermont", "VA" => "Virginia", "WA" => "Washington", "WV" => "West Virginia",
+    "WI" => "Wisconsin", "WY" => "Wyoming", "DC" => "District of Columbia"
+  }.freeze
+
   serialize :pois_cached_categories, coder: YAML, type: Array, default: []
 
   belongs_to :user # The owner of the stay
@@ -244,9 +261,22 @@ class Stay < ApplicationRecord
   end
 
   # URL slug for this stay's state tenant rights page
+  # Handles both full state names ("Oregon") and abbreviations ("OR")
   def tenant_rights_slug
-    return nil unless state.present? && country&.upcase&.include?("US")
-    state.downcase.strip.gsub(/\s+/, "-")
+    return nil unless state.present? && us_country?
+
+    normalized_state = state.strip
+    # Check if it's an abbreviation and convert to full name
+    full_name = US_STATE_ABBREVIATIONS[normalized_state.upcase] || normalized_state
+    full_name.downcase.gsub(/\s+/, "-")
+  end
+
+  # Check if the country is the United States
+  def us_country?
+    return false unless country.present?
+    normalized = country.upcase.gsub(/[^A-Z]/, "")
+    normalized.include?("US") || normalized.include?("USA") ||
+      normalized == "UNITEDSTATES" || normalized == "UNITEDSTATESOFAMERICA"
   end
 
   private
