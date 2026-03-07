@@ -19,6 +19,7 @@ import '../features/places/presentation/screens/gallery_screen.dart';
 import '../features/weather/presentation/screens/weather_screen.dart';
 import '../features/highlights/presentation/screens/highlights_screen.dart';
 import '../features/bucket_list/presentation/screens/bucket_list_map_screen.dart';
+import '../features/explored/presentation/screens/explored_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
@@ -79,6 +80,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/map',
             name: 'map',
             builder: (context, state) => const MapScreen(),
+          ),
+          GoRoute(
+            path: '/explored',
+            name: 'explored',
+            builder: (context, state) => const ExploredScreen(),
           ),
           GoRoute(
             path: '/timeline',
@@ -235,8 +241,9 @@ class MainBottomNav extends ConsumerWidget {
 
     int currentIndex = 0;
     if (location == '/map') currentIndex = 1;
-    if (location == '/timeline') currentIndex = 2;
-    if (location == '/profile') currentIndex = 3;
+    if (location == '/explored') currentIndex = 2;
+    if (location == '/timeline') currentIndex = 3;
+    if (location == '/profile') currentIndex = 4;
 
     return BottomNavigationBar(
       currentIndex: currentIndex,
@@ -249,9 +256,12 @@ class MainBottomNav extends ConsumerWidget {
             context.go('/map');
             break;
           case 2:
-            context.go('/timeline');
+            context.go('/explored');
             break;
           case 3:
+            context.go('/timeline');
+            break;
+          case 4:
             context.go('/profile');
             break;
         }
@@ -266,6 +276,11 @@ class MainBottomNav extends ConsumerWidget {
           icon: Icon(Icons.map_outlined),
           activeIcon: Icon(Icons.map),
           label: 'Map',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.public_outlined),
+          activeIcon: Icon(Icons.public),
+          label: 'Explored',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.timeline_outlined),

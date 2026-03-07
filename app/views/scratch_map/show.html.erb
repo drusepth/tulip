@@ -1,0 +1,65 @@
+<% content_for(:title) { "Explored - Tulip" } %>
+
+<div class="h-[calc(100vh-3.5rem)] flex flex-col"
+     data-controller="scratch-map"
+     data-scratch-map-api-url-value="/api/v1/scratch_map"
+     data-scratch-map-geojson-url-value="/us-states.geo.json"
+     data-scratch-map-new-stay-url-value="<%= new_stay_path %>">
+
+  <!-- Stats Banner -->
+  <div class="bg-white border-b border-taupe-light px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <h1 class="text-lg font-semibold text-brown" style="font-family: var(--font-heading);">Explored</h1>
+      <span class="text-sm text-brown-light" data-scratch-map-target="statsText">Loading...</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="w-32 sm:w-48 h-2 bg-taupe-light rounded-full overflow-hidden">
+        <div class="h-full bg-sage rounded-full transition-all duration-700"
+             data-scratch-map-target="progressBar"
+             style="width: 0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Map Container -->
+  <div class="flex-1 relative">
+    <div data-scratch-map-target="map" class="w-full h-full"></div>
+
+    <!-- State Detail Panel (Desktop: right side panel, Mobile: bottom sheet) -->
+    <div data-scratch-map-target="panel"
+         class="scratch-panel absolute z-[1000] bg-white shadow-cozy-lg overflow-hidden
+                bottom-0 left-0 right-0 max-h-[60vh] translate-y-full
+                sm:bottom-auto sm:top-0 sm:left-auto sm:right-0 sm:w-96 sm:max-h-full sm:h-full sm:translate-y-0 sm:translate-x-full
+                transition-transform duration-300 ease-in-out">
+
+      <!-- Panel Header -->
+      <div class="flex items-center justify-between p-4 border-b border-taupe-light bg-cream">
+        <div>
+          <h2 class="text-lg font-semibold text-brown" style="font-family: var(--font-heading);"
+              data-scratch-map-target="panelTitle">State</h2>
+          <p class="text-sm text-brown-light" data-scratch-map-target="panelSubtitle"></p>
+        </div>
+        <button data-action="click->scratch-map#closePanel"
+                class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-taupe-light transition-colors">
+          <svg class="w-5 h-5 text-brown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Panel Content -->
+      <div class="overflow-y-auto p-4 space-y-3" data-scratch-map-target="panelContent"
+           style="max-height: calc(60vh - 4rem); sm:max-height: calc(100vh - 8rem);">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden SVG for crosshatch pattern -->
+<svg width="0" height="0" style="position: absolute;">
+  <defs>
+    <pattern id="crosshatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#b0b0b0" stroke-width="1.5" stroke-opacity="0.3"/>
+    </pattern>
+  </defs>
+</svg>
