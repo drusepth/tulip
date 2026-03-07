@@ -73,6 +73,11 @@ class _TimelineScreenState extends ConsumerState<TimelineScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.add_circle_outline),
+          tooltip: 'New Stay',
+          onPressed: () => context.push('/stays/new'),
+        ),
         title: Text('Timeline', style: TulipTextStyles.heading2),
         actions: [
           IconButton(

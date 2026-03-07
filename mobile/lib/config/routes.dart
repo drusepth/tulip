@@ -223,11 +223,6 @@ class MainShell extends StatelessWidget {
     return Scaffold(
       body: child,
       bottomNavigationBar: const MainBottomNav(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/stays/new'),
-        child: const Icon(Icons.add),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
