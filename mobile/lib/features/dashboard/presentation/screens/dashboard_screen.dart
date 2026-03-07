@@ -22,6 +22,11 @@ class DashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.add_circle_outline),
+          tooltip: 'New Stay',
+          onPressed: () => context.push('/stays/new'),
+        ),
         title: Text('Tulip', style: TulipTextStyles.heading2),
         actions: [
           IconButton(
