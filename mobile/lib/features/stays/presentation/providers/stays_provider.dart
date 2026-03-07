@@ -83,6 +83,19 @@ final pastStaysProvider = Provider<List<Stay>>((ref) {
   ) ?? [];
 });
 
+/// Computed provider for recent stays (past stays sorted by most recent checkout first)
+final recentStaysProvider = Provider<List<Stay>>((ref) {
+  final pastStays = ref.watch(pastStaysProvider);
+  final sorted = [...pastStays];
+  sorted.sort((a, b) {
+    if (a.checkOut == null && b.checkOut == null) return 0;
+    if (a.checkOut == null) return 1;
+    if (b.checkOut == null) return -1;
+    return b.checkOut!.compareTo(a.checkOut!);
+  });
+  return sorted;
+});
+
 /// Provider for stay form operations
 final stayFormProvider = StateNotifierProvider<StayFormNotifier, StayFormState>((ref) {
   final repository = ref.read(stayRepositoryProvider);

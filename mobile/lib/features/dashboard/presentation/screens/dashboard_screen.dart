@@ -19,6 +19,7 @@ class DashboardScreen extends ConsumerWidget {
     final staysAsync = ref.watch(staysProvider);
     final currentStay = ref.watch(currentStayProvider);
     final upcomingStays = ref.watch(upcomingStaysProvider);
+    final recentStays = ref.watch(recentStaysProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -36,7 +37,7 @@ class DashboardScreen extends ConsumerWidget {
         child: staysAsync.when(
           loading: () => _buildLoadingState(),
           error: (error, stack) => _buildErrorState(context, ref, error),
-          data: (stays) => _buildContent(context, stays, currentStay, upcomingStays),
+          data: (stays) => _buildContent(context, stays, currentStay, upcomingStays, recentStays),
         ),
       ),
     );
@@ -121,6 +122,7 @@ class DashboardScreen extends ConsumerWidget {
     List<Stay> allStays,
     Stay? currentStay,
     List<Stay> upcomingStays,
+    List<Stay> recentStays,
   ) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -232,6 +234,37 @@ class DashboardScreen extends ConsumerWidget {
 
           // Stats summary
           if (allStays.isNotEmpty) _buildStatsSummary(allStays),
+
+          // Recent stays
+          if (recentStays.isNotEmpty) ...[
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Recent Stays', style: TulipTextStyles.heading3),
+                TextButton(
+                  onPressed: () => context.push('/stays'),
+                  child: Text(
+                    'See all',
+                    style: TulipTextStyles.label.copyWith(
+                      color: TulipColors.sage,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ...recentStays.take(3).map((stay) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: StayCardCompact(
+                    stay: stay,
+                    onTap: () => context.push('/stays/${stay.id}'),
+                  ),
+                )),
+          ],
+
+          // Bottom padding to account for FAB
+          const SizedBox(height: 80),
         ],
       ),
     );
