@@ -1,4 +1,6 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../../../../shared/constants/tulip_colors.dart';
 import '../../../../shared/constants/tulip_text_styles.dart';
@@ -6,7 +8,8 @@ import '../../../../shared/widgets/animated_widgets.dart';
 import '../../../bucket_list/presentation/widgets/rating_stars.dart';
 import '../../data/models/highlights_model.dart';
 
-/// Carousel widget displaying unrated highlight items with rich hero cards
+/// Carousel widget displaying unrated highlight items with rich hero cards,
+/// watercolor texture overlays, and engaging rating interactions
 class UnratedCarousel extends StatefulWidget {
   final List<HighlightItem> items;
   final int currentUserId;
@@ -27,7 +30,6 @@ class _UnratedCarouselState extends State<UnratedCarousel> {
   late PageController _pageController;
   int _currentPage = 0;
 
-  // Category-based gradient palettes for visual variety
   static const _categoryGradients = <String, List<Color>>{
     'food': [Color(0xFFE8C4A0), Color(0xFFD4A080)],
     'restaurant': [Color(0xFFE8C4A0), Color(0xFFD4A080)],
@@ -52,14 +54,6 @@ class _UnratedCarouselState extends State<UnratedCarousel> {
     super.dispose();
   }
 
-  void _goToPage(int page) {
-    _pageController.animateToPage(
-      page,
-      duration: const Duration(milliseconds: 350),
-      curve: Curves.easeOutCubic,
-    );
-  }
-
   List<Color> _gradientForCategory(String category) {
     final key = category.toLowerCase().replaceAll('_', '');
     for (final entry in _categoryGradients.entries) {
@@ -70,7 +64,9 @@ class _UnratedCarouselState extends State<UnratedCarousel> {
 
   IconData _iconForCategory(String category) {
     final key = category.toLowerCase();
-    if (key.contains('food') || key.contains('restaurant')) return Icons.restaurant;
+    if (key.contains('food') || key.contains('restaurant')) {
+      return Icons.restaurant;
+    }
     if (key.contains('cafe') || key.contains('coffee')) return Icons.local_cafe;
     if (key.contains('nature') || key.contains('hik')) return Icons.park;
     if (key.contains('attract')) return Icons.attractions;
@@ -154,11 +150,12 @@ class _UnratedCarouselState extends State<UnratedCarousel> {
 
   Widget _buildCarouselCards() {
     return SizedBox(
-      height: 360,
+      height: 370,
       child: PageView.builder(
         controller: _pageController,
         itemCount: widget.items.length,
         onPageChanged: (page) {
+          HapticFeedback.selectionClick();
           setState(() => _currentPage = page);
         },
         itemBuilder: (context, index) {
@@ -167,8 +164,10 @@ class _UnratedCarouselState extends State<UnratedCarousel> {
             builder: (context, child) {
               double scale = 1.0;
               if (_pageController.position.haveDimensions) {
-                final page = _pageController.page ?? _currentPage.toDouble();
-                scale = (1 - (page - index).abs() * 0.06).clamp(0.94, 1.0);
+                final page =
+                    _pageController.page ?? _currentPage.toDouble();
+                scale =
+                    (1 - (page - index).abs() * 0.06).clamp(0.94, 1.0);
               }
               return Transform.scale(
                 scale: scale,
@@ -210,16 +209,13 @@ class _UnratedCarouselState extends State<UnratedCarousel> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Hero image area
               _buildHeroImage(item, gradientColors, categoryIcon),
-              // Card content
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Title
                       Text(
                         item.title,
                         style: TulipTextStyles.heading3.copyWith(
@@ -230,10 +226,8 @@ class _UnratedCarouselState extends State<UnratedCarousel> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 8),
-                      // Metadata row
                       _buildMetadataRow(item),
                       const Spacer(),
-                      // Rating section
                       _buildRatingSection(item),
                     ],
                   ),
@@ -252,7 +246,7 @@ class _UnratedCarouselState extends State<UnratedCarousel> {
     IconData categoryIcon,
   ) {
     return Container(
-      height: 120,
+      height: 130,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -266,38 +260,61 @@ class _UnratedCarouselState extends State<UnratedCarousel> {
       ),
       child: Stack(
         children: [
-          // Subtle texture overlay
+          // Watercolor texture overlay
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _WatercolorTexturePainter(
+                baseColor: Colors.white,
+                seed: item.title.hashCode,
+              ),
+            ),
+          ),
+          // Soft radial glow circles
           Positioned(
-            top: -20,
-            right: -10,
+            top: -30,
+            right: -15,
             child: Container(
-              width: 100,
-              height: 100,
+              width: 110,
+              height: 110,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.1),
+                gradient: RadialGradient(
+                  colors: [
+                    Colors.white.withValues(alpha: 0.15),
+                    Colors.white.withValues(alpha: 0.0),
+                  ],
+                ),
               ),
             ),
           ),
           Positioned(
-            bottom: -30,
-            left: -20,
+            bottom: -35,
+            left: -25,
             child: Container(
-              width: 80,
-              height: 80,
+              width: 90,
+              height: 90,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.08),
+                gradient: RadialGradient(
+                  colors: [
+                    Colors.white.withValues(alpha: 0.1),
+                    Colors.white.withValues(alpha: 0.0),
+                  ],
+                ),
               ),
             ),
           ),
-          // Center icon
+          // Center icon with double ring
           Center(
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
+                color: Colors.white.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  width: 1,
+                ),
               ),
               child: Icon(
                 categoryIcon,
@@ -311,7 +328,8 @@ class _UnratedCarouselState extends State<UnratedCarousel> {
             top: 12,
             right: 12,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.92),
                 borderRadius: BorderRadius.circular(14),
@@ -361,7 +379,7 @@ class _UnratedCarouselState extends State<UnratedCarousel> {
             child: Container(
               width: 3,
               height: 3,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: TulipColors.brownLighter,
                 shape: BoxShape.circle,
               ),
@@ -392,7 +410,14 @@ class _UnratedCarouselState extends State<UnratedCarousel> {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: TulipColors.cream,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            TulipColors.cream,
+            TulipColors.roseLight.withValues(alpha: 0.3),
+          ],
+        ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: TulipColors.taupeLight,
@@ -401,27 +426,37 @@ class _UnratedCarouselState extends State<UnratedCarousel> {
       child: Column(
         children: [
           Text(
-            'How was it?',
+            'Share your memory',
             style: TulipTextStyles.bodySmall.copyWith(
               color: TulipColors.brownLight,
               fontWeight: FontWeight.w500,
+              fontStyle: FontStyle.italic,
             ),
           ),
-          const SizedBox(height: 8),
-          RatingStars(
-            rating: 0,
-            size: 34,
-            onRatingChanged: (rating) {
+          const SizedBox(height: 10),
+          // Rating stars with scale-on-tap per star
+          _InteractiveRatingStars(
+            onRate: (rating) {
+              HapticFeedback.lightImpact();
               _showRatingDialog(context, item, rating);
             },
           ),
-          const SizedBox(height: 4),
-          Text(
-            'Tap a star',
-            style: TulipTextStyles.caption.copyWith(
-              color: TulipColors.brownLighter,
-              fontSize: 11,
-            ),
+          const SizedBox(height: 6),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              PulsingDot(color: TulipColors.coral, size: 5),
+              const SizedBox(width: 6),
+              Text(
+                'Tap a star to rate',
+                style: TulipTextStyles.caption.copyWith(
+                  color: TulipColors.brownLighter,
+                  fontSize: 11,
+                ),
+              ),
+              const SizedBox(width: 6),
+              PulsingDot(color: TulipColors.coral, size: 5),
+            ],
           ),
         ],
       ),
@@ -432,7 +467,6 @@ class _UnratedCarouselState extends State<UnratedCarousel> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Animated bar indicator
         Row(
           mainAxisSize: MainAxisSize.min,
           children: List.generate(widget.items.length, (index) {
@@ -453,7 +487,6 @@ class _UnratedCarouselState extends State<UnratedCarousel> {
           }),
         ),
         const SizedBox(width: 14),
-        // Counter
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
@@ -497,3 +530,90 @@ class _UnratedCarouselState extends State<UnratedCarousel> {
   }
 }
 
+/// Interactive rating stars with individual scale animations per star
+class _InteractiveRatingStars extends StatefulWidget {
+  final void Function(int rating) onRate;
+
+  const _InteractiveRatingStars({required this.onRate});
+
+  @override
+  State<_InteractiveRatingStars> createState() =>
+      _InteractiveRatingStarsState();
+}
+
+class _InteractiveRatingStarsState extends State<_InteractiveRatingStars> {
+  int _hoveredStar = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(5, (index) {
+        final starValue = index + 1;
+        final isHighlighted = starValue <= _hoveredStar;
+
+        return GestureDetector(
+          onTapDown: (_) => setState(() => _hoveredStar = starValue),
+          onTapUp: (_) {
+            widget.onRate(starValue);
+            setState(() => _hoveredStar = 0);
+          },
+          onTapCancel: () => setState(() => _hoveredStar = 0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: AnimatedScale(
+              scale: isHighlighted ? 1.2 : 1.0,
+              duration: const Duration(milliseconds: 150),
+              curve: Curves.easeOutBack,
+              child: Icon(
+                isHighlighted ? Icons.star_rounded : Icons.star_outline_rounded,
+                size: 34,
+                color: isHighlighted
+                    ? TulipColors.coral
+                    : TulipColors.brownLighter,
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+}
+
+/// Paints soft watercolor-style texture splotches on carousel hero images
+class _WatercolorTexturePainter extends CustomPainter {
+  final Color baseColor;
+  final int seed;
+
+  _WatercolorTexturePainter({required this.baseColor, required this.seed});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rng = math.Random(seed);
+
+    // Paint 3-5 soft splotches
+    final count = 3 + rng.nextInt(3);
+    for (int i = 0; i < count; i++) {
+      final x = rng.nextDouble() * size.width;
+      final y = rng.nextDouble() * size.height;
+      final radius = 20.0 + rng.nextDouble() * 40;
+      final alpha = 0.04 + rng.nextDouble() * 0.06;
+
+      final paint = Paint()
+        ..shader = RadialGradient(
+          colors: [
+            baseColor.withValues(alpha: alpha),
+            baseColor.withValues(alpha: 0),
+          ],
+        ).createShader(
+          Rect.fromCircle(center: Offset(x, y), radius: radius),
+        );
+
+      canvas.drawCircle(Offset(x, y), radius, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _WatercolorTexturePainter oldDelegate) =>
+      oldDelegate.seed != seed;
+}

@@ -1,4 +1,6 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../../../shared/constants/tulip_colors.dart';
 import '../../../../shared/constants/tulip_text_styles.dart';
 import '../../../../shared/widgets/animated_widgets.dart';
@@ -90,7 +92,6 @@ class StatsSection extends StatelessWidget {
   }
 
   Widget _buildIndividualRatingsGrid(List<_IndividualStatData> individuals) {
-    // Accent colors for variety
     const accentColors = [
       TulipColors.sage,
       TulipColors.lavender,
@@ -121,7 +122,6 @@ class StatsSection extends StatelessWidget {
       );
     }
 
-    // Layout logic based on count
     if (cards.length == 1) {
       return Center(
         child: FractionallySizedBox(
@@ -194,7 +194,6 @@ class StatsSection extends StatelessWidget {
   }
 }
 
-/// Data class for individual stats
 class _IndividualStatData {
   final String name;
   final double average;
@@ -211,8 +210,8 @@ class _IndividualStatData {
   });
 }
 
-/// Hero card for the trip average rating - layered gradient with glass panel
-class _TripAverageHeroCard extends StatelessWidget {
+/// Hero card with shimmer glow effect on initial load
+class _TripAverageHeroCard extends StatefulWidget {
   final double rating;
   final int totalRatings;
 
@@ -220,6 +219,36 @@ class _TripAverageHeroCard extends StatelessWidget {
     required this.rating,
     required this.totalRatings,
   });
+
+  @override
+  State<_TripAverageHeroCard> createState() => _TripAverageHeroCardState();
+}
+
+class _TripAverageHeroCardState extends State<_TripAverageHeroCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _shimmerController;
+  bool _showShimmer = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _shimmerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    );
+    // Play shimmer once then stop
+    _shimmerController.forward().then((_) {
+      if (mounted) {
+        setState(() => _showShimmer = false);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _shimmerController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -232,10 +261,10 @@ class _TripAverageHeroCard extends StatelessWidget {
           end: Alignment.bottomRight,
           stops: [0.0, 0.4, 0.7, 1.0],
           colors: [
-            Color(0xFFF9E4D8), // Warm peach
-            Color(0xFFF2D5C4), // Deeper peach
-            Color(0xFFEDD0C8), // Rose-peach
-            Color(0xFFE8CCBD), // Warm taupe-rose
+            Color(0xFFF9E4D8),
+            Color(0xFFF2D5C4),
+            Color(0xFFEDD0C8),
+            Color(0xFFE8CCBD),
           ],
         ),
         boxShadow: [
@@ -255,7 +284,7 @@ class _TripAverageHeroCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(28),
         child: Stack(
           children: [
-            // Subtle radial highlight
+            // Radial highlight
             Positioned(
               top: -40,
               right: -20,
@@ -274,7 +303,7 @@ class _TripAverageHeroCard extends StatelessWidget {
               ),
             ),
 
-            // Decorative leaf/petal shapes
+            // Decorative leaf shapes
             Positioned(
               top: 16,
               left: 16,
@@ -317,7 +346,8 @@ class _TripAverageHeroCard extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.35),
                   borderRadius: BorderRadius.circular(20),
@@ -328,7 +358,6 @@ class _TripAverageHeroCard extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    // Label
                     Text(
                       'OUR TRIP TOGETHER',
                       style: TulipTextStyles.caption.copyWith(
@@ -339,16 +368,12 @@ class _TripAverageHeroCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
-
-                    // Star arc with rating
                     _buildStarRatingDisplay(),
                     const SizedBox(height: 16),
-
-                    // Subtitle
                     Text(
-                      totalRatings == 1
+                      widget.totalRatings == 1
                           ? 'from 1 shared moment'
-                          : 'from $totalRatings shared moments',
+                          : 'from ${widget.totalRatings} shared moments',
                       style: TulipTextStyles.bodySmall.copyWith(
                         color: TulipColors.brownLight,
                         fontStyle: FontStyle.italic,
@@ -358,6 +383,35 @@ class _TripAverageHeroCard extends StatelessWidget {
                 ),
               ),
             ),
+
+            // Shimmer overlay on first load
+            if (_showShimmer)
+              Positioned.fill(
+                child: AnimatedBuilder(
+                  animation: _shimmerController,
+                  builder: (context, child) {
+                    return ShaderMask(
+                      shaderCallback: (bounds) {
+                        final progress = _shimmerController.value;
+                        return LinearGradient(
+                          begin: Alignment(-1.0 + 3.0 * progress, -0.3),
+                          end: Alignment(-0.5 + 3.0 * progress, 0.3),
+                          colors: [
+                            Colors.white.withValues(alpha: 0.0),
+                            Colors.white.withValues(alpha: 0.15),
+                            Colors.white.withValues(alpha: 0.0),
+                          ],
+                          stops: const [0.0, 0.5, 1.0],
+                        ).createShader(bounds);
+                      },
+                      blendMode: BlendMode.srcATop,
+                      child: Container(
+                        color: Colors.white.withValues(alpha: 0.3),
+                      ),
+                    );
+                  },
+                ),
+              ),
           ],
         ),
       ),
@@ -365,15 +419,14 @@ class _TripAverageHeroCard extends StatelessWidget {
   }
 
   Widget _buildStarRatingDisplay() {
-    final fullStars = rating.floor();
-    final hasHalfStar = (rating - fullStars) >= 0.3;
+    final fullStars = widget.rating.floor();
+    final hasHalfStar = (widget.rating - fullStars) >= 0.3;
     final emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
     return Column(
       children: [
-        // Rating number
         Text(
-          rating.toStringAsFixed(1),
+          widget.rating.toStringAsFixed(1),
           style: TulipTextStyles.heading1.copyWith(
             fontSize: 52,
             fontWeight: FontWeight.w700,
@@ -382,7 +435,6 @@ class _TripAverageHeroCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        // Star row
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -420,7 +472,6 @@ class _TripAverageHeroCard extends StatelessWidget {
   }
 }
 
-/// Decorative leaf icon
 class _LeafIcon extends StatelessWidget {
   final double size;
   final Color color;
@@ -436,16 +487,11 @@ class _LeafIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Transform.rotate(
       angle: rotation,
-      child: Icon(
-        Icons.eco_outlined,
-        size: size,
-        color: color,
-      ),
+      child: Icon(Icons.eco_outlined, size: size, color: color),
     );
   }
 }
 
-/// Botanical divider with leaf motif
 class _BotanicalDivider extends StatelessWidget {
   const _BotanicalDivider();
 
@@ -518,7 +564,6 @@ class _BotanicalDivider extends StatelessWidget {
   }
 }
 
-/// Individual rating card with accent color and visual star bar
 class _IndividualRatingCard extends StatelessWidget {
   final String name;
   final double rating;
@@ -558,10 +603,8 @@ class _IndividualRatingCard extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Avatar
           _buildAvatar(),
           const SizedBox(height: 10),
-          // Name
           Text(
             name,
             style: TulipTextStyles.label.copyWith(
@@ -573,8 +616,6 @@ class _IndividualRatingCard extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
-
-          // Rating with star bar
           Text(
             rating.toStringAsFixed(1),
             style: TulipTextStyles.heading2.copyWith(
@@ -584,11 +625,8 @@ class _IndividualRatingCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          // Visual star bar
           _buildStarBar(),
           const SizedBox(height: 8),
-
-          // Rating count
           Text(
             ratingCount == 1 ? '1 rating' : '$ratingCount ratings',
             style: TulipTextStyles.caption.copyWith(
@@ -642,7 +680,6 @@ class _IndividualRatingCard extends StatelessWidget {
       );
     }
 
-    // Gradient avatar with accent ring
     final avatarGradient = isCurrentUser
         ? [TulipColors.sage, TulipColors.sageDark]
         : [TulipColors.lavender, TulipColors.lavenderDark];
@@ -668,11 +705,7 @@ class _IndividualRatingCard extends StatelessWidget {
         ),
         child: Center(
           child: isCurrentUser
-              ? const Icon(
-                  Icons.person,
-                  size: 20,
-                  color: Colors.white,
-                )
+              ? const Icon(Icons.person, size: 20, color: Colors.white)
               : Text(
                   name.isNotEmpty ? name[0].toUpperCase() : '?',
                   style: TulipTextStyles.label.copyWith(

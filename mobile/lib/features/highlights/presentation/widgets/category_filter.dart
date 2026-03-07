@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../../shared/constants/tulip_colors.dart';
 import '../../../../shared/constants/tulip_text_styles.dart';
+import '../../../../shared/widgets/animated_widgets.dart';
 
-/// Horizontal scrollable category filter chips
+/// Horizontal scrollable category filter chips with cottagecore styling
 class CategoryFilter extends StatelessWidget {
   final List<String> categories;
   final String? selectedCategory;
@@ -21,67 +23,41 @@ class CategoryFilter extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
+    return SizedBox(
+      height: 44,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         children: [
-          _buildChip(
+          _FilterChip(
             label: 'All',
-            isSelected: selectedCategory == null,
-            onTap: () => onCategorySelected(null),
             icon: Icons.auto_awesome,
+            isSelected: selectedCategory == null,
+            accentColor: TulipColors.coral,
+            onTap: () {
+              HapticFeedback.lightImpact();
+              onCategorySelected(null);
+            },
           ),
-          const SizedBox(width: 8),
-          ...categories.map((category) => Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: _buildChip(
-                  label: _formatCategory(category),
-                  isSelected: selectedCategory == category,
-                  onTap: () => onCategorySelected(category),
-                  icon: _getCategoryIcon(category),
-                ),
-              )),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildChip({
-    required String label,
-    required bool isSelected,
-    required VoidCallback onTap,
-    required IconData icon,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? TulipColors.sage : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? TulipColors.sage : TulipColors.taupeLight,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 16,
-              color: isSelected ? Colors.white : TulipColors.brownLight,
-            ),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: TulipTextStyles.caption.copyWith(
-                color: isSelected ? Colors.white : TulipColors.brown,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+          const SizedBox(width: 10),
+          ...categories.map((category) {
+            final icon = _getCategoryIcon(category);
+            final color = _getCategoryColor(category);
+            return Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: _FilterChip(
+                label: _formatCategory(category),
+                icon: icon,
+                isSelected: selectedCategory == category,
+                accentColor: color,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  onCategorySelected(category);
+                },
               ),
-            ),
-          ],
-        ),
+            );
+          }),
+        ],
       ),
     );
   }
@@ -94,6 +70,38 @@ class CategoryFilter extends StatelessWidget {
         .map((word) =>
             word.isNotEmpty ? '${word[0].toUpperCase()}${word.substring(1)}' : '')
         .join(' ');
+  }
+
+  Color _getCategoryColor(String category) {
+    switch (category.toLowerCase()) {
+      case 'restaurant':
+      case 'restaurants':
+      case 'food':
+        return TulipColors.coral;
+      case 'cafe':
+      case 'cafes':
+      case 'coffee':
+        return TulipColors.taupe;
+      case 'bar':
+      case 'bars':
+      case 'nightlife':
+        return TulipColors.lavender;
+      case 'attraction':
+      case 'attractions':
+      case 'sightseeing':
+        return TulipColors.rose;
+      case 'park':
+      case 'parks':
+      case 'nature':
+        return TulipColors.sage;
+      case 'museum':
+      case 'museums':
+        return TulipColors.lavender;
+      case 'shopping':
+        return TulipColors.rose;
+      default:
+        return TulipColors.taupe;
+    }
   }
 
   IconData _getCategoryIcon(String category) {
@@ -135,5 +143,79 @@ class CategoryFilter extends StatelessWidget {
       default:
         return Icons.place;
     }
+  }
+}
+
+/// Individual filter chip with accent color, shadow, and scale animation
+class _FilterChip extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool isSelected;
+  final Color accentColor;
+  final VoidCallback onTap;
+
+  const _FilterChip({
+    required this.label,
+    required this.icon,
+    required this.isSelected,
+    required this.accentColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleOnTap(
+      onTap: onTap,
+      scale: 0.95,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? accentColor : Colors.white,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: isSelected
+                ? accentColor
+                : TulipColors.taupeLight,
+            width: isSelected ? 1.5 : 1,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: accentColor.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ]
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: isSelected ? Colors.white : accentColor,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TulipTextStyles.caption.copyWith(
+                color: isSelected ? Colors.white : TulipColors.brown,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
