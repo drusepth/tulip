@@ -5,11 +5,17 @@ class HighlightsController < ApplicationController
   def show
     @completed_items = @stay.bucket_list_items
                             .completed
-                            .includes(:ratings, ratings: :user)
+                            .includes(:place, :ratings, ratings: :user)
                             .ordered
 
     @categories = @completed_items.map(&:category).uniq.sort
     @items_by_category = @completed_items.group_by(&:category)
+
+    # Items the current user hasn't rated yet
+    @unrated_items = @completed_items.reject { |item| item.rating_for(current_user).present? }
+
+    # Items the current user has already rated
+    @rated_items = @completed_items.select { |item| item.rating_for(current_user).present? }
 
     # Compute aggregate stats
     @participants = all_stay_participants

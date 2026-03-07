@@ -30,17 +30,11 @@
     <!-- Stats Section -->
     <%= render partial: "highlights/stats_section" %>
 
-    <!-- Category Filters -->
-    <% if @categories.size > 1 %>
-      <%= render partial: "highlights/category_filters" %>
-    <% end %>
+    <!-- Unrated Items Section -->
+    <%= render partial: "highlights/unrated_section" %>
 
-    <!-- Completed Items by Category -->
-    <div class="space-y-8">
-      <% @categories.each do |category| %>
-        <%= render partial: "highlights/category_section", locals: { category: category, items: @items_by_category[category] } %>
-      <% end %>
-    </div>
+    <!-- Rated Experiences Section -->
+    <%= render partial: "highlights/rated_section" %>
   <% else %>
     <%= render partial: "highlights/empty_state" %>
   <% end %>
