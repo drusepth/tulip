@@ -1,0 +1,72 @@
+<% content_for(:title, "#{@state["name"]} Tenant Rights - Tulip") %>
+
+<% content_for(:head) do %>
+  <meta name="description" content="<%= @state["name"] %> tenant rights guide: security deposits, eviction protections, notice periods, habitability standards, and renter rights for long-term stays.">
+<% end %>
+
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Breadcrumb -->
+  <div class="mb-6">
+    <%= link_to tenant_rights_path, class: "text-sage-dark hover:text-sage inline-flex items-center text-sm" do %>
+      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      All States
+    <% end %>
+  </div>
+
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center gap-3 mb-3">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-lavender-light to-lavender flex items-center justify-center">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-3xl font-bold text-brown"><%= @state["name"] %> Tenant Rights</h1>
+        <p class="text-brown-light text-sm">Quick reference for stays of 30+ days</p>
+      </div>
+    </div>
+    <p class="text-brown-light mt-4 leading-relaxed"><%= @state["summary"] %></p>
+  </div>
+
+  <!-- Sections -->
+  <div class="space-y-6">
+    <% section_labels = {
+      "when_you_become_a_tenant" => { title: "When You Become a Tenant", icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", color: "sage" },
+      "security_deposits" => { title: "Security Deposits", icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", color: "taupe" },
+      "notice_to_terminate" => { title: "Notice to Terminate", icon: "M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9", color: "lavender" },
+      "rent_control" => { title: "Rent Control", icon: "M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z", color: "rose" },
+      "eviction_protections" => { title: "Eviction Protections", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6", color: "sage" },
+      "habitability" => { title: "Habitability Standards", icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z", color: "taupe" },
+      "key_statutes" => { title: "Key Statutes", icon: "M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253", color: "lavender" }
+    } %>
+
+    <% @state["sections"].each do |key, content| %>
+      <% meta = section_labels[key] || { title: key.titleize.gsub("_", " "), icon: "M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z", color: "sage" } %>
+      <div class="cozy-card p-5">
+        <div class="flex items-start gap-3">
+          <div class="w-9 h-9 rounded-full bg-<%= meta[:color] %>-light flex items-center justify-center flex-shrink-0 mt-0.5">
+            <svg class="w-4 h-4 text-<%= meta[:color] %>-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<%= meta[:icon] %>"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-brown mb-2"><%= meta[:title] %></h2>
+            <p class="text-brown-light leading-relaxed text-sm"><%= content %></p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Disclaimer -->
+  <div class="mt-8 p-4 rounded-2xl bg-cream border border-taupe-light">
+    <p class="text-xs text-brown-light leading-relaxed">
+      <strong>Disclaimer:</strong> This information is provided as a general reference and does not constitute legal advice.
+      Laws change frequently and may vary by municipality. For specific legal questions about your tenancy in
+      <%= @state["name"] %>, consult a licensed attorney.
+    </p>
+  </div>
+</div>

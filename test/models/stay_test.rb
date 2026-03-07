@@ -242,4 +242,65 @@ class StayTest < ActiveSupport::TestCase
     assert_equal Date.new(2027, 3, 1), gaps.first[:end_date]
     assert_equal 14, gaps.first[:days]
   end
+
+  # long_stay? tests
+  test "long_stay? returns true for 30+ day stays" do
+    stay = @user.stays.create!(
+      title: "Long Stay", city: "Austin", state: "Texas", country: "USA",
+      check_in: Date.new(2027, 1, 1), check_out: Date.new(2027, 2, 1),
+      latitude: 30.27, longitude: -97.74
+    )
+    assert stay.long_stay?
+  end
+
+  test "long_stay? returns false for short stays" do
+    stay = @user.stays.create!(
+      title: "Short Stay", city: "Austin", state: "Texas", country: "USA",
+      check_in: Date.new(2027, 1, 1), check_out: Date.new(2027, 1, 10),
+      latitude: 30.27, longitude: -97.74
+    )
+    assert_not stay.long_stay?
+  end
+
+  test "long_stay? returns false for stays without dates" do
+    stay = @user.stays.create!(title: "Wishlist", city: "Austin", latitude: 30.27, longitude: -97.74)
+    assert_not stay.long_stay?
+  end
+
+  # tenant_rights_slug tests
+  test "tenant_rights_slug returns slug for US stays with state" do
+    stay = @user.stays.create!(
+      title: "Test", city: "Austin", state: "Texas", country: "USA",
+      check_in: Date.new(2027, 1, 1), check_out: Date.new(2027, 2, 1),
+      latitude: 30.27, longitude: -97.74
+    )
+    assert_equal "texas", stay.tenant_rights_slug
+  end
+
+  test "tenant_rights_slug returns hyphenated slug for multi-word states" do
+    stay = @user.stays.create!(
+      title: "Test", city: "Manhattan", state: "New York", country: "USA",
+      check_in: Date.new(2027, 1, 1), check_out: Date.new(2027, 2, 1),
+      latitude: 40.71, longitude: -74.01
+    )
+    assert_equal "new-york", stay.tenant_rights_slug
+  end
+
+  test "tenant_rights_slug returns nil for non-US stays" do
+    stay = @user.stays.create!(
+      title: "Test", city: "Tokyo", country: "Japan",
+      check_in: Date.new(2027, 1, 1), check_out: Date.new(2027, 2, 1),
+      latitude: 35.68, longitude: 139.65
+    )
+    assert_nil stay.tenant_rights_slug
+  end
+
+  test "tenant_rights_slug returns nil when state is blank" do
+    stay = @user.stays.create!(
+      title: "Test", city: "Austin", country: "USA",
+      check_in: Date.new(2027, 1, 1), check_out: Date.new(2027, 2, 1),
+      latitude: 30.27, longitude: -97.74
+    )
+    assert_nil stay.tenant_rights_slug
+  end
 end
