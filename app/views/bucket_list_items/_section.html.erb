@@ -40,6 +40,34 @@
       </div>
     </div>
 
+    <!-- Highlights CTA for past stays with completed items -->
+    <% if stay.status == 'past' && completed_count > 0 %>
+      <%= link_to stay_highlights_path(stay), class: "group block mb-5" do %>
+        <div class="relative overflow-hidden p-4 rounded-2xl bg-gradient-to-br from-coral-light via-white to-rose-light border border-coral transition-all duration-300 hover:shadow-lg hover:scale-[1.01]">
+          <div class="flex items-center gap-4">
+            <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-coral flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="font-semibold text-coral-dark group-hover:text-coral transition-colors">Rate Your Experiences</h3>
+              <p class="text-sm text-brown-light mt-0.5">
+                <% if stay.collaborator_count > 0 %>
+                  Rate items and see ratings from your travel companions
+                <% else %>
+                  Rate your bucket list items and save your memories
+                <% end %>
+              </p>
+            </div>
+            <svg class="w-5 h-5 text-coral-dark group-hover:translate-x-1 transition-transform flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+
     <!-- Add Form -->
     <%= render "bucket_list_items/form", stay: stay %>
 

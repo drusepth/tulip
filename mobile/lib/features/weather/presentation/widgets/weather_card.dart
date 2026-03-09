@@ -7,11 +7,13 @@ import '../../../../shared/widgets/cozy_card.dart';
 class WeatherCard extends StatelessWidget {
   final Map<String, dynamic> weatherData;
   final VoidCallback? onTap;
+  final bool showDailyForecast;
 
   const WeatherCard({
     super.key,
     required this.weatherData,
     this.onTap,
+    this.showDailyForecast = true,
   });
 
   @override
@@ -85,8 +87,8 @@ class WeatherCard extends StatelessWidget {
         ),
         ),
 
-        // Daily forecast
-        if (dailyData.isNotEmpty) ...[
+        // Daily forecast (hidden for past stays)
+        if (dailyData.isNotEmpty && showDailyForecast) ...[
           const SizedBox(height: 12),
           SizedBox(
             height: 130,

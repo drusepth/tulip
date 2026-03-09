@@ -561,6 +561,7 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
 
         return WeatherCard(
           weatherData: weatherData,
+          showDailyForecast: !stay.isPast,
           onTap: () => context.push(
             '/stays/${stay.id}/weather?title=${Uri.encodeComponent(stay.title)}',
           ),
@@ -868,6 +869,12 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
           _buildBucketListProgress(items),
           const SizedBox(height: 16),
 
+          // Highlights CTA for past stays
+          if (stay.isPast && completedItems.isNotEmpty) ...[
+            _buildHighlightsCTA(stay),
+            const SizedBox(height: 16),
+          ],
+
           // View on Map button
           if (itemsWithLocation.isNotEmpty) ...[
             OutlinedButton.icon(
@@ -952,6 +959,75 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
                 )),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildHighlightsCTA(Stay stay) {
+    final hasCollaborators = stay.collaboratorCount > 0;
+
+    return GestureDetector(
+      onTap: () => context.push(
+        '/stays/${stay.id}/highlights?title=${Uri.encodeComponent(stay.title)}',
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              TulipColors.coralDark.withValues(alpha: 0.15),
+              TulipColors.coral.withValues(alpha: 0.1),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: TulipColors.coral.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: TulipColors.coral,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.auto_awesome,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Rate Your Experiences',
+                    style: TulipTextStyles.label.copyWith(
+                      color: TulipColors.coralDark,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    hasCollaborators
+                        ? 'Rate items and see ratings from your travel companions'
+                        : 'Rate your bucket list items and save your memories',
+                    style: TulipTextStyles.caption.copyWith(
+                      color: TulipColors.brown,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: TulipColors.coralDark,
+            ),
+          ],
+        ),
       ),
     );
   }
