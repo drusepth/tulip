@@ -347,28 +347,36 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      TulipColors.sageLight,
-                      TulipColors.sage.withValues(alpha: 0.3),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  // Use normal card styling for past stays, gradient for upcoming/current
+                  gradient: stay.isPast
+                      ? null
+                      : LinearGradient(
+                          colors: [
+                            TulipColors.sageLight,
+                            TulipColors.sage.withValues(alpha: 0.3),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                  color: stay.isPast ? Colors.white : null,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: TulipColors.sage.withValues(alpha: 0.5)),
+                  border: Border.all(
+                    color: stay.isPast
+                        ? TulipColors.taupeLight
+                        : TulipColors.sage.withValues(alpha: 0.5),
+                  ),
                 ),
                 child: Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: TulipColors.sage,
+                        color: stay.isPast ? TulipColors.taupeLight : TulipColors.sage,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.check,
-                        color: Colors.white,
+                        color: stay.isPast ? TulipColors.brownLight : Colors.white,
                         size: 20,
                       ),
                     ),
@@ -378,16 +386,16 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Booked!',
+                            stay.isPast ? 'Booked' : 'Booked!',
                             style: TulipTextStyles.label.copyWith(
-                              color: TulipColors.sageDark,
+                              color: stay.isPast ? TulipColors.brown : TulipColors.sageDark,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                           Text(
                             'View booking on ${_formatStayType(stay.stayType)}',
                             style: TulipTextStyles.caption.copyWith(
-                              color: TulipColors.sageDark,
+                              color: stay.isPast ? TulipColors.brownLight : TulipColors.sageDark,
                             ),
                           ),
                         ],
@@ -395,7 +403,7 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
                     ),
                     Icon(
                       Icons.open_in_new,
-                      color: TulipColors.sageDark,
+                      color: stay.isPast ? TulipColors.brownLight : TulipColors.sageDark,
                       size: 18,
                     ),
                   ],

@@ -470,45 +470,76 @@
       <% if @stay.booked? %>
         <% if @stay.booking_url.present? %>
           <%= link_to @stay.booking_url, target: "_blank", rel: "noopener", class: "block group" do %>
-            <div class="relative overflow-hidden rounded-3xl shadow-cozy p-6 cursor-pointer
-                        bg-gradient-to-br from-sage-light via-white to-rose-light
-                        border-2 border-sage
-                        transition-all duration-300 ease-out
-                        hover:shadow-xl hover:scale-[1.02] hover:border-sage">
-              <!-- Decorative elements -->
-              <div class="absolute top-0 right-0 w-24 h-24 opacity-10 transform translate-x-8 -translate-y-8">
-                <svg viewBox="0 0 100 100" fill="currentColor" class="text-sage-dark">
-                  <path d="M50 5 C60 20, 80 20, 80 40 C80 60, 60 70, 50 95 C40 70, 20 60, 20 40 C20 20, 40 20, 50 5Z"/>
-                </svg>
-              </div>
-              <div class="absolute bottom-0 left-0 w-16 h-16 opacity-10 transform -translate-x-4 translate-y-4">
-                <svg viewBox="0 0 100 100" fill="currentColor" class="text-rose">
-                  <path d="M50 5 C60 20, 80 20, 80 40 C80 60, 60 70, 50 95 C40 70, 20 60, 20 40 C20 20, 40 20, 50 5Z"/>
-                </svg>
-              </div>
-
-              <div class="relative flex items-center justify-between">
-                <div>
-                  <div class="flex items-center gap-2 mb-1">
-                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-sage-light">
-                      <svg class="w-4 h-4 text-sage-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            <% if @stay.status == 'past' %>
+              <!-- Simplified card for past stays -->
+              <div class="relative overflow-hidden rounded-3xl shadow-cozy p-6 cursor-pointer
+                          bg-white border border-taupe-light
+                          transition-all duration-300 ease-out
+                          hover:shadow-xl hover:scale-[1.02]">
+                <div class="relative flex items-center justify-between">
+                  <div>
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-taupe-light">
+                        <svg class="w-4 h-4 text-brown-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                      </span>
+                      <span class="text-xs font-medium text-brown-light uppercase tracking-wide">Booked</span>
+                    </div>
+                    <h2 class="text-lg font-semibold text-brown group-hover:text-brown-light transition-colors">View Booking</h2>
+                    <p class="text-sm text-brown-light">Open reservation details</p>
+                  </div>
+                  <div class="flex-shrink-0">
+                    <div class="w-10 h-10 rounded-full bg-cream shadow-sm flex items-center justify-center group-hover:bg-taupe-light group-hover:shadow-md transition-all duration-300">
+                      <svg class="w-5 h-5 text-brown-light group-hover:text-brown group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                       </svg>
-                    </span>
-                    <span class="text-xs font-medium text-sage-dark uppercase tracking-wide">Confirmed</span>
-                  </div>
-                  <h2 class="text-lg font-semibold text-brown group-hover:text-sage-dark transition-colors">View Booking</h2>
-                  <p class="text-sm text-brown-light">Open reservation details</p>
-                </div>
-                <div class="flex-shrink-0">
-                  <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center group-hover:bg-sage group-hover:shadow-md transition-all duration-300">
-                    <svg class="w-5 h-5 text-sage-dark group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                    </svg>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            <% else %>
+              <!-- Highlighted card for upcoming/current stays -->
+              <div class="relative overflow-hidden rounded-3xl shadow-cozy p-6 cursor-pointer
+                          bg-gradient-to-br from-sage-light via-white to-rose-light
+                          border-2 border-sage
+                          transition-all duration-300 ease-out
+                          hover:shadow-xl hover:scale-[1.02] hover:border-sage">
+                <!-- Decorative elements -->
+                <div class="absolute top-0 right-0 w-24 h-24 opacity-10 transform translate-x-8 -translate-y-8">
+                  <svg viewBox="0 0 100 100" fill="currentColor" class="text-sage-dark">
+                    <path d="M50 5 C60 20, 80 20, 80 40 C80 60, 60 70, 50 95 C40 70, 20 60, 20 40 C20 20, 40 20, 50 5Z"/>
+                  </svg>
+                </div>
+                <div class="absolute bottom-0 left-0 w-16 h-16 opacity-10 transform -translate-x-4 translate-y-4">
+                  <svg viewBox="0 0 100 100" fill="currentColor" class="text-rose">
+                    <path d="M50 5 C60 20, 80 20, 80 40 C80 60, 60 70, 50 95 C40 70, 20 60, 20 40 C20 20, 40 20, 50 5Z"/>
+                  </svg>
+                </div>
+
+                <div class="relative flex items-center justify-between">
+                  <div>
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-sage-light">
+                        <svg class="w-4 h-4 text-sage-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                      </span>
+                      <span class="text-xs font-medium text-sage-dark uppercase tracking-wide">Confirmed</span>
+                    </div>
+                    <h2 class="text-lg font-semibold text-brown group-hover:text-sage-dark transition-colors">View Booking</h2>
+                    <p class="text-sm text-brown-light">Open reservation details</p>
+                  </div>
+                  <div class="flex-shrink-0">
+                    <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center group-hover:bg-sage group-hover:shadow-md transition-all duration-300">
+                      <svg class="w-5 h-5 text-sage-dark group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
           <% end %>
         <% end %>
       <% else %>
