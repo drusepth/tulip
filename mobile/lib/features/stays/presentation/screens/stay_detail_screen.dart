@@ -965,66 +965,131 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
 
   Widget _buildHighlightsCTA(Stay stay) {
     final hasCollaborators = stay.collaboratorCount > 0;
+    final completedCount = stay.bucketListCompletedCount;
 
     return GestureDetector(
       onTap: () => context.push(
         '/stays/${stay.id}/highlights?title=${Uri.encodeComponent(stay.title)}',
       ),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              TulipColors.coralDark.withValues(alpha: 0.15),
-              TulipColors.coral.withValues(alpha: 0.1),
+              TulipColors.coral.withValues(alpha: 0.2),
+              TulipColors.rose.withValues(alpha: 0.15),
+              TulipColors.coralDark.withValues(alpha: 0.1),
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: TulipColors.coral.withValues(alpha: 0.3)),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: TulipColors.coral.withValues(alpha: 0.4), width: 2),
         ),
-        child: Row(
+        child: Column(
           children: [
+            // Large icon with decorative background
             Container(
-              padding: const EdgeInsets.all(12),
+              width: 80,
+              height: 80,
               decoration: BoxDecoration(
-                color: TulipColors.coral,
-                borderRadius: BorderRadius.circular(12),
+                gradient: LinearGradient(
+                  colors: [TulipColors.coral, TulipColors.coralDark],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: TulipColors.coral.withValues(alpha: 0.4),
+                    blurRadius: 16,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
               ),
               child: const Icon(
                 Icons.auto_awesome,
                 color: Colors.white,
-                size: 24,
+                size: 40,
               ),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Rate Your Experiences',
-                    style: TulipTextStyles.label.copyWith(
-                      color: TulipColors.coralDark,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    hasCollaborators
-                        ? 'Rate items and see ratings from your travel companions'
-                        : 'Rate your bucket list items and save your memories',
-                    style: TulipTextStyles.caption.copyWith(
-                      color: TulipColors.brown,
-                    ),
+            const SizedBox(height: 20),
+
+            // Title
+            Text(
+              'Trip Complete! 🎉',
+              style: TulipTextStyles.heading2.copyWith(
+                color: TulipColors.coralDark,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // Subtitle
+            Text(
+              'Rate Your Experiences',
+              style: TulipTextStyles.heading3.copyWith(
+                color: TulipColors.brown,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Description
+            Text(
+              hasCollaborators
+                  ? 'Rate your $completedCount completed items and see what your travel companions thought!'
+                  : 'Rate your $completedCount completed items and preserve your travel memories.',
+              style: TulipTextStyles.body.copyWith(
+                color: TulipColors.brownLight,
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+
+            // CTA Button
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [TulipColors.coral, TulipColors.coralDark],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: TulipColors.coral.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
-            ),
-            Icon(
-              Icons.chevron_right,
-              color: TulipColors.coralDark,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.star_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'View Trip Highlights',
+                    style: TulipTextStyles.label.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Icon(
+                    Icons.arrow_forward_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -1120,6 +1185,27 @@ class _StayDetailScreenState extends ConsumerState<StayDetailScreen>
                 );
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.thermostat_outlined),
+              title: const Text('View Weather'),
+              onTap: () {
+                Navigator.pop(context);
+                context.push(
+                  '/stays/${stay.id}/weather?title=${Uri.encodeComponent(stay.title)}',
+                );
+              },
+            ),
+            if (stay.hasCoordinates)
+              ListTile(
+                leading: const Icon(Icons.explore_outlined),
+                title: const Text('Explore Nearby'),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.push(
+                    '/stays/${stay.id}/gallery?title=${Uri.encodeComponent(stay.title)}',
+                  );
+                },
+              ),
             ListTile(
               leading: const Icon(Icons.share_outlined),
               title: const Text('Share Stay'),

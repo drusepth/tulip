@@ -17,9 +17,9 @@ const _visitedColors = [
   TulipColors.rose,
   TulipColors.lavender,
   TulipColors.taupe,
-  TulipColors.coral,
 ];
 
+const _upcomingColor = TulipColors.coral;
 const _unvisitedColor = Color(0xFFD4D4D4);
 const _borderColor = TulipColors.brown;
 
@@ -186,22 +186,41 @@ class _ExploredScreenState extends ConsumerState<ExploredScreen> {
         final name = feature['properties']?['name'] as String? ?? '';
         final geometry = feature['geometry'] as Map<String, dynamic>;
         final rings = _parseGeometry(geometry);
-        final isVisited = data.states.containsKey(name);
+        final hasState = data.states.containsKey(name);
+        final isVisited = data.hasVisitedStays(name);
+        final isUpcomingOnly = data.hasOnlyUpcomingStays(name);
+
+        // Determine color: visited (past/current) > upcoming > unvisited
+        Color stateColor;
+        double borderAlpha;
+        double borderWidth;
+
+        if (isVisited) {
+          stateColor = _colorForState(name).withValues(alpha: 0.6);
+          borderAlpha = 0.5;
+          borderWidth = 1.0;
+        } else if (isUpcomingOnly) {
+          stateColor = _upcomingColor.withValues(alpha: 0.5);
+          borderAlpha = 0.4;
+          borderWidth = 1.0;
+        } else {
+          stateColor = _unvisitedColor.withValues(alpha: 0.4);
+          borderAlpha = 0.2;
+          borderWidth = 0.5;
+        }
 
         for (final ring in rings) {
           polygons.add(Polygon(
             points: ring,
-            color: isVisited
-                ? _colorForState(name).withValues(alpha: 0.6)
-                : _unvisitedColor.withValues(alpha: 0.4),
-            borderColor: _borderColor.withValues(alpha: isVisited ? 0.5 : 0.2),
-            borderStrokeWidth: isVisited ? 1.0 : 0.5,
+            color: stateColor,
+            borderColor: _borderColor.withValues(alpha: borderAlpha),
+            borderStrokeWidth: borderWidth,
             isFilled: true,
           ));
         }
 
-        // Add count badge marker for visited states
-        if (isVisited && rings.isNotEmpty) {
+        // Add count badge marker for states with stays
+        if (hasState && rings.isNotEmpty) {
           final centroid = _computeCentroid(rings);
           final count = data.states[name]!.count;
           markers.add(Marker(
@@ -212,7 +231,7 @@ class _ExploredScreenState extends ConsumerState<ExploredScreen> {
               onTap: () => _onStateTapped(name, data),
               child: Container(
                 decoration: BoxDecoration(
-                  color: TulipColors.brown,
+                  color: isUpcomingOnly ? TulipColors.coralDark : TulipColors.brown,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
@@ -430,18 +449,9 @@ class _StateBottomSheet extends StatelessWidget {
           // Content
           if (isVisited)
             Flexible(
-              child: ListView.separated(
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(16),
-                itemCount: stateData!.stays.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 8),
-                itemBuilder: (context, index) {
-                  final stay = stateData!.stays[index];
-                  return _StayCard(
-                    stay: stay,
-                    onTap: () => onStayTapped(stay.id),
-                  );
-                },
+              child: _StaysList(
+                stateData: stateData!,
+                onStayTapped: onStayTapped,
               ),
             )
           else
@@ -486,8 +496,13 @@ class _StateBottomSheet extends StatelessWidget {
 class _StayCard extends StatelessWidget {
   final ExploredStay stay;
   final VoidCallback onTap;
+  final bool isUpcoming;
 
-  const _StayCard({required this.stay, required this.onTap});
+  const _StayCard({
+    required this.stay,
+    required this.onTap,
+    this.isUpcoming = false,
+  });
 
   String _formatDates() {
     if (stay.checkIn == null || stay.checkOut == null) return '';
@@ -513,9 +528,13 @@ class _StayCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isUpcoming
+              ? TulipColors.coral.withValues(alpha: 0.05)
+              : Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: TulipColors.taupeLight),
+          border: Border.all(
+            color: isUpcoming ? TulipColors.coral.withValues(alpha: 0.4) : TulipColors.taupeLight,
+          ),
         ),
         child: Row(
           children: [
@@ -578,6 +597,107 @@ class _StayCard extends StatelessWidget {
     return Container(
       color: TulipColors.taupeLight,
       child: const Icon(Icons.home_outlined, color: TulipColors.taupe, size: 24),
+    );
+  }
+}
+
+class _StaysList extends StatelessWidget {
+  final ExploredState stateData;
+  final void Function(int stayId) onStayTapped;
+
+  const _StaysList({
+    required this.stateData,
+    required this.onStayTapped,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Group stays by status
+    final pastStays = stateData.stays
+        .where((s) => s.status == 'past' || s.status == 'current')
+        .toList();
+    final upcomingStays = stateData.stays
+        .where((s) => s.status == 'upcoming')
+        .toList();
+
+    return ListView(
+      shrinkWrap: true,
+      padding: const EdgeInsets.all(16),
+      children: [
+        // Past/Current stays section
+        if (pastStays.isNotEmpty) ...[
+          _buildSectionHeader(
+            icon: Icons.check_circle,
+            iconColor: TulipColors.sage,
+            title: 'Visited',
+            count: pastStays.length,
+          ),
+          const SizedBox(height: 8),
+          ...pastStays.map((stay) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _StayCard(
+                  stay: stay,
+                  onTap: () => onStayTapped(stay.id),
+                ),
+              )),
+        ],
+
+        // Upcoming stays section
+        if (upcomingStays.isNotEmpty) ...[
+          if (pastStays.isNotEmpty) const SizedBox(height: 16),
+          _buildSectionHeader(
+            icon: Icons.schedule,
+            iconColor: TulipColors.coral,
+            title: 'Upcoming',
+            count: upcomingStays.length,
+          ),
+          const SizedBox(height: 8),
+          ...upcomingStays.map((stay) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _StayCard(
+                  stay: stay,
+                  onTap: () => onStayTapped(stay.id),
+                  isUpcoming: true,
+                ),
+              )),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildSectionHeader({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required int count,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: iconColor),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: TulipTextStyles.label.copyWith(
+            color: iconColor,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(width: 6),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          decoration: BoxDecoration(
+            color: iconColor.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            '$count',
+            style: TulipTextStyles.caption.copyWith(
+              color: iconColor,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

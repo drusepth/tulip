@@ -104,7 +104,7 @@ class Stay < ApplicationRecord
   end
 
   def full_address
-    [ address, city, country ].compact.join(", ")
+    [ address, city, state, country ].compact.join(", ")
   end
 
   def duration_days
@@ -303,7 +303,7 @@ class Stay < ApplicationRecord
   end
 
   def should_geocode?
-    (address_changed? || city_changed? || country_changed?) && full_address.present?
+    (address_changed? || city_changed? || state_changed? || country_changed?) && full_address.present?
   end
 
   def location_changed?

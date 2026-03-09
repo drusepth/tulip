@@ -46,6 +46,21 @@ class ExploredData {
       totalStates: json['total_states'] as int? ?? 50,
     );
   }
+
+  /// Check if a state has any past or current stays (fully visited)
+  bool hasVisitedStays(String stateName) {
+    final state = states[stateName];
+    if (state == null) return false;
+    return state.stays.any((s) => s.status == 'past' || s.status == 'current');
+  }
+
+  /// Check if a state has only upcoming stays (not yet visited)
+  bool hasOnlyUpcomingStays(String stateName) {
+    final state = states[stateName];
+    if (state == null) return false;
+    return state.stays.isNotEmpty &&
+        state.stays.every((s) => s.status == 'upcoming');
+  }
 }
 
 class ExploredState {

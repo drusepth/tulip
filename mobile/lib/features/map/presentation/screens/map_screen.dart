@@ -41,12 +41,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   void _onMapReady() {
     if (_mapReady) return;
     _mapReady = true;
-    // Small delay to ensure the map is fully rendered
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (mounted) {
-        _fitToStays();
-      }
-    });
+    // Map starts centered on US - don't auto-fit to stays
+    // User can tap the location button to fit to all stays if needed
   }
 
   void _onPositionChanged(MapPosition position, bool hasGesture) {
@@ -240,9 +236,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             ),
             data: (_) => TulipMap(
               mapController: _mapController,
-              initialCenter: mapStays.isNotEmpty
-                  ? LatLng(mapStays.first.latitude!, mapStays.first.longitude!)
-                  : null,
+              initialCenter: TulipMap.defaultCenter, // Center of USA
+              initialZoom: 4.0,
               markers: allMarkers,
               polylines: transitPolylines,
               onMapReady: _onMapReady,
