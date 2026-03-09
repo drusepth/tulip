@@ -30,8 +30,8 @@ class TulipMap extends StatelessWidget {
     this.interactionOptions = true,
   });
 
-  // Default center (Portland, OR - matches the web app's default)
-  static const defaultCenter = LatLng(45.5152, -122.6784);
+  // Default center (center of USA)
+  static const defaultCenter = LatLng(39.8, -98.5);
 
   @override
   Widget build(BuildContext context) {

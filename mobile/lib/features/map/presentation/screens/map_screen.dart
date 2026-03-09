@@ -240,6 +240,9 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             ),
             data: (_) => TulipMap(
               mapController: _mapController,
+              initialCenter: mapStays.isNotEmpty
+                  ? LatLng(mapStays.first.latitude!, mapStays.first.longitude!)
+                  : null,
               markers: allMarkers,
               polylines: transitPolylines,
               onMapReady: _onMapReady,
