@@ -50,6 +50,9 @@ class Endpoints {
   static String stayCollaborationsLeave(int stayId) =>
       '/api/v1/stays/$stayId/collaborations/leave';
 
+  // Device Tokens (push notifications)
+  static const String deviceTokens = '/api/v1/device_tokens';
+
   // Notifications
   static const String notifications = '/api/v1/notifications';
   static String notificationRead(int id) => '/api/v1/notifications/$id/read';

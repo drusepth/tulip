@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+user_one_ios:
+  user: one
+  token: fcm_token_user_one_ios
+  platform: ios
+  active: true
+
+user_two_android:
+  user: two
+  token: fcm_token_user_two_android
+  platform: android
+  active: true

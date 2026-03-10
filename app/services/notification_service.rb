@@ -150,12 +150,53 @@ class NotificationService
       )
     end
 
+    def trip_ended(stay)
+      # Notify ALL participants (owner + collaborators) to rate places
+      recipients = all_participants_for_stay(stay)
+
+      notifications = recipients.map do |recipient|
+        Notification.create!(
+          user: recipient,
+          notification_type: "trip_ended",
+          notifiable: stay,
+          data: {
+            stay_id: stay.id,
+            stay_title: stay.title,
+            city: stay.city
+          }
+        )
+      end
+
+      # Send push notifications to mobile devices
+      notifications.each do |notification|
+        PushNotificationService.send_to_user(
+          notification.user,
+          title: "How was #{stay.city}?",
+          body: notification.message,
+          data: {
+            notification_id: notification.id.to_s,
+            notification_type: "trip_ended",
+            stay_id: stay.id.to_s,
+            target_path: "/stays/#{stay.id}/highlights"
+          }
+        )
+      end
+
+      notifications
+    end
+
     private
 
     def recipients_for_stay(stay, exclude:)
       recipients = [ stay.owner ]
       recipients += stay.collaborators.to_a
       recipients.uniq.reject { |u| u == exclude }
+    end
+
+    def all_participants_for_stay(stay)
+      recipients = [ stay.owner ]
+      recipients += stay.collaborators.to_a
+      recipients.uniq
     end
   end
 end

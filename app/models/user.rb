@@ -7,6 +7,7 @@ class User < ApplicationRecord
 
   has_many :stays, dependent: :destroy # Stays this user owns
   has_many :notifications, dependent: :destroy
+  has_many :device_tokens, dependent: :destroy
 
   # Returns display_name if set, otherwise falls back to email username
   def name

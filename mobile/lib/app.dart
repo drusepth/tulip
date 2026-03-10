@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'config/routes.dart';
 import 'config/theme.dart';
+import 'core/auth/auth_provider.dart';
 import 'core/deep_links/deep_link_service.dart';
+import 'core/push_notifications/push_notification_service.dart';
 
 class TulipApp extends ConsumerStatefulWidget {
   const TulipApp({super.key});
@@ -14,6 +16,7 @@ class TulipApp extends ConsumerStatefulWidget {
 
 class _TulipAppState extends ConsumerState<TulipApp> {
   StreamSubscription<Uri>? _linkSubscription;
+  bool _pushInitialized = false;
 
   @override
   void initState() {
@@ -32,6 +35,19 @@ class _TulipAppState extends ConsumerState<TulipApp> {
 
     // Handle deep links received while app is running
     _linkSubscription = deepLinkService.linkStream.listen(_handleDeepLink);
+  }
+
+  void _initPushNotifications() {
+    if (_pushInitialized) return;
+    _pushInitialized = true;
+
+    final pushService = ref.read(pushNotificationServiceProvider);
+    pushService.initialize(
+      onNotificationTap: (path) {
+        final router = ref.read(routerProvider);
+        router.push(path);
+      },
+    );
   }
 
   void _handleDeepLink(Uri uri) {
@@ -68,6 +84,12 @@ class _TulipAppState extends ConsumerState<TulipApp> {
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
+    final authState = ref.watch(authStateProvider);
+
+    // Initialize push notifications once the user is authenticated
+    if (authState.status == AuthStatus.authenticated) {
+      _initPushNotifications();
+    }
 
     return MaterialApp.router(
       title: 'Tulip',
